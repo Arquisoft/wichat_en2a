@@ -4,6 +4,14 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_en2a&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_en2a)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_en2a&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_en2a)
 
+## Members
+
+| Name | GitHub Profile|
+|------|---------------|
+|Carlos Lavilla Fernández| <a href="https://github.com/CarlosLavilla"><img src="https://img.shields.io/badge/UO287997-Carlos Lavilla-blue"></a>
+
+## Quick description
+
 <p float="left">
 <img src="https://blog.wildix.com/wp-content/uploads/2020/06/react-logo.jpg" height="100">
 <img src="https://miro.medium.com/max/365/1*Jr3NFSKTfQWRUyjblBSKeg.png" height="100">
