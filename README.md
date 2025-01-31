@@ -9,6 +9,7 @@
 | Name | GitHub Profile|
 |------|---------------|
 |Carlos Lavilla Fernández| <a href="https://github.com/CarlosLavilla"><img src="https://img.shields.io/badge/UO287997-Carlos Lavilla-blue"></a>
+|Sergio Mulet Alonso| <a href="https://github.com/SergioMulet"><img src="https://img.shields.io/badge/UO296503-Sergio Mulet-green"></a>
 
 ## Quick description
 
