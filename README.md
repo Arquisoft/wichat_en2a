@@ -12,6 +12,7 @@
 |Sergio Mulet Alonso| <a href="https://github.com/SergioMulet"><img src="https://img.shields.io/badge/UO296503-Sergio Mulet-green"></a>
 |Raquel Suarez Sanchez| <a href="https://github.com/RaquelSuarezSanchez"><img src="https://img.shields.io/badge/UO295000-Raquel Suarez-pink"></a>
 |Omar Aguirre Rodríguez| <a href="https://github.com/OmarAguirreRguez"><img src="https://img.shields.io/badge/UO295808-Omar_Aguirre-115C14"></a>
+|Ana Pérez Bango| <a href="https://github.com/AnaPB8"><img src="https://img.shields.io/badge/UO294100-Ana Pérez-purple"></a>
 
 ## Quick description
 
