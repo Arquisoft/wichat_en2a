@@ -14,7 +14,7 @@
 |Omar Aguirre Rodríguez| <a href="https://github.com/OmarAguirreRguez"><img src="https://img.shields.io/badge/UO295808-Omar_Aguirre-115C14"></a>
 |Ana Pérez Bango| <a href="https://github.com/AnaPB8"><img src="https://img.shields.io/badge/UO294100-Ana Pérez-purple"></a>
 |Pablo Roces Pérez| <a href="https://github.com/PabloRP275"><img src="https://img.shields.io/badge/UO294656-Pablo Roces-brown"></a>
-|Carlos Sampedro Menéndez| <a href="https://github.com/uo288764"><img src="https://img.shields.io/badge/UO288764-Carlos orange"></a>
+|Carlos Sampedro Menéndez| <a href="https://github.com/uo288764"><img src="https://img.shields.io/badge/UO288764-Carlos Sampedro-orange"></a>
 
 ## Quick description
 
