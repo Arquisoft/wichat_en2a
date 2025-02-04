@@ -1,5 +1,4 @@
 name: CI for wichat_en2a
-
 on:
   release:
     types: [published]
