@@ -1,7 +1,6 @@
 name: CI for wichat_en2a
 
 on:
-  workflow_dispatch:
   release:
     types: [published]
 
