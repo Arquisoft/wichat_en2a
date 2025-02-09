@@ -36,8 +36,8 @@ endif::arc42help[]
 |===
 |Term |Definition
 
-|<Term-1>
-|<definition-1>
+|TBD
+|To Be Defined
 
 |<Term-2>
 |<definition-2>
