@@ -452,7 +452,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_stakeholders">1.3. Stakeholders</a></li>
 </ul>
 </li>
-<li><a href="#section-architecture-constraints">2. Architecture Constraints</a></li>
+<li><a href="#section-architecture-constraints">2. Architecture Constraints</a>
+<ul class="sectlevel2">
+<li><a href="#_list_of_constraints">2.1. List of constraints</a></li>
+</ul>
+</li>
 <li><a href="#section-context-and-scope">3. Context and Scope</a>
 <ul class="sectlevel2">
 <li><a href="#_business_context">3.1. Business Context</a></li>
@@ -741,7 +745,69 @@ conventions (e.g. programming or versioning guidelines, documentation or naming 
 </div>
 </div>
 </div>
+<div class="paragraph">
+<p>In this section we will pinpoint the constraints that come into play for the design of our application and its architecture.</p>
+</div>
+<div class="sect2">
+<h3 id="_list_of_constraints">2.1. List of constraints</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Constraint type</th>
+<th class="tableblock halign-left valign-top">Constraint description</th>
+<th class="tableblock halign-left valign-top">Repercussions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Technical</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Using Git and GitHub for version control.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires the team to get accustomed to GitHub and its functionalities.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Technical</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Using either one of the projects from previous years or the template provided.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires the team to work starting from code authored and technologies selected by other people (teachers/previous year&#8217;s students)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Technical</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mandatory inclusion of LLM functionalities to help the user.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires the team to get familiarized with the LLM of their choice and implement it into the program.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Organizational</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">There is a time limit established.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The application must be developed in a few months, which sets a time limit for the team.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Organizational</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Using pull requests for code submissions.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ensures that more than one person will be responsible of each commit.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Organizational</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Holding regular team meetings.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A team meeting must be held at least once a week (or more if required) and the participants and contents of said meeting must both be noted down.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Domain</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Developing an application with code up to standards.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Code developed by the team must be as clear to understand as possible (i.e. following code conventions, or adding documentation), in order to ensure the maintainability of the application.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Domain</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ensuring the LLM provides factual clues.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires to adjust the LLM accordingly to ensure it does not provide any falsehoods that may confuse the player of the game.</p></td>
+</tr>
+</tbody>
+</table>
 <div style="page-break-after: always;"></div>
+</div>
 </div>
 </div>
 <div class="sect1">
