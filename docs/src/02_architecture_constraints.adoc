@@ -27,3 +27,43 @@ See https://docs.arc42.org/section-2/[Architecture Constraints] in the arc42 doc
 
 ****
 endif::arc42help[]
+
+In this section we will pinpoint the constraints that come into play for the design of our application and its architecture.
+
+=== List of constraints
+
+|===
+| Constraint type | Constraint description | Repercussions
+
+| Technical
+| Using Git and GitHub for version control.
+| Requires the team to get accustomed to GitHub and its functionalities. 
+
+| Technical
+| Using either one of the projects from previous years or the template provided.
+| Requires the team to work starting from code authored and technologies selected by other people (teachers/previous year's students) 
+
+| Technical
+| Mandatory inclusion of LLM functionalities to help the user.
+| Requires the team to get familiarized with the LLM of their choice and implement it into the program.
+
+| Organizational
+| There is a time limit established.
+| The application must be developed in a few months, which sets a time limit for the team.
+
+| Organizational
+| Using pull requests for code submissions.
+| Ensures that more than one person will be responsible of each commit.
+
+| Organizational
+| Holding regular team meetings.
+| A team meeting must be held at least once a week (or more if required) and the participants and contents of said meeting must both be noted down.
+
+| Domain
+| Developing an application with code up to standards.
+| Code developed by the team must be as clear to understand as possible (i.e. following code conventions, or adding documentation), in order to ensure the maintainability of the application.
+
+| Domain
+| Ensuring the LLM provides factual clues.
+| Requires to adjust the LLM accordingly to ensure it does not provide any falsehoods that may confuse the player of the game.
+|===
