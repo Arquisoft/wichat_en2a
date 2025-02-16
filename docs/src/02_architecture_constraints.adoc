@@ -40,12 +40,16 @@ In this section we will pinpoint the constraints that come into play for the des
 | Requires the team to get accustomed to GitHub and its functionalities. 
 
 | Technical
-| Using either one of the projects from previous years or the template provided.
-| Requires the team to work starting from code authored and technologies selected by other people (teachers/previous year's students) 
+| Deploying the application to access it through a web browser.
+| Requires the team to get familiarized with tools and services such as Docker, Azure...
+
+| Technical
+| Using the project from the previous year.
+| Requires the team to work starting from code authored and technologies selected by other people previous year's students of the chosen project.
 
 | Technical
 | Mandatory inclusion of LLM functionalities to help the user.
-| Requires the team to get familiarized with the LLM of their choice and implement it into the program.
+| Requires the team to get familiarized with the LLM selected (Qwen) and implement it into the program.
 
 | Organizational
 | There is a time limit established.
@@ -59,11 +63,15 @@ In this section we will pinpoint the constraints that come into play for the des
 | Holding regular team meetings.
 | A team meeting must be held at least once a week (or more if required) and the participants and contents of said meeting must both be noted down.
 
-| Domain
+| Conventional
 | Developing an application with code up to standards.
 | Code developed by the team must be as clear to understand as possible (i.e. following code conventions, or adding documentation), in order to ensure the maintainability of the application.
 
-| Domain
+| Conventional
 | Ensuring the LLM provides factual clues.
 | Requires to adjust the LLM accordingly to ensure it does not provide any falsehoods that may confuse the player of the game.
+
+| Conventional
+| Following the Arc42 template in the documentation.
+| The documentation to be provided in the project must be modelled after Arc42.
 |===
