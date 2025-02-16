@@ -56,7 +56,7 @@ In this subsection, the technologies that are inherited from the previous projec
 
 In this subsection, the technologies that were not present in the original project are described. These technologies have been decided by our team to fullfill the new requirements of the project.
 
-* *QWen2.5*: To add the LLM functionality to the system, we will use this model. This way we may apply to the Empathy contest if we decided to do so. That is the main reason to use this model because we felt that using others like Gemini or DeepSeek would probably provide better results but we would not be able to enroll our project in the contest.
+* *QWen2.5*: To add the LLM functionality to the system, we will use this model. This way we may apply to the Empathy contest if we decided to do so. That is the main reason to use this model because we felt that using others like Gemini or DeepSeek would probably provide better results, but we would not be able to enroll our project in the contest.
 * *Azure*: To deploy the system, we will use Azure due to its scalability and reliability. We will use a VM stored in Azure to deploy the system and make it accessible. We could have used any other cloud provider, but we decided to use Azure because it was the one shown in the course. Moreover, we could have used a local server, but that would demand to have a machine running 24/7 and we would have to take care of some security issues that using a cloud provided are not so relevant.
 
 === Architecture
