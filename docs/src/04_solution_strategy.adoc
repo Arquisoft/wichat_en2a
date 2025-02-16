@@ -43,11 +43,8 @@ The following technologies are used in our project:
 * *NodeJS*: To develop the backend part of the system, we will use NodeJS due to its ease to develop server-side operations (compared to plain JavaScript). Furthermore, it is a well-known technology for this type of projects and it provides some key features that we will need, such as the ability to handle multiple requests at the same time and the fact that it is an event-driven language.
 * *MongoDB*: To store the data of the system, we will use MongoDB due to its flexibility and scalability.
 * *Docker*: To deploy the system, we will use this technology due to its portability and reliability.
-* #TBD# Choose the LLM: We are still deciding which LLM to use. We are considering using one of the following:
-** Gemini
-** Qwen
-** Mistral
-* #TBD# Choose the deployment platform: We will probably use a cloud platform to deploy the system, but this will be decided later.
+* *QWen2.5*: To add the LLM functionality to the system, we will use this model. This way we may apply to the Empathy contest if we decided to do so. That is the main reason to use this model because we felt that using others like Gemini or DeepSeek would probably provide better results but we would not be able to enroll our project in the contest.
+* *Azure*: To deploy the system, we will use Azure due to its scalability and reliability. We will use a VM stored in Azure to deploy the system and make it accessible. We could have used any other cloud provider, but we decided to use Azure because it was the one shown in the course. Moreover, we could have used a local server, but that would demand to have a machine running 24/7 and we would have to take care of some security issues that using a cloud provided are not so relevant.
 * *Git & GitHub*: For version control and collaboration, we will use Git and GitHub. These tools will enable the team to collaborate efficiently and keep track of changes, issues and documentation.
 * #TBD# Elaborate on CI/CD: We will probably use GitHub Actions to automate the CI/CD process, but this will be elaborated later.
 
@@ -57,3 +54,9 @@ The architecture used in the system will be based on the following parts:
 
 * *Microservices* for the different core functionalities of the system. This way we can develop each service independently and scale them as needed. Additionally, this approach will allow us to use different technologies if needed.
 * *Gateway* to allow communication within services, ensuring cohesion in the system.
+
+=== Organizational Decisions
+
+In this section, the most important organizational decisions will be described at high level.
+
+* *Starting point of the project*: The project will be based on an existing project from last year (the exact project can be found https://github.com/Arquisoft/wiq_en2b[here]). These way we can reuse an existing codebase and improve it. However, we are aware that this approach may bring some challenges, such as the need to fully understand the existing code and the risk of adapting it to the new requirements.
