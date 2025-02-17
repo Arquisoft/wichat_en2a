@@ -64,9 +64,7 @@ image::../images/07_deployment_view.png[]
 
 Motivation::
 
-The application is build using Docker and an Azure Virtual Machine with Ubuntu. Using both together creates a combination of the portability and efficiency of the containers obtained by the use of Docker with the additional security and isolation provided by virtual machines.
-
-Docker will be used for the deployment of the application both while developing (local deployment) and when the final result is ready. It is a containerization platform that packages applications and their dependencies into lightweight, portable containers, ensuring consistency across environments.
+The application is build using Docker and an Azure Virtual Machine with Ubuntu. Using both together creates a combination of the portability and efficiency of the containers obtained by the use of Docker with the additional security and isolation provided by virtual machines. Docker will be used for the deployment of the application both while developing (local deployment) and when the final result is ready. It is a containerization platform that packages applications and their dependencies into lightweight, portable containers, ensuring consistency across environments.
 
 Quality and/or Performance Features::
 
@@ -88,5 +86,6 @@ As of now, the current application counts with several building blocks that are 
 - **Mongodb**: The database that will contain all the data of the application. Currently we only have one database but, further ahead, it may be divided in several databases to manage different features independently (one for users, another for the questions for the game...), but this is yet unclear.
 
 It is also worth mentioning the use of other tools that we be probably or surely implemented in the future:
+
 - **APIs**: The Wikidata API, the LLM API...
 - **Prometheus and Grafana**: This tools combined allow to monitor and observe the system creating statistics about it.
