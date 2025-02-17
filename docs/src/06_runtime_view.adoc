@@ -101,7 +101,7 @@ image::https://raw.githubusercontent.com/Arquisoft/wichat_en2a/carlos-doc/docs/i
 •	After the final question, the backend calculates the final score and stores it in the database.
 •	The client displays a summary of the results.
 
-image::docs/images/documentation/06_runtime5_score.png[]
+image::https://github.com/Arquisoft/wichat_en2a/blob/carlos-doc/docs/images/documentation/06_runtime5_score.png[]
 
 
 === <Runtime Scenario 6. . Leaderboard and Social Features>
@@ -109,4 +109,4 @@ image::docs/images/documentation/06_runtime5_score.png[]
 •	The backend updates the leaderboard using the scores database or a dedicated one.
 •	The client displays rankings, showing top players.
 
-image::docs/images/documentation/06_runtime6_leaderboard.png[]
+image::https://github.com/Arquisoft/wichat_en2a/blob/carlos-doc/docs/images/documentation/06_runtime6_leaderboard.png[]
