@@ -49,7 +49,7 @@ endif::arc42help[]
 •	If login fails, an error message is displayed, asking the user to try again.
 
 //[plantuml,"Sequence diagram",png]
-image::docs/images/documentation/06_runtime1_login.png[]
+image::docs/images/06_runtime1_login.png[]
 
 
 === <Runtime Scenario 2. Game Mode and Question Selection>
