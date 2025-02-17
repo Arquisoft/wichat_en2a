@@ -39,6 +39,15 @@ endif::arc42help[]
 |TBD
 |To Be Defined
 
-|<Term-2>
-|<definition-2>
+|LLM
+|Large Language Model
+
+|CI
+|Continuous Integration
+
+|CD
+|Continuous Delivery/Deployment
+
+|UI
+|User Interface
 |===
