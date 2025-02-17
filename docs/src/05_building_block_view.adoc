@@ -123,7 +123,7 @@ Contained Building Blocks::
 - **App System**: Main place where the game takes place. Will receive some information about the user from the browser (probably using a proxy) and communicate with the other internal parts of the app, or external (like the LLM functionality).
 - **App API**: Probably programmed in Springboot. This part of the app will receive the information about the user from the browser and save it in the database, as well as information about the status of the game.
 - **Question generator**: This part will first ask the WikiData API for some questions and answers, which it will later store in the database.
-- **Database**: In MongoDB. Will receive information about the user/state of the game/questions and answers.
+- **Database**: In PostgreSQL. Will receive information about the user/state of the game/questions and answers.
 - **WikiData API**: External API, which will be used to generate questions and answers.
 - **LLM API**: External use of LLM (for now it will be Empathy) to allow the user to get hints from an artificial intelligence. 
 
