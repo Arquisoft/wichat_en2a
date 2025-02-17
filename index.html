@@ -447,9 +447,10 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#section-introduction-and-goals">1. Introduction and Goals</a>
 <ul class="sectlevel2">
-<li><a href="#_requirements_overview">1.1. Requirements Overview</a></li>
-<li><a href="#_quality_goals">1.2. Quality Goals</a></li>
-<li><a href="#_stakeholders">1.3. Stakeholders</a></li>
+<li><a href="#_introduction">1.1. Introduction</a></li>
+<li><a href="#_requirements_overview">1.2. Requirements Overview</a></li>
+<li><a href="#_quality_goals">1.3. Quality Goals</a></li>
+<li><a href="#_stakeholders">1.4. Stakeholders</a></li>
 </ul>
 </li>
 <li><a href="#section-architecture-constraints">2. Architecture Constraints</a>
@@ -472,8 +473,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#section-building-block-view">5. Building Block View</a>
 <ul class="sectlevel2">
 <li><a href="#_whitebox_overall_system">5.1. Whitebox Overall System</a></li>
-<li><a href="#_level_2">5.2. Level 2</a></li>
-<li><a href="#_level_3">5.3. Level 3</a></li>
 </ul>
 </li>
 <li><a href="#section-runtime-view">6. Runtime View</a>
@@ -589,7 +588,41 @@ These include</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_requirements_overview">1.1. Requirements Overview</h3>
+<h3 id="_introduction">1.1. Introduction</h3>
+<div class="paragraph">
+<p>We are a team of seven Software engineering <strong>students</strong> working for ChattySw, a company that has been hired by RTVE aiming to extend their online version of the "Saber y Ganar" quiz show.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_requirements_overview">1.2. Requirements Overview</h3>
+<div class="paragraph">
+<p>The system is designed to provide an interactive quiz experience based on <strong>Saber y Ganar</strong>. The key requirements include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Web-Based Interface</strong>: The application will be accessible through a web frontend, displaying questions, answers, and a hint system.</p>
+</li>
+<li>
+<p><strong>User Accounts &amp; Progress Tracking</strong>: Users will be able to register and view their participation history, including game statistics.</p>
+</li>
+<li>
+<p><strong>Automated Question Generation</strong>: Questions and answers will be taken from WikiData.</p>
+</li>
+<li>
+<p><strong>AI-Powered Hints</strong>: An LLM-based hint system will assist users without revealing direct answers, mitigating incorrect information.</p>
+</li>
+<li>
+<p><strong>Time-Limited Responses</strong>: Players must answer within a given time frame.</p>
+</li>
+<li>
+<p><strong>API Access</strong>: The system will expose APIs to retrieve user data and question details.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For a detailed breakdown of requirements, please refer to the following document: 📄 <a href="https://docs.google.com/document/d/1_4KBTx6hVuR90cUW4LoDHEH0E3NZJ3DInacCZjAuGXY/edit?pli=1&amp;tab=t.0#heading=h.knuq2aw7zapd">Project Requirements Document</a>.</p>
+</div>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -619,7 +652,44 @@ If requirements documents exist this overview should refer to these documents.</
 </div>
 </div>
 <div class="sect2">
-<h3 id="_quality_goals">1.2. Quality Goals</h3>
+<h3 id="_quality_goals">1.3. Quality Goals</h3>
+<div class="paragraph">
+<p>The following quality attributes are prioritized in the architecture:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Quality Goal</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Usability</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The interface should be user-friendly, ensuring smooth interaction with questions and the AI assistant.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Scalability</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The system should efficiently handle multiple concurrent users.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Reliability</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The application must function without errors, correctly retrieving and displaying questions.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Maintainability</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The codebase should follow best practices, allowing future extensions and improvements.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Security</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User data and interactions must be securely managed, preventing unauthorized access.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -650,7 +720,7 @@ If you as an architect do not know how the quality of your work will be judged&#
 </div>
 </div>
 <div class="sect2">
-<h3 id="_stakeholders">1.3. Stakeholders</h3>
+<h3 id="_stakeholders">1.4. Stakeholders</h3>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -703,14 +773,29 @@ These stakeholders determine the extent and the level of detail of your work and
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Role-1&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Contact-1&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Expectation-1&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>RTVE</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Client</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To have a modernized and functional quiz system with AI-based hints to engage users.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Role-2&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Contact-2&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Expectation-2&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>End Users (Players)</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Public Users</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Want an enjoyable, responsive, and fair game experience with accurate hints and reliable performance.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Development Team (ChattySw)</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal Team</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Responsible for implementing the system following the defined requirements and quality standards.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>WikiData</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API Provider</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Provides the database of questions and images, ensuring relevant and accurate information for the game.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>External AI Provider (LLM Service)</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API Provider</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Provides the AI-based hint system, which must be reliable and minimize incorrect responses.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1113,19 +1198,39 @@ In the best case you will get away with examples or simple signatures.</p>
 <div class="paragraph">
 <p><em><strong>&lt;Overview Diagram&gt;</strong></em></p>
 </div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="./images/Whitebox%20Overall%20System.png" alt="Whitebox Overall System">
+</div>
+</div>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Motivation</dt>
 <dd>
-<p><em>&lt;text explanation&gt;</em></p>
+<p>This diagram shows the different parts of the application that interact when a user is playing, as well as outside elements used.</p>
 </dd>
 <dt class="hdlist1">Contained Building Blocks</dt>
 <dd>
-<p><em>&lt;Description of contained building block (black boxes)&gt;</em></p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Player</strong>: User that interacts with the game, they will need to fill some sort of login information and be validated before playing.</p>
+</li>
+<li>
+<p><strong>App System</strong>: Main place where the game takes place.</p>
+</li>
+<li>
+<p><strong>WikiData API</strong>: External API, which will be used to generate questions and answers.</p>
+</li>
+<li>
+<p><strong>LLM API</strong>: External use of LLM (probably Gemini) to allow the user to get hints from an artificial intelligence.</p>
+</li>
+</ul>
+</div>
 </dd>
 <dt class="hdlist1">Important Interfaces</dt>
 <dd>
-<p><em>&lt;Description of important interfaces&gt;</em></p>
+<p>As we can see in the diagram, the user will interact with the App Internal System, which will first ask for a list of questions and answers from the WikiData API. Then, as well as showing the questions to the player, it will allow them to see an AI generated hint.</p>
 </dd>
 </dl>
 </div>
@@ -1167,158 +1272,57 @@ Its headline is the name of the black box.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_name_black_box_1">5.1.1. &lt;Name black box 1&gt;</h4>
-<div class="sidebarblock arc42help">
-<div class="content">
+<h4 id="_container_diagram">5.1.1. Container Diagram</h4>
 <div class="paragraph">
-<p>Here you describe &lt;black box 1&gt;
-according the the following black box template:</p>
+<p><em><strong>&lt;Overview Diagram&gt;</strong></em></p>
 </div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="./images/Container%20Diagram.png" alt="Container Diagram">
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Motivation</dt>
+<dd>
+<p>This diagram shows in more detail the different (<strong>internal</strong>) parts of the application that interact when a user is playing, as well as outside elements used.</p>
+</dd>
+<dt class="hdlist1">Contained Building Blocks</dt>
+<dd>
 <div class="ulist">
 <ul>
 <li>
-<p>Purpose/Responsibility</p>
+<p><strong>Player&#8217;s browser</strong>: The browser will send us some information about the user that interacts with the game, they will need to fill some sort of login information and be validated before playing.</p>
 </li>
 <li>
-<p>Interface(s), when they are not extracted as separate paragraphs. This interfaces may include qualities and performance characteristics.</p>
+<p><strong>App System</strong>: Main place where the game takes place. Will receive some information about the user from the browser (probably using a proxy) and communicate with the other internal parts of the app, or external (like the LLM functionality).</p>
 </li>
 <li>
-<p>(Optional) Quality-/Performance characteristics of the black box, e.g.availability, run time behavior, &#8230;&#8203;.</p>
+<p><strong>App API</strong>: Probably programmed in Springboot. This part of the app will receive the information about the user from the browser and save it in the database, as well as information about the status of the game.</p>
 </li>
 <li>
-<p>(Optional) directory/file location</p>
+<p><strong>Question generator</strong>: This part will first ask the WikiData API for some questions and answers, which it will later store in the database.</p>
 </li>
 <li>
-<p>(Optional) Fulfilled requirements (if you need traceability to requirements).</p>
+<p><strong>Database</strong>: In PostgreSQL. Will receive information about the user/state of the game/questions and answers.</p>
 </li>
 <li>
-<p>(Optional) Open issues/problems/risks</p>
+<p><strong>WikiData API</strong>: External API, which will be used to generate questions and answers.</p>
+</li>
+<li>
+<p><strong>LLM API</strong>: External use of LLM (for now it will be Empathy) to allow the user to get hints from an artificial intelligence.</p>
 </li>
 </ul>
 </div>
-</div>
-</div>
+</dd>
+<dt class="hdlist1">Important Interfaces</dt>
+<dd>
+<p>As we can see in the diagram, the user will interact with the App Internal System first, which will ask for information about the user from their browser (proxy). This container will send this info to the app API which will store it in the database.</p>
 <div class="paragraph">
-<p><em>&lt;Purpose/Responsibility&gt;</em></p>
+<p>Then, when the game starts, the Question generator will use the WikiData API to get a list of questions and answers, which will be stored in the database as well. Then, as well as showing the questions to the player, ithe App System container will communicate with the LLM Container to allow players to see an AI generated hint.</p>
 </div>
-<div class="paragraph">
-<p><em>&lt;Interface(s)&gt;</em></p>
-</div>
-<div class="paragraph">
-<p><em>&lt;(Optional) Quality/Performance Characteristics&gt;</em></p>
-</div>
-<div class="paragraph">
-<p><em>&lt;(Optional) Directory/File Location&gt;</em></p>
-</div>
-<div class="paragraph">
-<p><em>&lt;(Optional) Fulfilled Requirements&gt;</em></p>
-</div>
-<div class="paragraph">
-<p><em>&lt;(optional) Open Issues/Problems/Risks&gt;</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_name_black_box_2">5.1.2. &lt;Name black box 2&gt;</h4>
-<div class="paragraph">
-<p><em>&lt;black box template&gt;</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_name_black_box_n">5.1.3. &lt;Name black box n&gt;</h4>
-<div class="paragraph">
-<p><em>&lt;black box template&gt;</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_name_interface_1">5.1.4. &lt;Name interface 1&gt;</h4>
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_name_interface_m">5.1.5. &lt;Name interface m&gt;</h4>
-
-</div>
-</div>
-<div class="sect2">
-<h3 id="_level_2">5.2. Level 2</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<p>Here you can specify the inner structure of (some) building blocks from level 1 as white boxes.</p>
-</div>
-<div class="paragraph">
-<p>You have to decide which building blocks of your system are important enough to justify such a detailed description.
-Please prefer relevance over completeness. Specify important, surprising, risky, complex or volatile building blocks.
-Leave out normal, simple, boring or standardized parts of your system</p>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_1">5.2.1. White Box <em>&lt;building block 1&gt;</em></h4>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<p>&#8230;&#8203;describes the internal structure of <em>building block 1</em>.</p>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p><em>&lt;white box template&gt;</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_2">5.2.2. White Box <em>&lt;building block 2&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;white box template&gt;</em></p>
-</div>
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_m">5.2.3. White Box <em>&lt;building block m&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;white box template&gt;</em></p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_level_3">5.3. Level 3</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<p>Here you can specify the inner structure of (some) building blocks from level 2 as white boxes.</p>
-</div>
-<div class="paragraph">
-<p>When you need more detailed levels of your architecture please copy this
-part of arc42 for additional levels.</p>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_x_1">5.3.1. White Box &lt;_building block x.1_&gt;</h4>
-<div class="sidebarblock arc42help">
-<div class="content">
-<div class="paragraph">
-<p>Specifies the internal structure of <em>building block x.1</em>.</p>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p><em>&lt;white box template&gt;</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_x_2">5.3.2. White Box &lt;_building block x.2_&gt;</h4>
-<div class="paragraph">
-<p><em>&lt;white box template&gt;</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_white_box_building_block_y_1">5.3.3. White Box &lt;_building block y.1_&gt;</h4>
-<div class="paragraph">
-<p><em>&lt;white box template&gt;</em></p>
+</dd>
+</dl>
 </div>
 <div style="page-break-after: always;"></div>
 </div>
@@ -1941,7 +1945,7 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 <div id="footer">
 <div id="footer-text">
 Version 8.2 EN<br>
-Last updated 2025-02-04 11:26:57 +0100
+Last updated 2025-02-04 11:54:29 +0100
 </div>
 </div>
 </body>
