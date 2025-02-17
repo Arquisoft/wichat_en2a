@@ -83,7 +83,7 @@ As of now, the current application counts with several building blocks that are 
 - **Userservice**: It will be in charge of the user management.
 - **Authservice**: On the same level as the previous one, it will be use for the authentication of users.
 - **Llmservice**: This one is also on the same level as the two before it, and it is the one that manages the LLM that will be used in the application. The LLM API used will be the one from Empathy.
-- **Mongodb**: The database that will contain all the data of the application. Currently we only have one database but, further ahead, it may be divided in several databases to manage different features independently (one for users, another for the questions for the game...), but this is yet unclear.
+- **Database**: The database that will contain all the data of the application. Currently we only have one database but, further ahead, it may be divided in several databases to manage different features independently (one for users, another for the questions for the game...), but this is yet unclear.
 
 It is also worth mentioning the use of other tools that we be probably or surely implemented in the future:
 
