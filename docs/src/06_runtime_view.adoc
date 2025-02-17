@@ -89,6 +89,9 @@ image::../images/documentation/..06_runtime1_login.png[]
 •	The hint is sent to the client and displayed to the user.
 •	The user can then retry answering the question.
 
+image::../images/documentation/..06_runtime4_hints.png[]
+
+
 === <Runtime Scenario 5. Game Progress and Score Management>
 •	The game continues through a predefined number of images and questions.
 •	The backend keeps track of the user’s progress, including:
@@ -97,4 +100,9 @@ image::../images/documentation/..06_runtime1_login.png[]
     o	Time taken per question.
 •	After the final question, the backend calculates the final score and stores it in the database.
 •	The client displays a summary of the results.
+
+=== <Runtime Scenario 6. . Leaderboard and Social Features>
+•	The user’s score is compared against other players.
+•	The backend updates the leaderboard using the scores database or a dedicated one.
+•	The client displays rankings, showing top players.
 
