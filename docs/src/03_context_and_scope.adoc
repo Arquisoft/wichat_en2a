@@ -2,7 +2,7 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-context-and-scope]]
 == Context and Scope
-
+This chapter describes the environment and context of the app, who uses the system and on which other systems it depends
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -51,9 +51,9 @@ The title of the table is the name of your system, the three columns contain the
 ****
 endif::arc42help[]
 
-**<Diagram or Table>**
-
-**<optionally: Explanation of external domain interfaces>**
+The user in the game interact with the application and he/she Will see a question with its answers and a photo to help him. In this case the questions Will be generate using information with wikidata. The photo is caught from an LLM (not decide still) using its API.
+[.text-center]
+image::../images/BusinessContextASW.drawio.png[Business Context Photo]
 
 === Technical Context
 
@@ -73,8 +73,12 @@ together with a mapping table showing the relationships between channels and inp
 ****
 endif::arc42help[]
 
-**<Diagram or Table>**
 
-**<optionally: Explanation of technical interfaces>**
 
-**<Mapping Input/Output to Channels>**
+image::../images/TechnicalContextASW.png[technical context photo]
+
+The application has a main part where all the logic is performed for the application(generate questions with WIKIDATA, get the hint from the IA, store users and check if they exists, ...).
+For the storage of the users or the questions it's used a database, in this case we use PostgreSQL (In some parts can be used MongoDB for different questions).
+Also this part uses different API's to provide info for the question and for getting an image from an IA to let the users have a hint for the question.
+Finally we have were the app is going to be deployed to let de user play the game.
+
