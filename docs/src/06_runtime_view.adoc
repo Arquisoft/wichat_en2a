@@ -49,11 +49,10 @@ endif::arc42help[]
 •	If login fails, an error message is displayed, asking the user to try again.
 
 //[plantuml,"Sequence diagram",png]
-image::https://github.com/Arquisoft/wichat_en2a/blob/carlos-doc/docs/images/documentation/06_runtime1_login.png[]
-
+image::../images/documentation/06_runtime1_login.png[Runtime 1 Login Diagram]
 
 === <Runtime Scenario 2. Game Mode and Question Selection>
-•	After logging in, the user navigates to the game selection screen.
+After logging in, the user navigates to the game selection screen.
 •	The user selects a game mode (e.g., cities, historical figures, sports…).
 •	The client requests a set of questions from the backend.
 •	The game retrieves a set questions based on the  image from WikiData.
