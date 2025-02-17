@@ -468,6 +468,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_technologies">4.1. Technologies</a></li>
 <li><a href="#_architecture">4.2. Architecture</a></li>
+<li><a href="#_introduced_architecture">4.3. Introduced architecture</a></li>
+<li><a href="#organizational_decisions">4.4. Organizational Decisions</a></li>
 </ul>
 </li>
 <li><a href="#section-building-block-view">5. Building Block View</a>
@@ -477,18 +479,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#section-runtime-view">6. Runtime View</a>
 <ul class="sectlevel2">
-<li><a href="#_runtime_scenario_1">6.1. &lt;Runtime Scenario 1&gt;</a></li>
-<li><a href="#_runtime_scenario_2">6.2. &lt;Runtime Scenario 2&gt;</a></li>
-<li><a href="#">6.3. &#8230;&#8203;</a></li>
-<li><a href="#_runtime_scenario_n">6.4. &lt;Runtime Scenario n&gt;</a></li>
+<li><a href="#_runtime_scenario_1_login_and_authentication">6.1. &lt;Runtime Scenario 1. Login and Authentication&gt;</a></li>
+<li><a href="#_runtime_scenario_2_game_mode_and_question_selection">6.2. &lt;Runtime Scenario 2. Game Mode and Question Selection&gt;</a></li>
+<li><a href="#_runtime_scenario_3_image_based_questioning">6.3. &lt;Runtime Scenario 3. Image-Based Questioning&gt;</a></li>
+<li><a href="#_runtime_scenario_4_hint_system_and_ai_assistance">6.4. &lt;Runtime Scenario 4. Hint System and AI Assistance&gt;</a></li>
+<li><a href="#_runtime_scenario_5_game_progress_and_score_management">6.5. &lt;Runtime Scenario 5. Game Progress and Score Management&gt;</a></li>
+<li><a href="#_runtime_scenario_6_leaderboard_and_social_features">6.6. &lt;Runtime Scenario 6. . Leaderboard and Social Features&gt;</a></li>
 </ul>
 </li>
-<li><a href="#section-deployment-view">7. Deployment View</a>
-<ul class="sectlevel2">
-<li><a href="#_infrastructure_level_1">7.1. Infrastructure Level 1</a></li>
-<li><a href="#_infrastructure_level_2">7.2. Infrastructure Level 2</a></li>
-</ul>
-</li>
+<li><a href="#section-deployment-view">7. Deployment View</a></li>
 <li><a href="#section-concepts">8. Cross-cutting Concepts</a>
 <ul class="sectlevel2">
 <li><a href="#_concept_1">8.1. <em>&lt;Concept 1&gt;</em></a></li>
@@ -496,7 +495,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_concept_n">8.3. <em>&lt;Concept n&gt;</em></a></li>
 </ul>
 </li>
-<li><a href="#section-design-decisions">9. Architecture Decisions</a></li>
+<li><a href="#section-design-decisions">9. Architecture Decisions</a>
+<ul class="sectlevel2">
+<li><a href="#_extend_previous_system">9.1. Extend previous system</a></li>
+<li><a href="#_llm_selection">9.2. LLM selection</a></li>
+</ul>
+</li>
 <li><a href="#section-quality-scenarios">10. Quality Requirements</a>
 <ul class="sectlevel2">
 <li><a href="#_quality_tree">10.1. Quality Tree</a></li>
@@ -590,7 +594,8 @@ These include</p>
 <div class="sect2">
 <h3 id="_introduction">1.1. Introduction</h3>
 <div class="paragraph">
-<p>We are a team of seven Software engineering <strong>students</strong> working for ChattySw, a company that has been hired by RTVE aiming to extend their online version of the "Saber y Ganar" quiz show.</p>
+<p>We are a team of seven Software engineering <strong>students</strong> working for ChattySw, a company that has been hired by RTVE aiming to extend their online version of the "Saber y Ganar" quiz show.
+The application we are extending was originally developed by another team from HappySw. This is their repository, from which we will start 📂 <a href="https://github.com/Arquisoft/wiq_en2b">HappySw repository</a>.</p>
 </div>
 </div>
 <div class="sect2">
@@ -856,13 +861,18 @@ conventions (e.g. programming or versioning guidelines, documentation or naming 
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Technical</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Using either one of the projects from previous years or the template provided.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Requires the team to work starting from code authored and technologies selected by other people (teachers/previous year&#8217;s students)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Deploying the application to access it through a web browser.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires the team to get familiarized with tools and services such as Docker, Azure&#8230;&#8203;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Technical</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Using the project from the previous year.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires the team to work starting from code authored and technologies selected by other people previous year&#8217;s students of the chosen project.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Technical</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Mandatory inclusion of LLM functionalities to help the user.</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Requires the team to get familiarized with the LLM of their choice and implement it into the program.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires the team to get familiarized with the LLM selected (Qwen) and implement it into the program.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Organizational</p></td>
@@ -880,14 +890,19 @@ conventions (e.g. programming or versioning guidelines, documentation or naming 
 <td class="tableblock halign-left valign-top"><p class="tableblock">A team meeting must be held at least once a week (or more if required) and the participants and contents of said meeting must both be noted down.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Domain</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Conventional</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Developing an application with code up to standards.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Code developed by the team must be as clear to understand as possible (i.e. following code conventions, or adding documentation), in order to ensure the maintainability of the application.</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Domain</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Conventional</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Ensuring the LLM provides factual clues.</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Requires to adjust the LLM accordingly to ensure it does not provide any falsehoods that may confuse the player of the game.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Conventional</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Following the Arc42 template in the documentation.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The documentation to be provided in the project must be modelled after Arc42.</p></td>
 </tr>
 </tbody>
 </table>
@@ -898,6 +913,9 @@ conventions (e.g. programming or versioning guidelines, documentation or naming 
 <div class="sect1">
 <h2 id="section-context-and-scope">3. Context and Scope</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>This chapter describes the environment and context of the app, who uses the system and on which other systems it depends</p>
+</div>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -956,10 +974,12 @@ The title of the table is the name of your system, the three columns contain the
 </div>
 </div>
 <div class="paragraph">
-<p><strong>&lt;Diagram or Table&gt;</strong></p>
+<p>The user in the game interact with the application and he/she Will see a question with its answers and a photo to help him. In this case the questions Will be generate using information with wikidata. The photo is caught from an LLM (not decide still) using its API.</p>
 </div>
-<div class="paragraph">
-<p><strong>&lt;optionally: Explanation of external domain interfaces&gt;</strong></p>
+<div class="imageblock text-center">
+<div class="content">
+<img src="./images/BusinessContextASW.drawio.png" alt="Business Context Photo">
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -981,14 +1001,16 @@ together with a mapping table showing the relationships between channels and inp
 </div>
 </div>
 </div>
-<div class="paragraph">
-<p><strong>&lt;Diagram or Table&gt;</strong></p>
+<div class="imageblock">
+<div class="content">
+<img src="./images/TechnicalContextASW.png" alt="technical context photo">
+</div>
 </div>
 <div class="paragraph">
-<p><strong>&lt;optionally: Explanation of technical interfaces&gt;</strong></p>
-</div>
-<div class="paragraph">
-<p><strong>&lt;Mapping Input/Output to Channels&gt;</strong></p>
+<p>The application has a main part where all the logic is performed for the application(generate questions with WIKIDATA, get the hint from the IA, store users and check if they exists, &#8230;&#8203;).
+For the storage of the users or the questions it&#8217;s used a database, in this case we use PostgreSQL (In some parts can be used MongoDB for different questions).
+Also this part uses different API&#8217;s to provide info for the question and for getting an image from an IA to let the users have a hint for the question.
+Finally we have were the app is going to be deployed to let de user play the game.</p>
 </div>
 <div style="page-break-after: always;"></div>
 </div>
@@ -1039,67 +1061,92 @@ Refer to details in the following sections.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>In this section we will describe the approach taken to develop the system. First we address the technologies used in the project and then the architecture used.</p>
+<p>In this section we will describe the approach taken to develop the system from a high-level perspective. This includes the technologies used, the architecture of the system and the most important organizational decisions.</p>
 </div>
 <div class="sect2">
 <h3 id="_technologies">4.1. Technologies</h3>
 <div class="paragraph">
 <p>The following technologies are used in our project:</p>
 </div>
+<div class="sect3">
+<h4 id="_inherited_technologies">4.1.1. Inherited technologies</h4>
+<div class="paragraph">
+<p>In this subsection, the technologies that are inherited from the previous project are described. Note that the reasoning behing the selection of these selection is purely inherited from the previous project. We may add some clarifications if needed, but the explanation may be quite similar to the one in the <a href="https://arquisoft.github.io/wiq_en2b/#_technologies_breakdown">previous project&#8217;s documentation</a><sup class="footnote">[<a id="_footnoteref_1" class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup>.</p>
+</div>
 <div class="ulist">
 <ul>
 <li>
 <p><strong>React</strong>: To build the web application&#8217;s UI, we will use this technology due to its simplicity and its ability to create reusable components. It has also been chosen as it has a relatively gentle learning curve (as we will be learning while building).</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>ChakraUI</strong> component library is being used. A downside of using it is the need to use plain JavaScript rather than TypeScript as React 18 does not support it.</p>
+</li>
+</ul>
+</div>
 </li>
 <li>
-<p><strong>NodeJS</strong>: To develop the backend part of the system, we will use NodeJS due to its ease to develop server-side operations (compared to plain JavaScript). Furthermore, it is a well-known technology for this type of projects and it provides some key features that we will need, such as the ability to handle multiple requests at the same time and the fact that it is an event-driven language.</p>
+<p><strong>Java Spring Boot 3</strong>: To build the backend (API part) of the system we will rely on this technology. Although inherited from the previous project, we believe that it is a good choice due to the familiariy of the team with Java. Aditionally is a well-known technology that, in case of any problem, we may be able ot find some solutions online.</p>
 </li>
 <li>
-<p><strong>MongoDB</strong>: To store the data of the system, we will use MongoDB due to its flexibility and scalability.</p>
+<p><strong>Java</strong>: To generate the questions, Java will be used. This technology, as stated before, is well-known by the team .</p>
+</li>
+<li>
+<p><strong>PostgreSQL</strong>: To store the data, we will use this DBMS. The team is quite familiar with relational databases and we believe that although a NoSQL is more flexible, a relational database will bring more consistency and performance to the system. However, based on some open issues from the previous project, we may consider using a NoSQL (probably MongoDB) database for some parts of the system.</p>
 </li>
 <li>
 <p><strong>Docker</strong>: To deploy the system, we will use this technology due to its portability and reliability.</p>
 </li>
 <li>
-<p><mark>TBD</mark> Choose the LLM: We are still deciding which LLM to use. We are considering using one of the following:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Gemini</p>
-</li>
-<li>
-<p>Qwen</p>
-</li>
-<li>
-<p>Mistral</p>
-</li>
-</ul>
-</div>
-</li>
-<li>
-<p><mark>TBD</mark> Choose the deployment platform: We will probably use a cloud platform to deploy the system, but this will be decided later.</p>
-</li>
-<li>
 <p><strong>Git &amp; GitHub</strong>: For version control and collaboration, we will use Git and GitHub. These tools will enable the team to collaborate efficiently and keep track of changes, issues and documentation.</p>
 </li>
 <li>
-<p><mark>TBD</mark> Elaborate on CI/CD: We will probably use GitHub Actions to automate the CI/CD process, but this will be elaborated later.</p>
+<p><mark>TBD</mark> Elaborate on CI/CD: We will use GitHub Actions to automate the CI/CD process, but this will be elaborated later when we have more knowledge.</p>
 </li>
 </ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="introduced_technologies">4.1.2. Introduced technologies</h4>
+<div class="paragraph">
+<p>In this subsection, the technologies that were not present in the original project are described. These technologies have been decided by our team to fullfill the new requirements of the project.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>QWen2.5 (7B parameters)</strong>: To add the LLM functionality to the system, we will use this model. This way we may apply to the Empathy contest if we decided to do so. That is the main reason to use this model because we felt that using others like Gemini or DeepSeek would probably provide better results, but we would not be able to enroll our project in the contest.</p>
+</li>
+<li>
+<p><strong>Azure</strong>: To deploy the system, we will use Azure due to its scalability and reliability. We will use a VM stored in Azure to deploy the system and make it accessible. We could have used any other cloud provider, but we decided to use Azure because it was the one shown in the course. Moreover, we could have used a local server, but that would demand to have a machine running 24/7 and we would have to take care of some security issues that using a cloud provided are not so relevant.</p>
+</li>
+</ul>
+</div>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_architecture">4.2. Architecture</h3>
+<div class="sect3">
+<h4 id="_inherited_architecture">4.2.1. Inherited architecture</h4>
 <div class="paragraph">
-<p>The architecture used in the system will be based on the following parts:</p>
+<p>The concrete specification of the architecture can be found in the <a href="https://arquisoft.github.io/wiq_en2b/#_code_stylestructure">previous project&#8217;s documentation</a>.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_introduced_architecture">4.3. Introduced architecture</h3>
+<div class="paragraph">
+<p><mark>TBD: Any updates done will be detailed here.</mark></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="organizational_decisions">4.4. Organizational Decisions</h3>
+<div class="paragraph">
+<p>In this section, the most important organizational decisions will be described at high level.</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p><strong>Microservices</strong> for the different core functionalities of the system. This way we can develop each service independently and scale them as needed. Additionally, this approach will allow us to use different technologies if needed.</p>
-</li>
-<li>
-<p><strong>Gateway</strong> to allow communication within services, ensuring cohesion in the system.</p>
+<p><strong>Starting point of the project</strong>: The project will be based on an existing project from last year (the exact project can be found <a href="https://github.com/Arquisoft/wiq_en2b">here</a>). These way we can reuse an existing codebase and improve it. However, we are aware that this approach may bring some challenges, such as the need to fully understand the existing code and the risk of adapting it to the new requirements.</p>
 </li>
 </ul>
 </div>
@@ -1395,37 +1442,172 @@ You will mainly capture scenarios in your documentation to communicate your arch
 </div>
 </div>
 <div class="sect2">
-<h3 id="_runtime_scenario_1">6.1. &lt;Runtime Scenario 1&gt;</h3>
+<h3 id="_runtime_scenario_1_login_and_authentication">6.1. &lt;Runtime Scenario 1. Login and Authentication&gt;</h3>
 <div class="ulist">
 <ul>
 <li>
-<p><em>&lt;insert runtime diagram or textual description of the scenario&gt;</em></p>
+<p>The user opens the application and is asked to log in.</p>
 </li>
 <li>
-<p><em>&lt;insert description of the notable aspects of the interactions between the
-building block instances depicted in this diagram.&gt;</em></p>
+<p>They enter their credentials (username and password).</p>
+</li>
+<li>
+<p>The client application sends an authentication request to the backend.</p>
+</li>
+<li>
+<p>The backend verifies the credentials by checking in its database.</p>
+</li>
+<li>
+<p>If login is successful, a session token is generated and sent back to the client.</p>
+</li>
+<li>
+<p>The client stores the token for future requests.</p>
+</li>
+<li>
+<p>If login fails, an error message is displayed, asking the user to try again.</p>
 </li>
 </ul>
 </div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/documentation/06_runtime1_login.png" alt="Runtime 1 Login Diagram">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_runtime_scenario_2_game_mode_and_question_selection">6.2. &lt;Runtime Scenario 2. Game Mode and Question Selection&gt;</h3>
 <div class="paragraph">
-<p>It is possible to use a sequence diagram:</p>
+<p>After logging in, the user navigates to the game selection screen.
+•	The user selects a game mode (e.g., cities, historical figures, sports…).
+•	The client requests a set of questions from the backend.
+•	The game retrieves a set questions based on the  image from WikiData.
+•	The questions and associated images are sent to the client.
+•	The game session starts, displaying the first question.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="./images/Sequence%20diagram.png" alt="Sequence diagram" width="332" height="335">
+<img src="./images/documentation/06_runtime2_questionSelection.png" alt="Runtime 2 Question Selection Diagram">
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_runtime_scenario_2">6.2. &lt;Runtime Scenario 2&gt;</h3>
-
+<h3 id="_runtime_scenario_3_image_based_questioning">6.3. &lt;Runtime Scenario 3. Image-Based Questioning&gt;</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The app presents an image to the user based on the game topic.</p>
+</li>
+<li>
+<p>The app gets the set of questions related to the image from the QuestionsDB, such as:
+    o	"Which historical figure is shown in this photo?"
+    o	"What city is this landmark located in?"
+    o	"Which sport is depicted in this picture?"
+    o	"Which historical event is depicted in this picture?"</p>
+</li>
+<li>
+<p>The user selects an answer from multiple-choice options or types in a response.</p>
+</li>
+<li>
+<p>The client sends the answer to the backend for validation.</p>
+</li>
+<li>
+<p>The backend checks if the response matches the correct answer.</p>
+</li>
+<li>
+<p>If correct:
+o	The user earns points.
+o	The next question is displayed.</p>
+</li>
+<li>
+<p>If incorrect:
+o	The user can try again or request a hint</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/documentation/06_runtime3_questions.png" alt="Runtime 3 Questioning Diagram">
+</div>
+</div>
 </div>
 <div class="sect2">
-<h3 id="">6.3. &#8230;&#8203;</h3>
-
+<h3 id="_runtime_scenario_4_hint_system_and_ai_assistance">6.4. &lt;Runtime Scenario 4. Hint System and AI Assistance&gt;</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>If the user does not know the answer, they can request a hint.</p>
+</li>
+<li>
+<p>The backend calls the AI to generate a hint based on the image and question.</p>
+</li>
+<li>
+<p>Types of hints may include:
+o	A brief historical fact about the person, place, or event.
+o	A partial reveal of the answer.
+o	A clue referencing a relatedevent.
+o	Eliminating one wrong answer choices (if it is a multiple-choice question).</p>
+</li>
+<li>
+<p>The hint is sent to the client and displayed to the user.</p>
+</li>
+<li>
+<p>The user can then retry answering the question.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/documentation/06_runtime4_hints.png" alt="Runtime 4 Hints Diagram">
+</div>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_runtime_scenario_n">6.4. &lt;Runtime Scenario n&gt;</h3>
+<h3 id="_runtime_scenario_5_game_progress_and_score_management">6.5. &lt;Runtime Scenario 5. Game Progress and Score Management&gt;</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The game continues through a predefined number of images and questions.</p>
+</li>
+<li>
+<p>The backend keeps track of the user’s progress, including:
+o	Score.
+o	Number of correct and incorrect answers.
+o	Time taken per question.</p>
+</li>
+<li>
+<p>After the final question, the backend calculates the final score and stores it in the database.</p>
+</li>
+<li>
+<p>The client displays a summary of the results.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/documentation/06_runtime5_score.png" alt="Runtime 4 Hints Diagram">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_runtime_scenario_6_leaderboard_and_social_features">6.6. &lt;Runtime Scenario 6. . Leaderboard and Social Features&gt;</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The user’s score is compared against other players.</p>
+</li>
+<li>
+<p>The backend updates the leaderboard using the scores database or a dedicated one.</p>
+</li>
+<li>
+<p>The client displays rankings, showing top players.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/documentation/06_runtime6_leaderboard.png" alt="Runtime 4 Hints Diagram">
+</div>
+</div>
 <div style="page-break-after: always;"></div>
 </div>
 </div>
@@ -1487,8 +1669,6 @@ when your infrastructure is more complex.</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_infrastructure_level_1">7.1. Infrastructure Level 1</h3>
 <div class="sidebarblock arc42help">
 <div class="content">
 <div class="paragraph">
@@ -1516,60 +1696,84 @@ when your infrastructure is more complex.</p>
 </div>
 </div>
 <div class="paragraph">
-<p><em><strong>&lt;Overview Diagram&gt;</strong></em></p>
+<p><strong>Overview Diagram</strong></p>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="./images/07_deployment_view.png" alt="07 deployment view">
+</div>
 </div>
 <div class="dlist">
 <dl>
 <dt class="hdlist1">Motivation</dt>
 <dd>
-<p><em>&lt;explanation in text form&gt;</em></p>
+<p>The application is build using Docker and an Azure Virtual Machine with Ubuntu. Using both together creates a combination of the portability and efficiency of the containers obtained by the use of Docker with the additional security and isolation provided by virtual machines. Docker will be used for the deployment of the application both while developing (local deployment) and when the final result is ready. It is a containerization platform that packages applications and their dependencies into lightweight, portable containers, ensuring consistency across environments.</p>
 </dd>
 <dt class="hdlist1">Quality and/or Performance Features</dt>
 <dd>
-<p><em>&lt;explanation in text form&gt;</em></p>
+<p>Expanding on the advantages of the combined use of Docker and a VM (and also their independent characteristics that add their own value), we can remark:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Isolation</strong>: Not only because of the container-level isolation provided by Docker (which helps prevent dependency conflicts), but also because the additional OS-level isolation thanks to the use of an VM.</p>
+</li>
+<li>
+<p><strong>Security</strong>: The VM can act as a security boundary if a container is ever compromised.</p>
+</li>
+<li>
+<p><strong>Resource Management and Allocation</strong>: The VM has a dedicated CPU, RAM and disk which can be allocated specifically for Docker, and Docker itself reduces resource consumption by sharing the OS kernel.</p>
+</li>
+<li>
+<p><strong>Portability and Compatibility</strong>: Using Docker ensures that the application works in the exact same way across different environments.</p>
+</li>
+<li>
+<p><strong>More</strong>: Easy recovery and backup (this can also be attributed to the use of a Github repository), flexible scalability&#8230;&#8203;</p>
+</li>
+</ul>
+</div>
 </dd>
 <dt class="hdlist1">Mapping of Building Blocks to Infrastructure</dt>
 <dd>
-<p><em>&lt;description of the mapping&gt;</em></p>
+<p>As of now, the current application counts with several building blocks that are yet to be defined:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Webapp</strong>: Its port (3000) is the one the user will connect to when interacting with the application, as it is its graphic user interface and will work as the frontend.</p>
+</li>
+<li>
+<p><strong>Gateway</strong>: As its name suggets, it works as the interface that comunicates the webapp with the rest of the services.</p>
+</li>
+<li>
+<p><strong>Userservice</strong>: It will be in charge of the user management.</p>
+</li>
+<li>
+<p><strong>Authservice</strong>: On the same level as the previous one, it will be use for the authentication of users.</p>
+</li>
+<li>
+<p><strong>Llmservice</strong>: This one is also on the same level as the two before it, and it is the one that manages the LLM that will be used in the application. The LLM API used will be the one from Empathy.</p>
+</li>
+<li>
+<p><strong>Database</strong>: The database that will contain all the data of the application. Currently we only have one database but, further ahead, it may be divided in several databases to manage different features independently (one for users, another for the questions for the game&#8230;&#8203;), but this is yet unclear.</p>
+</li>
+</ul>
+</div>
 </dd>
 </dl>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_infrastructure_level_2">7.2. Infrastructure Level 2</h3>
-<div class="sidebarblock arc42help">
-<div class="content">
 <div class="paragraph">
-<p>Here you can include the internal structure of (some) infrastructure elements from level 1.</p>
+<p>It is also worth mentioning the use of other tools that we be probably or surely implemented in the future:</p>
 </div>
-<div class="paragraph">
-<p>Please copy the structure from level 1 for each selected element.</p>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_infrastructure_element_1">7.2.1. <em>&lt;Infrastructure Element 1&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;diagram + explanation&gt;</em></p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_infrastructure_element_2">7.2.2. <em>&lt;Infrastructure Element 2&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;diagram + explanation&gt;</em></p>
-</div>
-<div class="paragraph">
-<p>&#8230;&#8203;</p>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_infrastructure_element_n">7.2.3. <em>&lt;Infrastructure Element n&gt;</em></h4>
-<div class="paragraph">
-<p><em>&lt;diagram + explanation&gt;</em></p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>APIs</strong>: The Wikidata API, the LLM API&#8230;&#8203;</p>
+</li>
+<li>
+<p><strong>Prometheus and Grafana</strong>: This tools combined allow to monitor and observe the system creating statistics about it.</p>
+</li>
+</ul>
 </div>
 <div style="page-break-after: always;"></div>
-</div>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -1745,7 +1949,101 @@ There you will find links and examples about ADR.</p>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_extend_previous_system">9.1. Extend previous system</h3>
+<div class="paragraph">
+<p><strong>Date</strong>: 16/02/2025</p>
+</div>
+<div class="paragraph">
+<p><strong>Status</strong>: Accepted</p>
+</div>
+<div class="paragraph">
+<p><strong>Context</strong>: The system that we will develop is quite similar to those developed in last year&#8217;s course. In the requirements of the project we were informed that we may extend an existing system or create a new one from scratch.</p>
+</div>
+<div class="paragraph">
+<p><strong>Decision</strong>: We will extend an existing system as stated on Section 4: <a href="#organizational_decisions">Organizational Decisions</a>.</p>
+</div>
+<div class="paragraph">
+<p><strong>Consequences</strong>: This decision was hard to take because there may be as many possible pitfalls as beneficts. But as it was encouraged during the classes we have decided that we will give this approach a try. Moreover, the potential beneficts of this decision can be:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>We won&#8217;t need to start from scratch, so we will lose less time developing features that are already present in the previous system.</p>
+</li>
+<li>
+<p>We will focus on the new features that are required in the requirements and will have more time to polish them.</p>
+</li>
+<li>
+<p>We will practice on a more realistic scenario, providing us a better learning experience.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>However, we may encounter some problems:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The previous system may have some code that is hard to understand or that is hard to adapt to the new requirements.</p>
+</li>
+<li>
+<p>The documentation could not be as complete as it seems, leading to problems to understand the system.</p>
+</li>
+<li>
+<p>The communication with the team that developed the original system will be limited or may not be possible at all.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_llm_selection">9.2. LLM selection</h3>
+<div class="paragraph">
+<p><strong>Date</strong>: 16/02/2025</p>
+</div>
+<div class="paragraph">
+<p><strong>Status</strong>: Accepted</p>
+</div>
+<div class="paragraph">
+<p><strong>Context</strong>: One of the new requiremnts is to implement some mechanism that uses an LLM to provide clues to the user.</p>
+</div>
+<div class="paragraph">
+<p><strong>Decision</strong>: We have decided to use QWen2.5 model as stated in Section 4: <a href="#introduced_technologies">Introduced technologies</a>.</p>
+</div>
+<div class="paragraph">
+<p><strong>Consequences</strong>: This decision was quite easy to take as the main reason to use this model is to be able to enroll the project in the Empathy contest. In some more detail, the beneficts of this decision are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>This model is powerful enough to provide good results in the required functionality.</p>
+</li>
+<li>
+<p>We have been provided with an API key to use this model, so we won&#8217;t have to pay for it.</p>
+</li>
+<li>
+<p>We have an example on how to use the model, so we won&#8217;t have to spend much time learning how to use it. We will only have to adapt it to our needs.</p>
+</li>
+<li>
+<p>We will be able to enroll the project in the contest if we decided to do so.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>However, we some cons of this decision are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>We could have used other models like Gemini or DeepSeek that may provide better results as they are more powerful.</p>
+</li>
+<li>
+<p>We may need to pass images to the model and although we have seen that it is possible, we may encounter some problems when implementing it.</p>
+</li>
+</ul>
+</div>
 <div style="page-break-after: always;"></div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1934,12 +2232,30 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 <td class="tableblock halign-left valign-top"><p class="tableblock"><em>To Be Defined</em></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;Term-2&gt;</em></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><em>&lt;definition-2&gt;</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>LLM</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Large Language Model</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>CI</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Continuous Integration</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>CD</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Continuous Delivery/Deployment</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>UI</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>User Interface</em></p></td>
 </tr>
 </tbody>
 </table>
 </div>
+</div>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnotedef_1">
+<a href="#_footnoteref_1">1</a>. We may change some technologies if we feel like we may obtain some benefict, so it may be possible that not all technolgies that are present in the original project are present on ours. However, these changes will be documented.
 </div>
 </div>
 <div id="footer">
