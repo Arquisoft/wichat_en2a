@@ -20,6 +20,8 @@ endif::arc42help[]
 === Introduction
 
 We are a team of seven Software engineering *students* working for ChattySw, a company that has been hired by RTVE aiming to extend their online version of the "Saber y Ganar" quiz show.
+The application we are extending was originally developed by another team from HappySw. This is their repository, from which we will start 📂 link:https://github.com/Arquisoft/wiq_en2b[HappySw repository].
+
 
 === Requirements Overview
 
