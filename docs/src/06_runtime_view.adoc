@@ -89,8 +89,7 @@ image::docs/images/06_runtime1_login.png[]
 •	The hint is sent to the client and displayed to the user.
 •	The user can then retry answering the question.
 
-image::../../images/documentation/06_runtime4_hints.png[]
-image::..images/documentation/06_runtime4_hints.png[]
+image::https://raw.githubusercontent.com/Arquisoft/wichat_en2a/carlos-doc/docs/images/documentation/06_runtime4_hints.png[]
 
 
 === <Runtime Scenario 5. Game Progress and Score Management>
