@@ -62,10 +62,13 @@ In this subsection, the technologies that were not present in the original proje
 
 === Architecture
 
-The architecture used in the system will be based on the following parts:
+==== Inherited architecture
 
-* *Microservices* for the different core functionalities of the system. This way we can develop each service independently and scale them as needed. Additionally, this approach will allow us to use different technologies if needed.
-* *Gateway* to allow communication within services, ensuring cohesion in the system.
+The concrete specification of the architecture can be found in the https://arquisoft.github.io/wiq_en2b/#_code_stylestructure[previous project's documentation].
+
+=== Introduced architecture
+
+#TBD: Any updates done will be detailed here.#
 
 [#organizational_decisions]
 === Organizational Decisions
