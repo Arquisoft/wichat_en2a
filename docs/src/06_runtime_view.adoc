@@ -39,26 +39,20 @@ See https://docs.arc42.org/section-6/[Runtime View] in the arc42 documentation.
 ****
 endif::arc42help[]
 
-=== <Runtime Scenario 1>
+=== <Runtime Scenario 1. Login and Authentication>
+•	The user opens the application and is asked to log in.
+•	They enter their credentials (username and password).
+•	The client application sends an authentication request to the backend.
+•	The backend verifies the credentials by checking in its database.
+•	If login is successful, a session token is generated and sent back to the client.
+•	The client stores the token for future requests.
+•	If login fails, an error message is displayed, asking the user to try again.
 
 
-* _<insert runtime diagram or textual description of the scenario>_
-* _<insert description of the notable aspects of the interactions between the
-building block instances depicted in this diagram.>_
+//[plantuml,"Sequence diagram",png]
 
-It is possible to use a sequence diagram:
+image::../images/documentation/..06_runtime1_login.png[]
 
-[plantuml,"Sequence diagram",png]
-----
-actor Alice
-actor Bob
-database Pod as "Bob's Pod"
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
-Alice  --> Pod: Store route
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
-----
 
 === <Runtime Scenario 2>
 
