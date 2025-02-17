@@ -101,8 +101,12 @@ image::../images/documentation/..06_runtime4_hints.png[]
 •	After the final question, the backend calculates the final score and stores it in the database.
 •	The client displays a summary of the results.
 
+image::../images/documentation/..06_runtime5_score.png[]
+
+
 === <Runtime Scenario 6. . Leaderboard and Social Features>
 •	The user’s score is compared against other players.
 •	The backend updates the leaderboard using the scores database or a dedicated one.
 •	The client displays rankings, showing top players.
 
+image::../images/documentation/..06_runtime6_leaderboard.png[]
