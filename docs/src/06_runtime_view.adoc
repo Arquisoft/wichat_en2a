@@ -59,6 +59,9 @@ After logging in, the user navigates to the game selection screen.
 •	The questions and associated images are sent to the client.
 •	The game session starts, displaying the first question.
 
+image::../images/documentation/06_runtime2_questionSelection.png[Runtime 2 Question Selection Diagram]
+
+
 === <Runtime Scenario 3. Image-Based Questioning>
 •	The app presents an image to the user based on the game topic.
 •	The app gets the set of questions related to the image from the QuestionsDB, such as:
@@ -76,6 +79,8 @@ After logging in, the user navigates to the game selection screen.
     •	If incorrect:
         o	The user can try again or request a hint
 
+image::../images/documentation/06_runtime3_questions.png[Runtime 3 Questioning Diagram]
+
 
 === <Runtime Scenario 4. Hint System and AI Assistance>
 •	If the user does not know the answer, they can request a hint.
@@ -88,7 +93,8 @@ After logging in, the user navigates to the game selection screen.
 •	The hint is sent to the client and displayed to the user.
 •	The user can then retry answering the question.
 
-image::https://raw.githubusercontent.com/Arquisoft/wichat_en2a/carlos-doc/docs/images/documentation/06_runtime4_hints.png[]
+image::../images/documentation/06_runtime4_hints.png[Runtime 4 Hints Diagram]
+
 
 
 === <Runtime Scenario 5. Game Progress and Score Management>
@@ -100,7 +106,7 @@ image::https://raw.githubusercontent.com/Arquisoft/wichat_en2a/carlos-doc/docs/i
 •	After the final question, the backend calculates the final score and stores it in the database.
 •	The client displays a summary of the results.
 
-image::https://github.com/Arquisoft/wichat_en2a/blob/carlos-doc/docs/images/documentation/06_runtime5_score.png[]
+image::../images/documentation/06_runtime5_score.png[Runtime 4 Hints Diagram]
 
 
 === <Runtime Scenario 6. . Leaderboard and Social Features>
@@ -108,4 +114,5 @@ image::https://github.com/Arquisoft/wichat_en2a/blob/carlos-doc/docs/images/docu
 •	The backend updates the leaderboard using the scores database or a dedicated one.
 •	The client displays rankings, showing top players.
 
-image::https://github.com/Arquisoft/wichat_en2a/blob/carlos-doc/docs/images/documentation/06_runtime6_leaderboard.png[]
+image::../images/documentation/06_runtime6_leaderboard.png[Runtime 4 Hints Diagram]
+
