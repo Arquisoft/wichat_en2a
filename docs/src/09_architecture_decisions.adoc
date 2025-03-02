@@ -36,46 +36,6 @@ There you will find links and examples about ADR.
 ****
 endif::arc42help[]
 
-=== Extend previous system
+The information about this section may be found in the https://github.com/Arquisoft/wichat_en2a/wiki/Team-Decisions[Wiki of the project].
 
-*Date*: 16/02/2025
-
-*Status*: Accepted
-
-*Context*: The system that we will develop is quite similar to those developed in last year's course. In the requirements of the project we were informed that we may extend an existing system or create a new one from scratch.
-
-*Decision*: We will extend an existing system as stated on Section 4: <<organizational_decisions, Organizational Decisions>>.
-
-*Consequences*: This decision was hard to take because there may be as many possible pitfalls as beneficts. But as it was encouraged during the classes we have decided that we will give this approach a try. Moreover, the potential beneficts of this decision can be:
-
-* We won't need to start from scratch, so we will lose less time developing features that are already present in the previous system.
-* We will focus on the new features that are required in the requirements and will have more time to polish them.
-* We will practice on a more realistic scenario, providing us a better learning experience.
-
-However, we may encounter some problems:
-
-* The previous system may have some code that is hard to understand or that is hard to adapt to the new requirements.
-* The documentation could not be as complete as it seems, leading to problems to understand the system.
-* The communication with the team that developed the original system will be limited or may not be possible at all.
-
-=== LLM selection
-
-*Date*: 16/02/2025
-
-*Status*: Accepted
-
-*Context*: One of the new requiremnts is to implement some mechanism that uses an LLM to provide clues to the user.
-
-*Decision*: We have decided to use QWen2.5 model as stated in Section 4: <<introduced_technologies, Introduced technologies>>.
-
-*Consequences*: This decision was quite easy to take as the main reason to use this model is to be able to enroll the project in the Empathy contest. In some more detail, the beneficts of this decision are:
-
-* This model is powerful enough to provide good results in the required functionality.
-* We have been provided with an API key to use this model, so we won't have to pay for it.
-* We have an example on how to use the model, so we won't have to spend much time learning how to use it. We will only have to adapt it to our needs.
-* We will be able to enroll the project in the contest if we decided to do so.
-
-However, we some cons of this decision are:
-
-* We could have used other models like Gemini or DeepSeek that may provide better results as they are more powerful.
-* We may need to pass images to the model and although we have seen that it is possible, we may encounter some problems when implementing it.
+We will document the most important decisions there for the sake of flexibility and ease of access. Furthermore, this will avoid multiple builds and deployments of the documentation.
