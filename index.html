@@ -495,12 +495,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_concept_n">8.3. <em>&lt;Concept n&gt;</em></a></li>
 </ul>
 </li>
-<li><a href="#section-design-decisions">9. Architecture Decisions</a>
-<ul class="sectlevel2">
-<li><a href="#_extend_previous_system">9.1. Extend previous system</a></li>
-<li><a href="#_llm_selection">9.2. LLM selection</a></li>
-</ul>
-</li>
+<li><a href="#section-design-decisions">9. Architecture Decisions</a></li>
 <li><a href="#section-quality-scenarios">10. Quality Requirements</a>
 <ul class="sectlevel2">
 <li><a href="#_quality_tree">10.1. Quality Tree</a></li>
@@ -1949,101 +1944,13 @@ There you will find links and examples about ADR.</p>
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="_extend_previous_system">9.1. Extend previous system</h3>
 <div class="paragraph">
-<p><strong>Date</strong>: 16/02/2025</p>
+<p>The information about this section may be found in the <a href="https://github.com/Arquisoft/wichat_en2a/wiki/Team-Decisions">Wiki of the project</a>.</p>
 </div>
 <div class="paragraph">
-<p><strong>Status</strong>: Accepted</p>
-</div>
-<div class="paragraph">
-<p><strong>Context</strong>: The system that we will develop is quite similar to those developed in last year&#8217;s course. In the requirements of the project we were informed that we may extend an existing system or create a new one from scratch.</p>
-</div>
-<div class="paragraph">
-<p><strong>Decision</strong>: We will extend an existing system as stated on Section 4: <a href="#organizational_decisions">Organizational Decisions</a>.</p>
-</div>
-<div class="paragraph">
-<p><strong>Consequences</strong>: This decision was hard to take because there may be as many possible pitfalls as beneficts. But as it was encouraged during the classes we have decided that we will give this approach a try. Moreover, the potential beneficts of this decision can be:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>We won&#8217;t need to start from scratch, so we will lose less time developing features that are already present in the previous system.</p>
-</li>
-<li>
-<p>We will focus on the new features that are required in the requirements and will have more time to polish them.</p>
-</li>
-<li>
-<p>We will practice on a more realistic scenario, providing us a better learning experience.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>However, we may encounter some problems:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>The previous system may have some code that is hard to understand or that is hard to adapt to the new requirements.</p>
-</li>
-<li>
-<p>The documentation could not be as complete as it seems, leading to problems to understand the system.</p>
-</li>
-<li>
-<p>The communication with the team that developed the original system will be limited or may not be possible at all.</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_llm_selection">9.2. LLM selection</h3>
-<div class="paragraph">
-<p><strong>Date</strong>: 16/02/2025</p>
-</div>
-<div class="paragraph">
-<p><strong>Status</strong>: Accepted</p>
-</div>
-<div class="paragraph">
-<p><strong>Context</strong>: One of the new requiremnts is to implement some mechanism that uses an LLM to provide clues to the user.</p>
-</div>
-<div class="paragraph">
-<p><strong>Decision</strong>: We have decided to use QWen2.5 model as stated in Section 4: <a href="#introduced_technologies">Introduced technologies</a>.</p>
-</div>
-<div class="paragraph">
-<p><strong>Consequences</strong>: This decision was quite easy to take as the main reason to use this model is to be able to enroll the project in the Empathy contest. In some more detail, the beneficts of this decision are:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>This model is powerful enough to provide good results in the required functionality.</p>
-</li>
-<li>
-<p>We have been provided with an API key to use this model, so we won&#8217;t have to pay for it.</p>
-</li>
-<li>
-<p>We have an example on how to use the model, so we won&#8217;t have to spend much time learning how to use it. We will only have to adapt it to our needs.</p>
-</li>
-<li>
-<p>We will be able to enroll the project in the contest if we decided to do so.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>However, we some cons of this decision are:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>We could have used other models like Gemini or DeepSeek that may provide better results as they are more powerful.</p>
-</li>
-<li>
-<p>We may need to pass images to the model and although we have seen that it is possible, we may encounter some problems when implementing it.</p>
-</li>
-</ul>
+<p>We will document the most important decisions there for the sake of flexibility and ease of access. Furthermore, this will avoid multiple builds and deployments of the documentation.</p>
 </div>
 <div style="page-break-after: always;"></div>
-</div>
 </div>
 </div>
 <div class="sect1">
@@ -2261,7 +2168,7 @@ more precisely down to a level of scenarios that can be discussed and evaluated.
 <div id="footer">
 <div id="footer-text">
 Version 8.2 EN<br>
-Last updated 2025-02-04 11:54:29 +0100
+Last updated 2025-01-31 16:12:47 +0100
 </div>
 </div>
 </body>
