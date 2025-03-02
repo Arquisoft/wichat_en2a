@@ -44,8 +44,6 @@ See https://docs.arc42.org/section-7/[Deployment View] in the arc42 documentatio
 ****
 endif::arc42help[]
 
-=== Infrastructure Level 1
-
 ifdef::arc42help[]
 [role="arc42help"]
 ****
@@ -60,41 +58,34 @@ For multiple environments or alternative deployments please copy and adapt this 
 ****
 endif::arc42help[]
 
-_**<Overview Diagram>**_
+**Overview Diagram**
+[.text-center]
+image::../images/07_deployment_view.png[]
 
 Motivation::
 
-_<explanation in text form>_
+The application is build using Docker and an Azure Virtual Machine with Ubuntu. Using both together creates a combination of the portability and efficiency of the containers obtained by the use of Docker with the additional security and isolation provided by virtual machines. Docker will be used for the deployment of the application both while developing (local deployment) and when the final result is ready. It is a containerization platform that packages applications and their dependencies into lightweight, portable containers, ensuring consistency across environments.
 
 Quality and/or Performance Features::
 
-_<explanation in text form>_
+Expanding on the advantages of the combined use of Docker and a VM (and also their independent characteristics that add their own value), we can remark:
+- **Isolation**: Not only because of the container-level isolation provided by Docker (which helps prevent dependency conflicts), but also because the additional OS-level isolation thanks to the use of an VM.
+- **Security**: The VM can act as a security boundary if a container is ever compromised.
+- **Resource Management and Allocation**: The VM has a dedicated CPU, RAM and disk which can be allocated specifically for Docker, and Docker itself reduces resource consumption by sharing the OS kernel.
+- **Portability and Compatibility**: Using Docker ensures that the application works in the exact same way across different environments. 
+- **More**: Easy recovery and backup (this can also be attributed to the use of a Github repository), flexible scalability...
 
 Mapping of Building Blocks to Infrastructure::
-_<description of the mapping>_
 
+As of now, the current application counts with several building blocks that are yet to be defined:
+- **Webapp**: Its port (3000) is the one the user will connect to when interacting with the application, as it is its graphic user interface and will work as the frontend.
+- **Gateway**: As its name suggets, it works as the interface that comunicates the webapp with the rest of the services.
+- **Userservice**: It will be in charge of the user management.
+- **Authservice**: On the same level as the previous one, it will be use for the authentication of users.
+- **Llmservice**: This one is also on the same level as the two before it, and it is the one that manages the LLM that will be used in the application. The LLM API used will be the one from Empathy.
+- **Database**: The database that will contain all the data of the application. Currently we only have one database but, further ahead, it may be divided in several databases to manage different features independently (one for users, another for the questions for the game...), but this is yet unclear.
 
-=== Infrastructure Level 2
+It is also worth mentioning the use of other tools that we be probably or surely implemented in the future:
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-Here you can include the internal structure of (some) infrastructure elements from level 1.
-
-Please copy the structure from level 1 for each selected element.
-****
-endif::arc42help[]
-
-==== _<Infrastructure Element 1>_
-
-_<diagram + explanation>_
-
-==== _<Infrastructure Element 2>_
-
-_<diagram + explanation>_
-
-...
-
-==== _<Infrastructure Element n>_
-
-_<diagram + explanation>_
+- **APIs**: The Wikidata API, the LLM API...
+- **Prometheus and Grafana**: This tools combined allow to monitor and observe the system creating statistics about it.

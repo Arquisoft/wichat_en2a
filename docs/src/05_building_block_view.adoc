@@ -68,17 +68,22 @@ In the best case you will get away with examples or simple signatures.
 endif::arc42help[]
 
 _**<Overview Diagram>**_
+[.text-center]
+image::../images/Whitebox Overall System.png[]
 
 Motivation::
 
-_<text explanation>_
+This diagram shows the different parts of the application that interact when a user is playing, as well as outside elements used.
 
 
 Contained Building Blocks::
-_<Description of contained building block (black boxes)>_
+- **Player**: User that interacts with the game, they will need to fill some sort of login information and be validated before playing.
+- **App System**: Main place where the game takes place.
+- **WikiData API**: External API, which will be used to generate questions and answers.
+- **LLM API**: External use of LLM (probably Gemini) to allow the user to get hints from an artificial intelligence. 
 
 Important Interfaces::
-_<Description of important interfaces>_
+As we can see in the diagram, the user will interact with the App Internal System, which will first ask for a list of questions and answers from the WikiData API. Then, as well as showing the questions to the player, it will allow them to see an AI generated hint.
 
 ifdef::arc42help[]
 [role="arc42help"]
@@ -102,124 +107,28 @@ Its headline is the name of the black box.
 ****
 endif::arc42help[]
 
-==== <Name black box 1>
+==== Container Diagram
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-Here you describe <black box 1>
-according the the following black box template:
+_**<Overview Diagram>**_
+[.text-center]
+image::../images/Container Diagram.png[]
 
-* Purpose/Responsibility
-* Interface(s), when they are not extracted as separate paragraphs. This interfaces may include qualities and performance characteristics.
-* (Optional) Quality-/Performance characteristics of the black box, e.g.availability, run time behavior, ....
-* (Optional) directory/file location
-* (Optional) Fulfilled requirements (if you need traceability to requirements).
-* (Optional) Open issues/problems/risks
+Motivation::
 
-****
-endif::arc42help[]
-
-_<Purpose/Responsibility>_
-
-_<Interface(s)>_
-
-_<(Optional) Quality/Performance Characteristics>_
-
-_<(Optional) Directory/File Location>_
-
-_<(Optional) Fulfilled Requirements>_
-
-_<(optional) Open Issues/Problems/Risks>_
+This diagram shows in more detail the different (**internal**) parts of the application that interact when a user is playing, as well as outside elements used.
 
 
+Contained Building Blocks::
+- **Player's browser**: The browser will send us some information about the user that interacts with the game, they will need to fill some sort of login information and be validated before playing. 
+- **App System**: Main place where the game takes place. Will receive some information about the user from the browser (probably using a proxy) and communicate with the other internal parts of the app, or external (like the LLM functionality).
+- **App API**: Probably programmed in Springboot. This part of the app will receive the information about the user from the browser and save it in the database, as well as information about the status of the game.
+- **Question generator**: This part will first ask the WikiData API for some questions and answers, which it will later store in the database.
+- **Database**: In PostgreSQL. Will receive information about the user/state of the game/questions and answers.
+- **WikiData API**: External API, which will be used to generate questions and answers.
+- **LLM API**: External use of LLM (for now it will be Empathy) to allow the user to get hints from an artificial intelligence. 
 
+Important Interfaces::
+As we can see in the diagram, the user will interact with the App Internal System first, which will ask for information about the user from their browser (proxy). This container will send this info to the app API which will store it in the database. 
++
+Then, when the game starts, the Question generator will use the WikiData API to get a list of questions and answers, which will be stored in the database as well. Then, as well as showing the questions to the player, ithe App System container will communicate with the LLM Container to allow players to see an AI generated hint.
 
-==== <Name black box 2>
-
-_<black box template>_
-
-==== <Name black box n>
-
-_<black box template>_
-
-
-==== <Name interface 1>
-
-...
-
-==== <Name interface m>
-
-
-
-=== Level 2
-
-ifdef::arc42help[]
-[role="arc42help"]
-****
-Here you can specify the inner structure of (some) building blocks from level 1 as white boxes.
-
-You have to decide which building blocks of your system are important enough to justify such a detailed description.
-Please prefer relevance over completeness. Specify important, surprising, risky, complex or volatile building blocks.
-Leave out normal, simple, boring or standardized parts of your system
-****
-endif::arc42help[]
-
-==== White Box _<building block 1>_
-
-ifdef::arc42help[]
-[role="arc42help"]
-****
-...describes the internal structure of _building block 1_.
-****
-endif::arc42help[]
-
-_<white box template>_
-
-==== White Box _<building block 2>_
-
-
-_<white box template>_
-
-...
-
-==== White Box _<building block m>_
-
-
-_<white box template>_
-
-
-
-=== Level 3
-
-ifdef::arc42help[]
-[role="arc42help"]
-****
-Here you can specify the inner structure of (some) building blocks from level 2 as white boxes.
-
-When you need more detailed levels of your architecture please copy this
-part of arc42 for additional levels.
-****
-endif::arc42help[]
-
-==== White Box <_building block x.1_>
-
-ifdef::arc42help[]
-[role="arc42help"]
-****
-Specifies the internal structure of _building block x.1_.
-****
-endif::arc42help[]
-
-_<white box template>_
-
-
-==== White Box <_building block x.2_>
-
-_<white box template>_
-
-
-
-==== White Box <_building block y.1_>
-
-_<white box template>_
