@@ -2,7 +2,16 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 const Question = require('./question-model'); 
 
+// Define the connection URL
+const mongoURI = 'mongodb://localhost:27017/mongo-db-wichat_en2a';
+
+// Connect to MongoDB
+mongoose.connect(mongoURI)
+    .then(() => console.log("✅ Connected to MongoDB"))
+    .catch(err => console.error("❌ MongoDB connection error:", err));
+
 async function fetchFlagData(){
+    //console.time('fetchFlagData');
     //Currently, this is the only type of question, in the future we will use more.
     //Should consider creating a question-generation.js or something like that to divide responsabilities.
     const query = `
@@ -25,36 +34,17 @@ async function fetchFlagData(){
             }
         });
 
-        // This should be use to insert the options. Had problems to connect to the db
-        /*
-        const results = response.data.results.bindings.map(async entry => {
-            const correctAnswer = entry.countryLabel.value;
-
-            // Generate random options for the current question
-            const options = await generateRandomOptions(correctAnswer);
-
-            // Create the question object
-            return {
-                type: "flag", 
-                imageUrl: entry.flag.value,  
-                options: options, 
-                correctAnswer: correctAnswer 
-            };
-        });
-
-        //wait for filling the options
-        const finalResults = await Promise.all(results);*/
-
         const results = response.data.results.bindings.map(entry => ({
             type: "flag", 
             imageUrl: entry.flag.value,  
-            options: [],
+            options: [entry.countryLabel.value],
             correctAnswer: entry.countryLabel.value 
         }));
 
         //save at db
-        await saveQuestionsToDB(results);
+        saveQuestionsToDB(results);
         console.log("Fetched Flag Data:", results);//testing
+        //console.timeEnd('fetchFlagData');
         return results;
 
     } catch(error){
@@ -71,26 +61,6 @@ async function saveQuestionsToDB(questions){
         console.error("Error while saving questions");
     }
 }
-/*
-async function generateRandomOptions(correctAnswer){
-    try{
-        const randomQuestions = await Question.aggregate([
-            { $match: { correctAnswer: { $ne: correctAnswer } } }, //we already have the correct one
-            { $sample: { size: 3 } }, // ust need 3 
-            { $project: { _id: 0, countryLabel: 1 } } // Only return the country label
-        ]);
-
-        const randomOptions = randomQuestions.map(question => question.countryLabel);
-        randomOptions.push(correctAnswer);
-        randomOptions.sort(() => Math.random() - 0.5); // Shuffle the options
-
-        return randomOptions;
-    } catch (error) {
-        console.error("Error generating random options:", error);
-        throw new Error("Failed to generate random options");
-    }
-}*/
-
 
 //Just for testing purposes
 fetchFlagData();
