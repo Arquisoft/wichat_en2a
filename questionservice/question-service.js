@@ -1,6 +1,7 @@
 const axios = require('axios');
 const mongoose = require('mongoose');
 const Question = require('./question-model'); 
+const LLMService = require('../llmservice/llm-service');
 
 // Define the connection URL
 const mongoURI = 'mongodb://localhost:27017/mongo-db-wichat_en2a';
@@ -34,10 +35,11 @@ async function fetchFlagData(){
             }
         });
 
+
         const results = response.data.results.bindings.map(entry => ({
             type: "flag", 
             imageUrl: entry.flag.value,  
-            options: [entry.countryLabel.value],
+            options: getIncorrectAnswers(entry.countryLabel.value), // Insert incorrect answers using LLM.
             correctAnswer: entry.countryLabel.value 
         }));
 
@@ -52,6 +54,11 @@ async function fetchFlagData(){
     }   
 }
 
+/// Returns array including correct and incorrect answers.
+function getIncorrectAnswers(correctAnswer) {
+    return [correctAnswer, ...LLMService.getIncorrectAnswers(correctAnswer)];
+}
+
 async function saveQuestionsToDB(questions){
     try{
         await Question.insertMany(questions) //insert questions to db
@@ -61,6 +68,24 @@ async function saveQuestionsToDB(questions){
         console.error("Error while saving questions");
     }
 }
+
+// Should be called from front-end
+async function getAndUpdateQuestion() {
+    try {
+        // Find one question where alreadyShown is false
+        const question = await Question.findOneAndUpdate(
+            { alreadyShown: false }, // Find condition
+            { alreadyShown: true },  // Update to true
+            { new: true }            // Return the updated document
+        );
+
+        return question; // Return the extracted question
+    } catch (error) {
+        console.error("Error fetching question:", error);
+        return null;
+    }
+}
+
 
 //Just for testing purposes
 fetchFlagData();
