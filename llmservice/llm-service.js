@@ -1,5 +1,8 @@
 const axios = require('axios');
 const express = require('express');
+const dotenv = require('dotenv');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+dotenv.config();
 
 const app = express();
 const port = 8003;
@@ -7,15 +10,8 @@ const port = 8003;
 // Middleware to parse JSON in request body
 app.use(express.json());
 
-// Define configurations for different LLM APIs
+// 
 const llmConfigs = {
-  gemini: {
-    url: (apiKey) => `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-    transformRequest: (question) => ({
-      contents: [{ parts: [{ text: question }] }]
-    }),
-    transformResponse: (response) => response.data.candidates[0]?.content?.parts[0]?.text
-  },
   empathy: {
     url: () => 'https://empathyai.prod.empathy.co/v1/chat/completions',
     transformRequest: (question) => ({
@@ -42,15 +38,18 @@ function validateRequiredFields(req, requiredFields) {
   }
 }
 
-// Generic function to send questions to LLM
-async function sendQuestionToLLM(question, apiKey, model = 'gemini') {
+// Generic function to send questions to LLM (now it's only use for empathy)
+async function sendQuestionToLLM(question, apiKey, model = 'empathy') {
   try {
+    //Select the configuration for an specific model of LLM(gemini by default)
     const config = llmConfigs[model];
     if (!config) {
       throw new Error(`Model "${model}" is not supported.`);
     }
-
+    
+    //Transform the url with apiKey passed
     const url = config.url(apiKey);
+    //With the question passed it transformed it to the request
     const requestData = config.transformRequest(question);
 
     const headers = {
@@ -58,8 +57,10 @@ async function sendQuestionToLLM(question, apiKey, model = 'gemini') {
       ...(config.headers ? config.headers(apiKey) : {})
     };
 
+    //Generates de response of the LLM
     const response = await axios.post(url, requestData, { headers });
 
+    //Return the response already transform 
     return config.transformResponse(response);
 
   } catch (error) {
@@ -68,13 +69,42 @@ async function sendQuestionToLLM(question, apiKey, model = 'gemini') {
   }
 }
 
+//It returns the answer to the question by using the LLM of gemini
+async function sendQuestionToGemini(question, apiKey, model = 'gemini'){
+    try{
+      const GEMINI_API_URL = 'Https://docs.gemini.com';
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+      const result = await model.generateContent(question);
+      return result;
+
+    }catch(error){
+      console.error(`Error sending question to ${model}:`, error.message || error)
+      return null;
+    }
+
+}
+
+
 app.post('/ask', async (req, res) => {
   try {
     // Check if required fields are present in the request body
     validateRequiredFields(req, ['question', 'model', 'apiKey']);
 
+    //Get the three fields passed
     const { question, model, apiKey } = req.body;
+    
+    //Get the answer of the LLM
+    
+    //For using empathy
     const answer = await sendQuestionToLLM(question, apiKey, model);
+    
+    //For using gemini if it's change in the future
+    //const preanswer = await sendQuestionToGemini(question, apiKey, model);
+    //const answer = preanswer.response.text();
+    
+    //Return the message
     res.json({ answer });
 
   } catch (error) {
