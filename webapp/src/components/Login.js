@@ -1,8 +1,8 @@
 // src/components/Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
-const dotenv = require('dotenv');
-dotenv.config();
+//const dotenv = require('dotenv');
+//dotenv.config();
 import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
 import { Typewriter } from "react-simple-typewriter";
 
@@ -16,7 +16,7 @@ const Login = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
-  const apiKey = process.env.REACT_APP_LLM_API_KEY || 'None';
+  const apiKey = process.env.REACT_APP_LLM_API_KEY || 'sk-IWStePBOmiuE5KiunSm4Kg';
 
   const loginUser = async () => {
     try {
