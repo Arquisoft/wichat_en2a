@@ -87,10 +87,10 @@ async function getQuestion() {
     }
 }
 
-async function checkAnswer(questionId, selectedAnswer) {
+function checkAnswer(questionId, selectedAnswer) {
     try {
         // Find the question by its ID
-        const question = await Question.findById(questionId);
+        const question = Question.findById(questionId);
 
         if (!question) {
             console.log("Question not found.");
