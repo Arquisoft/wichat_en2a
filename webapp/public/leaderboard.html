@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Leaderboard</h1>
+    <table id="leaderboard">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Total Score</th>
+                <th>Total Games</th>
+                <th>Wins</th>
+                <th>Avg. Score</th>
+                <th>Win-rate (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- elements inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchLeaderboard() {
+            try {
+                const response = await fetch('http://localhost:'); //need change
+                const data = await response.json();
+                const tbody = document.getElementById('leaderboard').getElementsByTagName('tbody')[0];
+
+                data.forEach(player => {
+                    const row = tbody.insertRow();
+                    row.insertCell(0).innerText = player.username;
+                    row.insertCell(1).innerText = player.totalScore;
+                    row.insertCell(2).innerText = player.gamesPlayed;
+                    row.insertCell(3).innerText = player.victories;
+                    row.insertCell(4).innerText = player.averageScore.toFixed(2); //adjust 2 decimals
+                    row.insertCell(5).innerText = player.winPercentage.toFixed(2) + '%'; 
+                });
+            } catch (error) {
+                console.error('Error fetching leaderboard:', error);
+            }
+        }
+
+        // calls function when loading page
+        window.onload = fetchLeaderboard;
+    </script>
+</body>
+</html>
