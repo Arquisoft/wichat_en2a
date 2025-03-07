@@ -56,8 +56,14 @@ async function fetchFlagData(){
 }
 
 /// Returns array including correct and incorrect answers.
-function getIncorrectAnswers(correctAnswer) {
-    return [correctAnswer, ...gateway.getIncorrectAnswers(correctAnswer)];
+async function getIncorrectAnswers(correctAnswer) {
+    try {
+        const incorrectAnswers = await gateway.getIncorrectAnswers(correctAnswer);
+        return [correctAnswer, ...incorrectAnswers];
+    } catch (error) {
+        console.error("❌ Error fetching incorrect answers:", error);
+        return [correctAnswer]; // Fallback to only correct answer if there's an error
+    }
 }
 
 async function saveQuestionsToDB(questions){
