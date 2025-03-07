@@ -3,11 +3,15 @@ const mongoose = require('mongoose');
 const scoreSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User ',
+        ref: 'User', 
         required: true,
     },
     score: {
         type: Number,
+        required: true,
+    },
+    isVictory: { 
+        type: Boolean,
         required: true,
     },
     createdAt: {
