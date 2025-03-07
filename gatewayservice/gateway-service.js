@@ -6,6 +6,7 @@ const promBundle = require('express-prom-bundle');
 const swaggerUi = require('swagger-ui-express'); 
 const fs = require("fs")
 const YAML = require('yaml')
+const LLMService = require('../llmservice/llm-service');
 
 const app = express();
 const port = 8000;
@@ -79,3 +80,8 @@ const server = app.listen(port, () => {
 });
 
 module.exports = server
+
+/////////////////////////////// Question service calls
+function getIncorrectAnswers(correctAnswer){
+  return LLMService.getIncorrectAnswers(correctAnswer);
+}

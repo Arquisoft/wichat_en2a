@@ -1,7 +1,8 @@
 const axios = require('axios');
 const mongoose = require('mongoose');
 const Question = require('./question-model'); 
-const LLMService = require('../llmservice/llm-service');
+const gateway = require('../gatewayservice/gateway-service');
+
 
 // Define the connection URL
 const mongoURI = 'mongodb://localhost:27017/mongo-db-wichat_en2a';
@@ -56,7 +57,7 @@ async function fetchFlagData(){
 
 /// Returns array including correct and incorrect answers.
 function getIncorrectAnswers(correctAnswer) {
-    return [correctAnswer, ...LLMService.getIncorrectAnswers(correctAnswer)];
+    return [correctAnswer, ...gateway.getIncorrectAnswers(correctAnswer)];
 }
 
 async function saveQuestionsToDB(questions){
@@ -70,7 +71,7 @@ async function saveQuestionsToDB(questions){
 }
 
 // Should be called from front-end
-async function getAndUpdateQuestion() {
+async function getQuestion() {
     try {
         // Find one question where alreadyShown is false
         const question = await Question.findOneAndUpdate(
@@ -83,6 +84,25 @@ async function getAndUpdateQuestion() {
     } catch (error) {
         console.error("Error fetching question:", error);
         return null;
+    }
+}
+
+async function checkAnswer(questionId, selectedAnswer) {
+    try {
+        // Find the question by its ID
+        const question = await Question.findById(questionId);
+
+        if (!question) {
+            console.log("Question not found.");
+            return false; // If no question is found, return false
+        }
+
+        // Compare the selected answer with the correct answer
+        return question.correctAnswer === selectedAnswer;
+        
+    } catch (error) {
+        console.error("Error checking answer:", error);
+        return false;
     }
 }
 
