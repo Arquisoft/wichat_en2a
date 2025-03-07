@@ -44,9 +44,28 @@ app.post('/adduser', async (req, res) => {
         res.status(400).json({ error: error.message }); 
     }});
 
+app.post('/updateProfilePicture', async (req, res) => {
+    try {
+
+        const { username, profilePicture } = req.body;
+        const user = await User.findOneAndUpdate(
+            { username },
+            { profilePicture },
+            { new: true }
+        );
+
+        res.json(user);
+    } 
+    catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+});
+
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);
 });
+
 
 // Listen for the 'close' event on the Express.js server
 server.on('close', () => {
