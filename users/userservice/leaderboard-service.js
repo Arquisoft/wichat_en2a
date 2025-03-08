@@ -1,14 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const Score = require('./score-model');
-const User = require('./user-model');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const User = require('./auth-model')
+const { check, matchedData, validationResult } = require('express-validator');
+const app = express();
+const port = 8002; 
 
-
+// Middleware to parse JSON in request body
+app.use(express.json());
 //Claves relevantes nombre coleccion Usuarios! = 'users'
 // en bd llamar totalScore 
-
-const app = express();
-const port = 8004;
 
 // Middleware to parse JSON in request body
 app.use(express.json());
