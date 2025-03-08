@@ -40,7 +40,7 @@ async function fetchFlagData(){
         const results = response.data.results.bindings.map(entry => ({
             type: "flag", 
             imageUrl: entry.flag.value,  
-            options: getIncorrectAnswers(entry.countryLabel.value), // Insert incorrect answers using LLM.
+            options: [],//getIncorrectAnswers(entry.countryLabel.value), 
             correctAnswer: entry.countryLabel.value 
         }));
 
@@ -60,6 +60,7 @@ async function getIncorrectAnswers(correctAnswer) {
     try {
         const incorrectAnswers = await gateway.getIncorrectAnswers(correctAnswer);
         return [correctAnswer, ...incorrectAnswers];
+        options.sort(() => Math.random() -0.5);
     } catch (error) {
         console.error("❌ Error fetching incorrect answers:", error);
         return [correctAnswer]; // Fallback to only correct answer if there's an error

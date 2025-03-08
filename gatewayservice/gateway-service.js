@@ -57,6 +57,20 @@ app.post('/askllm', async (req, res) => {
   }
 });
 
+app.get('/incorrect-answers', async (req, res) => {
+  try {
+      const { correctAnswer } = req.query; // Get the correctAnswer from query parameters
+      if (!correctAnswer) {
+          return res.status(400).json({ error: 'correctAnswer is required' });
+      }
+
+      const incorrectAnswers = await getIncorrectAnswers(correctAnswer); // Fetch incorrect answers
+      res.json({ incorrectAnswers });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
 // Read the OpenAPI YAML file synchronously
 openapiPath='./openapi.yaml'
 if (fs.existsSync(openapiPath)) {
@@ -79,9 +93,4 @@ const server = app.listen(port, () => {
   console.log(`Gateway Service listening at http://localhost:${port}`);
 });
 
-module.exports = server
-
-/////////////////////////////// Question service calls
-function getIncorrectAnswers(correctAnswer){
-  return LLMService.getIncorrectAnswers(correctAnswer);
-}
+module.exports = server;
