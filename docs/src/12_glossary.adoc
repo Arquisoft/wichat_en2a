@@ -36,18 +36,6 @@ endif::arc42help[]
 |===
 |Term |Definition
 
-|TBD
-|To Be Defined
-
-|LLM
-|Large Language Model
-
-|CI
-|Continuous Integration
-
-|CD
-|Continuous Delivery/Deployment
-
-|UI
-|User Interface
+|<Term>
+|<Definition>
 |===

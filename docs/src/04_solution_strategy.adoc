@@ -3,76 +3,35 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-solution-strategy]]
 == Solution Strategy
 
-
-ifdef::arc42help[]
-[role="arc42help"]
-****
-.Contents
-A short summary and explanation of the fundamental decisions and solution strategies, that shape system architecture. It includes
-
-* technology decisions
-* decisions about the top-level decomposition of the system, e.g. usage of an architectural pattern or design pattern
-* decisions on how to achieve key quality goals
-* relevant organizational decisions, e.g. selecting a development process or delegating certain tasks to third parties.
-
-.Motivation
-These decisions form the cornerstones for your architecture. They are the foundation for many other detailed decisions or implementation rules.
-
-.Form
-Keep the explanations of such key decisions short.
-
-Motivate what was decided and why it was decided that way,
-based upon problem statement, quality goals and key constraints.
-Refer to details in the following sections.
-
-
-.Further Information
-
-See https://docs.arc42.org/section-4/[Solution Strategy] in the arc42 documentation.
-
-****
-endif::arc42help[]
-
 In this section we will describe the approach taken to develop the system from a high-level perspective. This includes the technologies used, the architecture of the system and the most important organizational decisions.
 
 === Technologies
 
 The following technologies are used in our project:
 
-==== Inherited technologies
-
-In this subsection, the technologies that are inherited from the previous project are described. Note that the reasoning behing the selection of these selection is purely inherited from the previous project. We may add some clarifications if needed, but the explanation may be quite similar to the one in the https://arquisoft.github.io/wiq_en2b/#_technologies_breakdown[previous project's documentation]footnote:[We may change some technologies if we feel like we may obtain some benefict, so it may be possible that not all technolgies that are present in the original project are present on ours. However, these changes will be documented.].
-
+* *NodeJS*: To build our backend, we will use this technology due to its simplicity and its ability to create scalable and efficient servers. This technology is not so familiar to the team but as it is widely used we think we won't have many issues as there are plenty of resources available (documentation, GitHub repos, StackOverflow...).
+* *MongoDB*: To store the data, we will use this technology due to its flexibility and scalability. Furthermore, this technology is recommended to use combined with NodeJS as they perform quite well together (therefore avoiding the pitfall of performance that is typically associated with the use of NoSQL databases over SQL ones). The team is not so used to work with NoSQL databases, but we think that it will be a good opportunity to learn something new.
 * *React*: To build the web application's UI, we will use this technology due to its simplicity and its ability to create reusable components. It has also been chosen as it has a relatively gentle learning curve (as we will be learning while building).
-** *ChakraUI* component library is being used. A downside of using it is the need to use plain JavaScript rather than TypeScript as React 18 does not support it.
-* *Java Spring Boot 3*: To build the backend (API part) of the system we will rely on this technology. Although inherited from the previous project, we believe that it is a good choice due to the familiariy of the team with Java. Aditionally is a well-known technology that, in case of any problem, we may be able ot find some solutions online.
-* *Java*: To generate the questions, Java will be used. This technology, as stated before, is well-known by the team .
-* *PostgreSQL*: To store the data, we will use this DBMS. The team is quite familiar with relational databases and we believe that although a NoSQL is more flexible, a relational database will bring more consistency and performance to the system. However, based on some open issues from the previous project, we may consider using a NoSQL (probably MongoDB) database for some parts of the system.
 * *Docker*: To deploy the system, we will use this technology due to its portability and reliability.
 * *Git & GitHub*: For version control and collaboration, we will use Git and GitHub. These tools will enable the team to collaborate efficiently and keep track of changes, issues and documentation.
 * #TBD# Elaborate on CI/CD: We will use GitHub Actions to automate the CI/CD process, but this will be elaborated later when we have more knowledge.
-
-[#introduced_technologies]
-==== Introduced technologies
-
-In this subsection, the technologies that were not present in the original project are described. These technologies have been decided by our team to fullfill the new requirements of the project.
-
+* *SonarQube*: For static code analysis, we will use SonarQube. This tool will help the team to keep the codebase clean and maintainable.
 * *QWen2.5 (7B parameters)*: To add the LLM functionality to the system, we will use this model. This way we may apply to the Empathy contest if we decided to do so. That is the main reason to use this model because we felt that using others like Gemini or DeepSeek would probably provide better results, but we would not be able to enroll our project in the contest.
 * *Azure*: To deploy the system, we will use Azure due to its scalability and reliability. We will use a VM stored in Azure to deploy the system and make it accessible. We could have used any other cloud provider, but we decided to use Azure because it was the one shown in the course. Moreover, we could have used a local server, but that would demand to have a machine running 24/7 and we would have to take care of some security issues that using a cloud provided are not so relevant.
 
 === Architecture
 
-==== Inherited architecture
+The system will be divided into several components, each one will have theit own responsibility. The idea is to follow a microservices architecture, where each component is responsible for a specific task. This way we can scale the system more easily and we can have a more organized codebase. Also, we may be able to work in parallel on different components.
 
-The concrete specification of the architecture can be found in the https://arquisoft.github.io/wiq_en2b/#_code_stylestructure[previous project's documentation].
+The specific components are:
 
-=== Introduced architecture
-
-#TBD: Any updates done will be detailed here.#
+* *WebApp*: This component will be responsible for the user interface. It will be built using React and will be responsible for displaying the information to the user and for sending the user's input to the backend services.
+* *Gateway-Service*: This component will be responsible for routing the requests to the correct service. It will be built using NodeJS and will be responsible for handling the requests from the WebApp and sending them to the correct service.
+* *Users*: This component will be responsible for managing the users. It will be built using NodeJS and will be responsible for handling the user's information and authentication in its database.
+* *Questions-Service*: This component will be responsible for retrieving the questions from Wikidata and storing them in its database. It will be built using NodeJS and will be responsible for handling the requests from the Gateway-Service and sending them to Wikidata.
+* *LLM-Service*: This component will be responsible of any interaction the system performs with the LLM model. It will be built using NodeJS and will be responsible for handling the requests from the Gateway-Service and sending them to the LLM model.
 
 [#organizational_decisions]
 === Organizational Decisions
 
-In this section, the most important organizational decisions will be described at high level.
-
-* *Starting point of the project*: The project will be based on an existing project from last year (the exact project can be found https://github.com/Arquisoft/wiq_en2b[here]). These way we can reuse an existing codebase and improve it. However, we are aware that this approach may bring some challenges, such as the need to fully understand the existing code and the risk of adapting it to the new requirements.
+All decisions will be recorded at the https://github.com/Arquisoft/wichat_en2a/wiki/Team-Decisions[decision's section] of the Wiki of the project. We have decided to do it in such a way so that we do not need to deploy the documentation all the times we record a decision.
