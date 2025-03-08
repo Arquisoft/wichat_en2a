@@ -44,23 +44,37 @@ app.post('/adduser', async (req, res) => {
         res.status(400).json({ error: error.message }); 
     }});
 
-app.post('/updateProfilePicture', async (req, res) => {
-    try {
+    app.post('/updateProfilePicture', [
 
-        const { username, profilePicture } = req.body;
-        const user = await User.findOneAndUpdate(
-            { username },
-            { profilePicture },
-            { new: true }
-        );
-
-        res.json(user);
-    } 
-    catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-
-});
+        // Validate  inputs
+        check('username').isString().trim().escape(),
+        check('profilePicture').isURL().trim().escape()
+    
+    ], async (req, res) => {
+    
+        // Check for validation errors
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
+        try {
+    
+            const { username, profilePicture } = req.body;
+    
+            // Update user profile pic
+            const user = await User.findOneAndUpdate(
+                { username },
+                { profilePicture },
+                { new: true }
+            );
+            if (!user) {
+                return res.status(404).json({ error: 'User  not found' });
+            }
+            res.json({ message: 'Profile picture updated successfully', user });
+        } catch (error) {
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    });
 
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);
