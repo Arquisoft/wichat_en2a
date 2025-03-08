@@ -3,8 +3,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('./auth-model')
+const Score = require('./score-model')
 const { check, matchedData, validationResult } = require('express-validator');
 const app = express();
+
+app.disable('x-powered-by');
 const port = 8002; 
 
 // Middleware to parse JSON in request body
@@ -54,7 +57,7 @@ app.put('/updateScore', async (req, res) => {
 });
 
 // endpoint to get scores by user
-app.get('/scoresByUser /:userId', async (req, res) => {
+app.get('/scoresByUser/:userId', async (req, res) => {
     try {
         const userId = req.params.userId;
         const scores = await Score.find({ userId });
