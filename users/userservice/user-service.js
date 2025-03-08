@@ -43,49 +43,44 @@ app.post('/adduser', async (req, res) => {
         res.json(newUser);
     } catch (error) {
         res.status(400).json({ error: error.message }); 
-    }});
+}});
 
 app.post('/updateProfilePicture', [
+    // Validate inputs
+    check('username').isString().trim().escape(),
+    check('profilePicture').isURL().trim().escape()
+], async (req, res) => {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+        const { username, profilePicture } = req.body;
 
-        // Validate  inputs
-        check('username').isString().trim().escape(),
-        check('profilePicture').isURL().trim().escape()
-    
-    ], async (req, res) => {
-    
-        // Check for validation errors
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+        // Update user profile pic
+        const user = await User.findOneAndUpdate(
+            { username },
+            { profilePicture },
+            { new: true }
+        );
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
         }
-        try {
-    
-            const { username, profilePicture } = req.body;
-    
-            // Update user profile pic
-            const user = await User.findOneAndUpdate(
-                { username },
-                { profilePicture },
-                { new: true }
-            );
-            if (!user) {
-                return res.status(404).json({ error: 'User  not found' });
-            }
-            res.json({ message: 'Profile picture updated successfully', user });
-        } catch (error) {
-            res.status(500).json({ error: 'Internal Server Error' });
-        }
-    });
-
-const server = app.listen(port, () => {
-  console.log(`User Service listening at http://localhost:${port}`);
+        res.json({ message: 'Profile picture updated successfully', user });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
+const server = app.listen(port, () => {
+    console.log(`User Service listening at http://localhost:${port}`);
+});
 
 // Listen for the 'close' event on the Express.js server
 server.on('close', () => {
     // Close the Mongoose connection
     mongoose.connection.close();
-  });
+});
 
-module.exports = server
+module.exports = server;
