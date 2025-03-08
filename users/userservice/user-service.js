@@ -44,7 +44,7 @@ app.post('/adduser', async (req, res) => {
         res.status(400).json({ error: error.message }); 
     }});
 
-    app.post('/updateProfilePicture', [
+app.post('/updateProfilePicture', [
 
         // Validate  inputs
         check('username').isString().trim().escape(),
