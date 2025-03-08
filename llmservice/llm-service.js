@@ -46,30 +46,22 @@ function validateRequiredFields(req, requiredFields) {
 
 // Generic function to send questions to LLM
 async function sendQuestionToLLM(question, apiKey, model) {
-  try {
-    const config = llmConfigs[model];
-    if (!config) {
-      throw new Error(`Model "${model}" is not supported.`);
-    }
-
-    const url = config.url(apiKey);
-    const requestData = config.transformRequest(question);
-
-    const headers = {
-      "Content-Type": "application/json",
-      ...(config.headers ? config.headers(apiKey) : {}),
-    };
-
-    const response = await axios.post(url, requestData, { headers });
-
-    return config.transformResponse(response);
-  } catch (error) {
-    console.error(
-      `Error sending question to ${model}:`,
-      error.message || error
-    );
-    return null;
+  const config = llmConfigs[model];
+  if (!config) {
+    throw new Error(`Model "${model}" is not supported.`);
   }
+
+  const url = config.url(apiKey);
+  const requestData = config.transformRequest(question);
+
+  const headers = {
+    "Content-Type": "application/json",
+    ...(config.headers ? config.headers(apiKey) : {}),
+  };
+
+  const response = await axios.post(url, requestData, { headers });
+
+  return config.transformResponse(response);
 }
 
 app.post("/ask", async (req, res) => {
@@ -79,9 +71,6 @@ app.post("/ask", async (req, res) => {
 
     const { question, model, apiKey } = req.body;
     const answer = await sendQuestionToLLM(question, apiKey, model);
-    if (!answer) {
-      throw new Error("Error generating answer from LLM");
-    }
 
     res.json({ answer });
   } catch (error) {
@@ -101,9 +90,6 @@ app.post("/generateIncorrectOptions", async (req, res) => {
       ". I need you to generate 3 incorrect options for that question that could be used as distractors. They should be plausible but different from the correct one. Provide them as 3 comma-separated values, nothing more.";
 
     const answer = await sendQuestionToLLM(question, apiKey, model);
-    if (!answer) {
-      throw new Error("Error generating incorrect options from LLM");
-    }
 
     let incorrectOptions = answer.split(",");
     res.json({ incorrectOptions });

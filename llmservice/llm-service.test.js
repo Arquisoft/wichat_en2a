@@ -121,9 +121,17 @@ describe("Error handling", () => {
     jest.resetAllMocks();
   });
 
-  it("should fail if the model is not supported", async () => {
+  it("should fail if the model is not supported when asking a question", async () => {
     const response = await request(app)
       .post("/ask")
+      .send({ question: "a question", apiKey: "apiKey", model: "openai" });
+
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("should fail if the model is not supported when generating the distractors", async () => {
+    const response = await request(app)
+      .post("/generateIncorrectOptions")
       .send({ question: "a question", apiKey: "apiKey", model: "openai" });
 
     expect(response.statusCode).toBe(400);
@@ -140,7 +148,7 @@ describe("Error handling", () => {
   it("should fail if the required fields are missing when generating the distractors", async () => {
     const response = await request(app)
       .post("/generateIncorrectOptions")
-      .send({ question: "a question", model: "gemini" });
+      .send({ correctAnswer: "an answer", model: "gemini" });
 
     expect(response.statusCode).toBe(400);
   });
