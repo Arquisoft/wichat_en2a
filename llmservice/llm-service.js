@@ -45,7 +45,7 @@ function validateRequiredFields(req, requiredFields) {
 }
 
 // Generic function to send questions to LLM
-async function sendQuestionToLLM(question, apiKey, model = "gemini") {
+async function sendQuestionToLLM(question, apiKey, model) {
   try {
     const config = llmConfigs[model];
     if (!config) {
@@ -79,6 +79,10 @@ app.post("/ask", async (req, res) => {
 
     const { question, model, apiKey } = req.body;
     const answer = await sendQuestionToLLM(question, apiKey, model);
+    if (!answer) {
+      throw new Error("Error generating answer from LLM");
+    }
+
     res.json({ answer });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -88,14 +92,19 @@ app.post("/ask", async (req, res) => {
 // Generation of incorrect options via llm
 app.post("/generateIncorrectOptions", async (req, res) => {
   try {
-    validateRequiredFields(req, ['model', 'apiKey', 'correctAnswer']);
+    validateRequiredFields(req, ["model", "apiKey", "correctAnswer"]);
 
     const { model, apiKey, correctAnswer } = req.body;
     let question =
       "I need to generate incorrect options for a multiple choice question of exactly 4 options. The question is: What country is represented by the flag shown? The correct answer to this question is:" +
       correctAnswer +
       ". I need you to generate 3 incorrect options for that question that could be used as distractors. They should be plausible but different from the correct one. Provide them as 3 comma-separated values, nothing more.";
+
     const answer = await sendQuestionToLLM(question, apiKey, model);
+    if (!answer) {
+      throw new Error("Error generating incorrect options from LLM");
+    }
+
     let incorrectOptions = answer.split(",");
     res.json({ incorrectOptions });
   } catch (error) {
