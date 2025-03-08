@@ -40,10 +40,15 @@ app.put('/updateScore', async (req, res) => {
     try {
         const { userId, score, isVictory } = req.body;
 
+        // verify that userId is a valid ObjectId 
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ error: 'Invalid userId format' });
+        }
+
         const updatedScore = await Score.findOneAndUpdate(
-            { userId },
-            { score, isVictory },
-            { new: true } // Returns the updated document
+            { userId: mongoose.Types.ObjectId(userId) }, // make userId safe
+            { $set: { score, isVictory } }, // use $set to avoid mongodb inyection security risk on Sonar Test
+            { new: true }
         );
 
         if (!updatedScore) {
