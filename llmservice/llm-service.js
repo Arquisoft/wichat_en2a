@@ -48,6 +48,7 @@ function validateRequiredFields(req, requiredFields) {
 async function sendQuestionToLLM(question, apiKey, model) {
   const config = llmConfigs[model];
   if (!config) {
+    // This errror should be catched in the endpoints that call this function
     throw new Error(`Model "${model}" is not supported.`);
   }
 
