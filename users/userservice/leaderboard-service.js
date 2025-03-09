@@ -46,12 +46,16 @@ app.get('/leaderboard', async (req, res) => {
                     username: '$userInfo.username',
                     totalScore: 1,
                     gamesPlayed: 1,
-                    winPercentage: {
+                    winRate: {
                         $multiply: [
-                            { $divide: ['$totalScore', { $add: ['$totalScore', 1] }] }, // totalScore + 1
-                            100,
-                        ],
-                    },
+                            { $cond: [
+                                { $eq: ['$gamesPlayed', 0] }, // If no games, avoid division by zero
+                                0, // default win rate = 0
+                                { $divide: ['$victories', '$gamesPlayed'] } // victories / gamesPlayed
+                            ]},
+                            100 // Convert value to percentage
+                        ]
+                    },                    
                 },
             },
             { $sort: { totalScore: -1 } }, // order in js by total score 

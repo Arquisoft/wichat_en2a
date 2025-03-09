@@ -99,10 +99,9 @@ describe('Leaderboard Service', () => {
     const player3WinRate = (2 / 2) * 100; // 100%
     
     //order 3 ,1,2
-    expect(Math.round(response.body[0].winPercentage)).toBe(Math.round(player3WinRate));
-    expect(Math.round(response.body[1].winPercentage)).toBe(Math.round(player1WinRate));
-    expect(Math.round(response.body[2].winPercentage)).toBe(Math.round(player2WinRate));
-    
+    expect(response.body[0]).toHaveProperty('winRate', player3WinRate);
+    expect(response.body[1]).toHaveProperty('winRate', player1WinRate);
+    expect(response.body[2]).toHaveProperty('winRate', player2WinRate);
   });
   
   it('should retrieve the game information from the given user', async () => {
