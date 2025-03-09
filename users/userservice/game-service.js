@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const User = require('./auth-model')
+const User = require('./user-model')
 const Score = require('./score-model')
 const { check, matchedData, validationResult } = require('express-validator');
 const app = express();
