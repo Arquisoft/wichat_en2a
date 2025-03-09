@@ -51,7 +51,7 @@ describe('Gateway Service', () => {
   });
 
   it('should forward question to the question service', async () =>{
-    const mockResponse = { data: { question: 'http://example.com/flag.png'} };
+    const mockResponse = { data: { question: 'https://example.com/flag.png'} };
       axios.get.mockResolvedValue(mockResponse);
   
       const response = await request(app).get('/question');
@@ -79,13 +79,13 @@ describe('Gateway Service', () => {
     const mockResponse = [
       {
           type: 'flag',
-          imageUrl: 'http://example.com/flag-france.png',
+          imageUrl: 'https://example.com/flag-france.png',
           options: ['France'],
           correctAnswer: 'France'
       },
       {
           type: 'flag',
-          imageUrl: 'http://example.com/flag-usa.png',
+          imageUrl: 'https://example.com/flag-usa.png',
           options: ['United States'],
           correctAnswer: 'United States'
       }
@@ -99,14 +99,14 @@ describe('Gateway Service', () => {
                 results: {
                     bindings: [
                         {
-                            country: { value: 'http://www.wikidata.org/entity/Q142' },
+                            country: { value: 'https://www.wikidata.org/entity/Q142' },
                             countryLabel: { value: 'France' },
-                            flag: { value: 'http://example.com/flag-france.png' }
+                            flag: { value: 'https://example.com/flag-france.png' }
                         },
                         {
-                            country: { value: 'http://www.wikidata.org/entity/Q30' },
+                            country: { value: 'https://www.wikidata.org/entity/Q30' },
                             countryLabel: { value: 'United States' },
-                            flag: { value: 'http://example.com/flag-usa.png' }
+                            flag: { value: 'https://example.com/flag-usa.png' }
                         }
                     ]
                 }
@@ -121,14 +121,14 @@ describe('Gateway Service', () => {
           results: {
               bindings: [
                   {
-                      country: { value: 'http://www.wikidata.org/entity/Q142' },
+                      country: { value: 'https://www.wikidata.org/entity/Q142' },
                       countryLabel: { value: 'France' },
-                      flag: { value: 'http://example.com/flag-france.png' }
+                      flag: { value: 'https://example.com/flag-france.png' }
                   },
                   {
-                      country: { value: 'http://www.wikidata.org/entity/Q30' },
+                      country: { value: 'https://www.wikidata.org/entity/Q30' },
                       countryLabel: { value: 'United States' },
-                      flag: { value: 'http://example.com/flag-usa.png' }
+                      flag: { value: 'https://example.com/flag-usa.png' }
                   }
               ]
           }
