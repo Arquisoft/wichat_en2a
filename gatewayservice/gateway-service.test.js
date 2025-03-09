@@ -1,12 +1,22 @@
 const request = require('supertest');
 const axios = require('axios');
 const app = require('./gateway-service'); 
+// const Question = require('../questionservice/question-model');
+// const { MongoMemoryServer } = require('mongodb-memory-server');
+
+jest.mock('axios');
 
 afterAll(async () => {
     app.close();
-  });
+});
 
-jest.mock('axios');
+/* beforeAll(async () => {
+  mongoServer = await MongoMemoryServer.create();
+  const mongoUri = mongoServer.getUri();
+  process.env.MONGODB_URI = mongoUri;
+  //app = require('./question-service'); 
+}); */
+
 
 describe('Gateway Service', () => {
   // Mock responses from external services
@@ -49,4 +59,38 @@ describe('Gateway Service', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.answer).toBe('llmanswer');
   });
+
+  it('should give us a question that has not been shown', async () =>{
+    const mockResponse = { data: { question: 'http://example.com/flag.png'} };
+      axios.get.mockResolvedValue(mockResponse);
+  
+      const response = await request(app).get('/question');
+  
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockResponse.data);
+  });
+
+  it('question validation', async () => {
+    const mockRequestBody = { questionId: 1, answer: 'France' };
+    const mockResponse = { data: { correct: true } };
+
+    axios.post.mockResolvedValue(mockResponse);
+
+    const response = await request(app)
+      .post('/check-answer')
+      .send(mockRequestBody)
+      .set('Content-Type', 'application/json');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse.data);
+  });
+
+  /* it('debe retornar los datos dados', async () => {
+    const response = await request(app).post('/fetch-flag-data');
+
+    expect(response.status).toBe(200);
+    const question = await Question.find();
+    expect(question.length).toBeGreaterThan(0);
+  }); */
+
 });

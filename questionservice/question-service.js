@@ -127,7 +127,6 @@ app.post('/check-answer', async (req, res) => {
     }
 });
 
-// Endpoint to fetch and save flag data (for testing purposes)
 app.post('/fetch-flag-data', async (req, res) => {
     try {
         const results = await fetchFlagData();
