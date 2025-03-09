@@ -91,8 +91,11 @@ describe('Leaderboard Service', () => {
     const player1AvgScore = 300 / 2; // 150
     const player2AvgScore = 150 / 2; // 75
     const player3AvgScore = 500 / 2; // 250
+
+    expect(response.body[0]).toHaveProperty('avgPointsPerGame', player3AvgScore);
+    expect(response.body[1]).toHaveProperty('avgPointsPerGame', player1AvgScore);
+    expect(response.body[2]).toHaveProperty('avgPointsPerGame', player2AvgScore);
      
-    
     // Calculate win rate  (victories / gamesPlayed) * 100
     const player1WinRate = (2 / 2) * 100; // 100% 
     const player2WinRate = (1 / 2) * 100; // 50% 

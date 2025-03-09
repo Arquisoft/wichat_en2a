@@ -47,6 +47,13 @@ app.get('/leaderboard', async (req, res) => {
                     username: '$userInfo.username',
                     totalScore: 1,
                     gamesPlayed: 1,
+                    avgPointsPerGame: {
+                        $cond: [
+                            { $eq: ['$gamesPlayed', 0] }, // If no games, avoid division by zero
+                            0, // default avg = 0
+                            { $divide: ['$totalScore', '$gamesPlayed'] } // totalScore / gamesPlayed
+                        ]
+                    },
                     winRate: {
                         $multiply: [
                             { $cond: [
