@@ -1,8 +1,17 @@
 import React from 'react';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import App from './App';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+
+const mockAxios = new MockAdapter(axios);
 
 describe('App component', () => {
+
+  beforeEach(() => {
+    mockAxios.reset();
+  });
+
   it('renders welcome message', () => {
     render(<App />);
     const welcomeMessage = screen.getByText(/Welcome to our Quiz game!/i);
@@ -21,6 +30,7 @@ describe('App component', () => {
   });
 
   it('navigates to login view when "Already have an account?" is clicked', () => {
+    
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: /Don't have an account?/i })); // Go to registration page
     fireEvent.click(screen.getByRole('button', { name: /Already have an account?/i })); // Go to login page
@@ -28,6 +38,8 @@ describe('App component', () => {
   });
 
   it('navigates to Home view after successful login', async () => {
+    mockAxios.onPost('http://localhost:8000/login').reply(200, { success: true }); // Mock a successful login
+
     render(<App />);
     const usernameInput = screen.getByLabelText(/Username/i);
     const passwordInput = screen.getByLabelText(/Password/i);
@@ -46,6 +58,8 @@ describe('App component', () => {
   });
 
   it('navigates to Home view after successful registration', async() => {
+    mockAxios.onPost('http://localhost:8000/adduser').reply(200, { success: true }); // Mock a successful registration
+
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: /Don't have an account?/i })); // Go to registration page
 
