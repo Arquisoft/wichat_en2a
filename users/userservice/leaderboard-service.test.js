@@ -17,9 +17,9 @@ beforeAll(async () => {
 
   // Create test users
   const users = [
-    { username: 'player1', email: 'player1@example.com', password: 'password1' },
-    { username: 'player2', email: 'player2@example.com', password: 'password2' },
-    { username: 'player3', email: 'player3@example.com', password: 'password3' }
+    { username: 'player1', email: 'player1@example.com', password: 'password1' }, //NOSONAR
+    { username: 'player2', email: 'player2@example.com', password: 'password2' }, // NOSONAR
+    { username: 'player3', email: 'player3@example.com', password: 'password3' } // NOSONAR
   ];
   
   // Save users to db
