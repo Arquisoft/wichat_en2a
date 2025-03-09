@@ -18,6 +18,7 @@ beforeAll(async () => {
   const newUser = new User({
     username: 'testuser',
     email: 'test@example.com',
+    // NOSONAR: Test password only, not a security issue
     password: 'hashedpassword'
   });
   
