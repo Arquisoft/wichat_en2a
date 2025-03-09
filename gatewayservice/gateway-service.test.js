@@ -1,22 +1,12 @@
 const request = require('supertest');
 const axios = require('axios');
 const app = require('./gateway-service'); 
-// const Question = require('../questionservice/question-model');
-// const { MongoMemoryServer } = require('mongodb-memory-server');
 
 jest.mock('axios');
 
 afterAll(async () => {
     app.close();
 });
-
-/* beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  process.env.MONGODB_URI = mongoUri;
-  //app = require('./question-service'); 
-}); */
-
 
 describe('Gateway Service', () => {
   // Mock responses from external services
@@ -60,7 +50,7 @@ describe('Gateway Service', () => {
     expect(response.body.answer).toBe('llmanswer');
   });
 
-  it('should give us a question that has not been shown', async () =>{
+  it('should forward question to the question service', async () =>{
     const mockResponse = { data: { question: 'http://example.com/flag.png'} };
       axios.get.mockResolvedValue(mockResponse);
   
@@ -70,7 +60,7 @@ describe('Gateway Service', () => {
       expect(response.body).toEqual(mockResponse.data);
   });
 
-  it('question validation', async () => {
+  it('should forward check-answer to the question service', async () => {
     const mockRequestBody = { questionId: 1, answer: 'France' };
     const mockResponse = { data: { correct: true } };
 
@@ -85,12 +75,75 @@ describe('Gateway Service', () => {
     expect(response.body).toEqual(mockResponse.data);
   });
 
-  /* it('debe retornar los datos dados', async () => {
-    const response = await request(app).post('/fetch-flag-data');
+   it('should forward fetch-flag-data to the question service', async () => {
+    const mockResponse = [
+      {
+          type: 'flag',
+          imageUrl: 'http://example.com/flag-france.png',
+          options: ['France'],
+          correctAnswer: 'France'
+      },
+      {
+          type: 'flag',
+          imageUrl: 'http://example.com/flag-usa.png',
+          options: ['United States'],
+          correctAnswer: 'United States'
+      }
+  ];
 
-    expect(response.status).toBe(200);
-    const question = await Question.find();
-    expect(question.length).toBeGreaterThan(0);
-  }); */
+  // Mock response for the /fetch-flag-data endpoint
+  axios.get.mockImplementation((url) => {
+    if (url.includes('wikidata.org/sparql')) {
+        return Promise.resolve({
+            data: {
+                results: {
+                    bindings: [
+                        {
+                            country: { value: 'http://www.wikidata.org/entity/Q142' },
+                            countryLabel: { value: 'France' },
+                            flag: { value: 'http://example.com/flag-france.png' }
+                        },
+                        {
+                            country: { value: 'http://www.wikidata.org/entity/Q30' },
+                            countryLabel: { value: 'United States' },
+                            flag: { value: 'http://example.com/flag-usa.png' }
+                        }
+                    ]
+                }
+            }
+        });
+    }
+});
+
+  // Mock the axios call to Wikidata
+  axios.get.mockResolvedValueOnce({
+      data: {
+          results: {
+              bindings: [
+                  {
+                      country: { value: 'http://www.wikidata.org/entity/Q142' },
+                      countryLabel: { value: 'France' },
+                      flag: { value: 'http://example.com/flag-france.png' }
+                  },
+                  {
+                      country: { value: 'http://www.wikidata.org/entity/Q30' },
+                      countryLabel: { value: 'United States' },
+                      flag: { value: 'http://example.com/flag-usa.png' }
+                  }
+              ]
+          }
+      }
+  });
+
+  // Mock the call to the question service's /fetch-flag-data endpoint
+  axios.post.mockResolvedValueOnce({ data: mockResponse });
+
+  const response = await request(app)
+      .post('/fetch-flag-data')
+      .send();
+
+  expect(response.status).toBe(200);
+  expect(response.body).toEqual(mockResponse);
+  }); 
 
 });
