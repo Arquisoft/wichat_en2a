@@ -1,12 +1,13 @@
 const request = require('supertest');
 const bcrypt = require('bcrypt');
 const { MongoMemoryServer } = require('mongodb-memory-server');
+const mongoose = require('mongoose'); // Add this import
 
 const User = require('./user-model');
 
-
 let mongoServer;
 let app;
+let testUserId; // Declare this variable at the top level
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -21,6 +22,21 @@ afterAll(async () => {
 });
 
 describe('User Service', () => {
+  // Create a test user before running the tests
+  beforeEach(async () => {
+    // Clear users collection
+    await User.deleteMany({});
+    
+    // Create a test user and save the ID
+    const testUser = new User({
+      username: 'testuser',
+      password: await bcrypt.hash('testpassword', 10)
+    });
+    
+    const savedUser = await testUser.save();
+    testUserId = savedUser._id;
+  });
+
   it('should add a new user on POST /adduser', async () => {
     const newUser = {
       username: 'testuser',
