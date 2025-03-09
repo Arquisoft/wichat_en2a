@@ -44,7 +44,7 @@
     <script>
         async function fetchLeaderboard() {
             try {
-                const response = await fetch('http://localhost:'); //need change
+                const response = await fetch('mongodb://localhost:27017/userdb'); 
                 const data = await response.json();
                 const tbody = document.getElementById('leaderboard').getElementsByTagName('tbody')[0];
 
