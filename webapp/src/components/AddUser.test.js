@@ -11,8 +11,8 @@ describe('AddUser component', () => {
     mockAxios.reset();
   });
 
-  it('should add user successfully', async () => {
-    render(<AddUser />);
+  it('should add user successfully and call onRegisterSuccess', async () => {
+    render(<AddUser onRegisterSuccess={mockOnRegisterSuccess} />);
 
     const usernameInput = screen.getByLabelText(/Username/i);
     const passwordInput = screen.getByLabelText(/Password/i);
@@ -31,6 +31,7 @@ describe('AddUser component', () => {
     // Wait for the Snackbar to be open
     await waitFor(() => {
       expect(screen.getByText(/User added successfully/i)).toBeInTheDocument();
+      expect(mockOnRegisterSuccess).toHaveBeenCalled();
     });
   });
 

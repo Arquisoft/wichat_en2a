@@ -5,7 +5,7 @@ import { Container, Typography, TextField, Button, Snackbar } from '@mui/materia
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
-const AddUser = () => {
+const AddUser = ({ onRegisterSuccess }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -15,8 +15,11 @@ const AddUser = () => {
     try {
       await axios.post(`${apiEndpoint}/adduser`, { username, password });
       setOpenSnackbar(true);
+      
+      // Notifies App.js in order to change its view to the Home page
+      onRegisterSuccess();
     } catch (error) {
-      setError(error.response.data.error);
+      setError(error.response?.data?.error || 'Registration failed');
     }
   };
 

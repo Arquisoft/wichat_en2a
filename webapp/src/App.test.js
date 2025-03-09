@@ -1,10 +1,62 @@
-import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders welcome message', () => {
-  render(<App />);
-  const welcomeMessage = screen.getByText(/Welcome to the 2025 edition of the Software Architecture course/i);
-  expect(welcomeMessage).toBeInTheDocument();
+describe('App component', () => {
+  it('renders welcome message', () => {
+    render(<App />);
+    const welcomeMessage = screen.getByText(/Welcome to our Quiz game!/i);
+    expect(welcomeMessage).toBeInTheDocument();
+  });
+
+  it('renders Login component by default', () => {
+    render(<App />);
+    expect(screen.getByText(/Login/i)).toBeInTheDocument();
+  });
+
+  it('navigates to register view when "Don\'t have an account?" is clicked', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: /Don't have an account?/i }));
+    expect(screen.getByText(/Add User/i)).toBeInTheDocument();
+  });
+
+  it('navigates to login view when "Already have an account?" is clicked', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: /Don't have an account?/i })); // Go to registration page
+    fireEvent.click(screen.getByRole('button', { name: /Already have an account?/i })); // Go to login page
+    expect(screen.getByText(/Login/i)).toBeInTheDocument();
+  });
+
+  it('navigates to Home view after successful login', () => {
+    render(<App />);
+    const usernameInput = screen.getByLabelText(/Username/i);
+    const passwordInput = screen.getByLabelText(/Password/i);
+    const loginButton = screen.getByRole('button', { name: /Login/i });
+
+    fireEvent.change(usernameInput, { target: { value: 'testUser' } });
+    fireEvent.change(passwordInput, { target: { value: 'testPassword' } });
+    fireEvent.click(loginButton);
+
+    // Technically depends on Login.js working properly.
+    // To keep it simple, and since Login is not tested here, 
+    // only whether the Home page is rendered or not will be checked.
+    expect(screen.getByText(/Home/i)).toBeInTheDocument();
+  });
+
+  it('navigates to Home view after successful registration', () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: /Don't have an account?/i })); // Go to registration page
+
+    const usernameInput = screen.getByLabelText(/Username/i);
+    const passwordInput = screen.getByLabelText(/Password/i);
+    const addUserButton = screen.getByRole('button', { name: /Add User/i });
+
+    fireEvent.change(usernameInput, { target: { value: 'testUser' } });
+    fireEvent.change(passwordInput, { target: { value: 'testPassword' } });
+    fireEvent.click(addUserButton);
+
+    // Same situation as the Login, only whether the Home page is
+    // rendered or not will be checked.
+    expect(screen.getByText(/Home/i)).toBeInTheDocument();
+  });
 });
-
-
