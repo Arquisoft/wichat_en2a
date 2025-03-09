@@ -1,13 +1,13 @@
 const request = require('supertest');
 const bcrypt = require('bcrypt');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const mongoose = require('mongoose'); // Add this import
+const mongoose = require('mongoose'); 
 
 const User = require('./user-model');
 
 let mongoServer;
 let app;
-let testUserId; // Declare this variable at the top level
+let testUserId;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -99,9 +99,9 @@ describe('User Service', () => {
     expect(updatedUser.profilePicture).toBe('http://example.com/pic.jpg');
   });
 
-  it('should update password correctly and hash it', async () => {
+  it('should update password correctly and hash it after', async () => {
     const updateData = {
-      password: 'newpassword'
+      password: 'newpassword' //NOSONAR
     };
     
     await request(app).put(`/users/${testUserId}`).send(updateData);
