@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const User = require('./auth-model')
 const Score = require('./score-model')
 const { check, matchedData, validationResult } = require('express-validator');
@@ -46,7 +45,7 @@ app.put('/updateScore', async (req, res) => {
         }
 
         const updatedScore = await Score.findOneAndUpdate(
-            { userId: mongoose.Types.ObjectId(userId) }, // make userId safe
+            { userId: new mongoose.Types.ObjectId(userId) }, // make userId safe
             { $set: { score, isVictory } }, // use $set to avoid mongodb inyection security risk on Sonar Test
             { new: true }
         );
