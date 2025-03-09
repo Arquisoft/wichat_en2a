@@ -12,6 +12,7 @@ describe('AddUser component', () => {
   });
 
   it('should add user successfully and call onRegisterSuccess', async () => {
+    const mockOnRegisterSuccess = jest.fn();
     render(<AddUser onRegisterSuccess={mockOnRegisterSuccess} />);
 
     const usernameInput = screen.getByLabelText(/Username/i);

@@ -11,23 +11,23 @@ describe('App component', () => {
 
   it('renders Login component by default', () => {
     render(<App />);
-    expect(screen.getByText(/Login/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Login/i })).toBeInTheDocument();
   });
 
   it('navigates to register view when "Don\'t have an account?" is clicked', () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: /Don't have an account?/i }));
-    expect(screen.getByText(/Add User/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Add User/i })).toBeInTheDocument();
   });
 
   it('navigates to login view when "Already have an account?" is clicked', () => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: /Don't have an account?/i })); // Go to registration page
     fireEvent.click(screen.getByRole('button', { name: /Already have an account?/i })); // Go to login page
-    expect(screen.getByText(/Login/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Login/i })).toBeInTheDocument();
   });
 
-  it('navigates to Home view after successful login', () => {
+  it('navigates to Home view after successful login', async () => {
     render(<App />);
     const usernameInput = screen.getByLabelText(/Username/i);
     const passwordInput = screen.getByLabelText(/Password/i);
@@ -40,10 +40,12 @@ describe('App component', () => {
     // Technically depends on Login.js working properly.
     // To keep it simple, and since Login is not tested here, 
     // only whether the Home page is rendered or not will be checked.
-    expect(screen.getByText(/Home/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Home/i)).toBeInTheDocument();
+    });
   });
 
-  it('navigates to Home view after successful registration', () => {
+  it('navigates to Home view after successful registration', async() => {
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: /Don't have an account?/i })); // Go to registration page
 
@@ -57,6 +59,8 @@ describe('App component', () => {
 
     // Same situation as the Login, only whether the Home page is
     // rendered or not will be checked.
-    expect(screen.getByText(/Home/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Home/i)).toBeInTheDocument();
+    });
   });
 });
