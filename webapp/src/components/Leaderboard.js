@@ -74,7 +74,7 @@ const Leaderboard = () => {
             {players.length > 0 ? (
               players.map((player, index) => (
                 <TableRow 
-                  key={index}
+                  key={player._id}
                   sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' } }}
                 >
                   <TableCell component="th" scope="row">
