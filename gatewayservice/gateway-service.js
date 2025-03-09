@@ -4,12 +4,14 @@ const cors = require('cors');
 const promBundle = require('express-prom-bundle');
 //libraries required for OpenAPI-Swagger
 const swaggerUi = require('swagger-ui-express'); 
-const fs = require("fs")
-const YAML = require('yaml')
+const fs = require("fs");
+const YAML = require('yaml');
+
 
 const app = express();
 const port = 8000;
 
+const questionServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://localhost:8004'
 const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
 const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
@@ -32,7 +34,7 @@ app.post('/login', async (req, res) => {
     const authResponse = await axios.post(authServiceUrl+'/login', req.body);
     res.json(authResponse.data);
   } catch (error) {
-    res.status(error.response.status).json({ error: error.response.data.error });
+      res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
 
@@ -42,7 +44,7 @@ app.post('/adduser', async (req, res) => {
     const userResponse = await axios.post(userServiceUrl+'/adduser', req.body);
     res.json(userResponse.data);
   } catch (error) {
-    res.status(error.response.status).json({ error: error.response.data.error });
+      res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
 
@@ -52,7 +54,37 @@ app.post('/askllm', async (req, res) => {
     const llmResponse = await axios.post(llmServiceUrl+'/ask', req.body);
     res.json(llmResponse.data);
   } catch (error) {
-    res.status(error.response.status).json({ error: error.response.data.error });
+      res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+app.get('/question', async (req, res) => {
+  try {
+    // Forward fetch question request to the question service
+    const questionResponse = await axios.get(`${questionServiceUrl}/question`);
+    res.json(questionResponse.data);
+  } catch (error) {
+      res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+app.post('/check-answer', async (req, res) => {
+  try {
+    // Forward check answer request to the question service
+    const checkAnswerResponse = await axios.post(`${questionServiceUrl}/check-answer`, req.body);
+    res.json(checkAnswerResponse.data);
+  } catch (error) {
+      res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+app.post('/fetch-flag-data', async (req, res) => {
+  try {
+    // Forward fetch flag data request to the question service
+    const fetchFlagDataResponse = await axios.post(`${questionServiceUrl}/fetch-flag-data`);
+    res.json(fetchFlagDataResponse.data);
+  } catch (error) {
+      res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
 
@@ -78,4 +110,4 @@ const server = app.listen(port, () => {
   console.log(`Gateway Service listening at http://localhost:${port}`);
 });
 
-module.exports = server
+module.exports = server;
