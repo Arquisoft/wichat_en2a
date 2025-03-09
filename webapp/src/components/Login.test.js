@@ -12,7 +12,7 @@ describe('Login component', () => {
   });
 
   it('should log in successfully', async () => {
-    render(<Login />);
+    render(<Login onLoginSuccess={mockOnLoginSuccess} />);
 
     const usernameInput = screen.getByLabelText(/Username/i);
     const passwordInput = screen.getByLabelText(/Password/i);
