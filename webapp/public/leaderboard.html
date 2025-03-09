@@ -44,8 +44,7 @@
     <script>
         async function fetchLeaderboard() {
             try {
-                const response = await fetch('mongodb://localhost:27017/userdb'); 
-                const data = await response.json();
+                const response = await fetch('http://localhost:8003/leaderboard'); // FIX: Llamar a Express, no MongoDB                const data = await response.json();
                 const tbody = document.getElementById('leaderboard').getElementsByTagName('tbody')[0];
 
                 data.forEach(player => {
