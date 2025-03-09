@@ -28,6 +28,7 @@ app.get('/leaderboard', async (req, res) => {
                     _id: '$userId',
                     totalScore: { $sum: '$score' },
                     gamesPlayed: { $count: {} },
+                    victories: { $sum: { $cond: [{ $eq: ['$isVictory', true] }, 1, 0] } } 
                 },
             },
             {
