@@ -4,7 +4,7 @@ import { Button, Container, Typography, Box } from '@mui/material';
 const Home = ({ onNavigate }) => {
   return (
     <Container component="main" maxWidth="md" sx={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' }}>
-      <Typography variant="h3" sx={{ mt: 8, mb: 4, textAlign: 'center' }}>
+      <Typography component="h3" variant="h3" sx={{ mt: 8, mb: 4, textAlign: 'center' }}>
         Home
       </Typography>
 
