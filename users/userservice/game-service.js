@@ -44,7 +44,7 @@ app.put('/updateScore', async (req, res) => {
         }
 
         const updatedScore = await Score.findOneAndUpdate(
-            { userId: new mongoose.Types.ObjectId(userId) }, // make userId safe
+            { userId: new mongoose.Types.ObjectId(String(userId)) }, // Make sure userId is a string
             { $set: { score, isVictory } }, // use $set to avoid mongodb inyection security risk on Sonar Test
             { new: true }
         );

@@ -41,6 +41,10 @@ beforeEach(async () => {
   await Score.deleteMany({});
 });
 
+function calculateWinRate(victories, gamesPlayed) {
+  return (victories / gamesPlayed) * 100;
+}
+
 describe('Leaderboard Service', () => {
   it('should return an empty array when no scores exist', async () => {
     const response = await request(app).get('/leaderboard');
@@ -97,9 +101,9 @@ describe('Leaderboard Service', () => {
     expect(response.body[2]).toHaveProperty('avgPointsPerGame', player2AvgScore);
      
     // Calculate win rate  (victories / gamesPlayed) * 100
-    const player1WinRate = (2 / 2) * 100; // 100% 
-    const player2WinRate = (1 / 2) * 100; // 50% 
-    const player3WinRate = (2 / 2) * 100; // 100%
+    const player1WinRate = calculateWinRate(2, 2); // 100%
+    const player2WinRate = calculateWinRate(1, 2); // 50%
+    const player3WinRate = calculateWinRate(2, 2); // 100%
     
     //order 3 ,1,2
     expect(response.body[0]).toHaveProperty('winRate', player3WinRate);
