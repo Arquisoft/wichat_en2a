@@ -3,6 +3,7 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 const User = require('./user-model');
 const Score = require('./score-model');
 const mongoose = require('mongoose');
+const TEST_PASSWORD = 'test_password_123'; // NOSONAR
 
 let mongoServer;
 let app;
@@ -19,7 +20,7 @@ beforeAll(async () => {
     username: 'testuser',
     email: 'test@example.com',
     // NOSONAR: Test password only, not a security issue
-    password: 'hashedpassword'
+    password: TEST_PASSWORD // NOSONAR
   });
   
   const savedUser = await newUser.save();
