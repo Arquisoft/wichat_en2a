@@ -15,7 +15,6 @@ const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
 mongoose.connect(mongoUri);
 
 
-
 // Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
     for (const field of requiredFields) {
@@ -25,6 +24,7 @@ function validateRequiredFields(req, requiredFields) {
     }
 }
 
+//add user endpint
 app.post('/adduser', async (req, res) => {
     try {
         // Check if required fields are present in the request body
@@ -42,7 +42,79 @@ app.post('/adduser', async (req, res) => {
         res.json(newUser);
     } catch (error) {
         res.status(400).json({ error: error.message }); 
-    }});
+}});
+
+// delete user endpoint
+app.delete('/users/:userId', async (req, res) => {
+  try {
+      const userId = req.params.userId;
+      
+      // Check if exists
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+      
+      // Delete user
+      await User.findByIdAndDelete(userId);
+      
+      res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
+// update user endpoint
+app.put('/users/:userId', async (req, res) => {
+  try {
+      const userId = req.params.userId;
+      const updateData = {};
+      
+      // Check if user exists
+      const user = await User.findById(userId);
+      if (!user) {
+          return res.status(404).json({ error: 'User not found' });
+      }
+      
+      // username update 
+      if (req.body.username !== undefined) {
+          if (req.body.username.trim() === '') {
+              return res.status(400).json({ error: 'Username cannot be empty' });
+          }
+          updateData.username = req.body.username;
+      }
+      
+      // Handle password update - prevent empty password
+      if (req.body.password !== undefined) {
+          if (req.body.password === '') {
+              return res.status(400).json({ error: 'Password cannot be empty' });
+          }
+          updateData.password = await bcrypt.hash(req.body.password, 10);
+      }
+      
+      // profile picture update - empty string or null to remove profile picture
+      if (req.body.profilePicture !== undefined) {
+          // if empty string -> to remove profile picture
+          updateData.profilePicture = req.body.profilePicture === '' ? null : req.body.profilePicture;
+      }
+      
+      // Check if there's anything to update
+      if (Object.keys(updateData).length === 0) {
+          return res.status(400).json({ error: 'No valid fields to update' });
+      }
+      
+      // Update user with new data
+      const updatedUser = await User.findByIdAndUpdate(
+          userId,
+          updateData,
+          { new: true } // Return the updated user
+      );
+      
+      res.json(updatedUser);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
 
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);
