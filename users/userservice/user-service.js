@@ -116,24 +116,6 @@ app.put('/users/:userId', async (req, res) => {
   }
 });
 
-app.post('/updateProfilePicture', async (req, res) => {
-    try {
-
-        const { username, profilePicture } = req.body;
-        const user = await User.findOneAndUpdate(
-            { username },
-            { profilePicture },
-            { new: true }
-        );
-
-        res.json(user);
-    } 
-    catch (error) {
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-
-});
-
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);
 });
