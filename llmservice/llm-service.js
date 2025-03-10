@@ -39,22 +39,19 @@ function validateRequiredFields(req, requiredFields) {
 }
 
 // Generic function to send questions to LLM (now it's only use for empathy)
-async function sendQuestionToLLM(question, apiKey, model = 'empathy') {
+async function sendQuestionToLLM(question) {
   try {
-    //Select the configuration for an specific model of LLM(gemini by default)
-    const config = llmConfigs[model];
-    if (!config) {
-      throw new Error(`Model "${model}" is not supported.`);
-    }
+    const config = llmConfigs['empathy'];
     
     //Transform the url with apiKey passed
-    const url = config.url(apiKey);
+    const url = config.url(process.env.EMPATHY_KEY);
+
     //With the question passed it transformed it to the request
     const requestData = config.transformRequest(question);
 
     const headers = {
       'Content-Type': 'application/json',
-      ...(config.headers ? config.headers(apiKey) : {})
+      ...(config.headers ? config.headers(process.env.EMPATHY_KEY) : {})
     };
 
     //Generates de response of the LLM
@@ -64,13 +61,13 @@ async function sendQuestionToLLM(question, apiKey, model = 'empathy') {
     return config.transformResponse(response);
 
   } catch (error) {
-    console.error(`Error sending question to ${model}:`, error.message || error);
+    console.error(`Error sending question to ${empathy}:`, error.message || error);
     return null;
   }
 }
 
-//It returns the answer to the question by using the LLM of gemini
-async function sendQuestionToGemini(question, apiKey, model = 'gemini'){
+//It returns the answer to the question by using the LLM of gemini (It's only for if in the future empathy's LLM gives problem with the answers change and dont waste time)
+async function sendQuestionToGemini(question){
     try{
       const GEMINI_API_URL = 'Https://docs.gemini.com';
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
@@ -86,23 +83,26 @@ async function sendQuestionToGemini(question, apiKey, model = 'gemini'){
 
 }
 
-
+//For the getting the hint from the LLM to help the user to answer the question
 app.post('/ask', async (req, res) => {
   try {
     // Check if required fields are present in the request body
-    validateRequiredFields(req, ['question', 'model', 'apiKey']);
+    validateRequiredFields(req, ['question', 'model']);
 
     //Get the three fields passed
-    const { question, model, apiKey } = req.body;
+    const { question, model} = req.body;
     
+    let answer;
+    let questionComplete = "Give in a single line and directly a clue for knowing " + question + "but without saying directly what country is";
+
     //Get the answer of the LLM
-    
-    //For using empathy
-    const answer = await sendQuestionToLLM(question, apiKey, model);
-    
-    //For using gemini if it's change in the future
-    //const preanswer = await sendQuestionToGemini(question, apiKey, model);
-    //const answer = preanswer.response.text();
+    if (model == 'empathy'){ //For using empathy's LLM
+      answer = await sendQuestionToLLM(questionComplete);
+
+    }else if (model == 'gemini'){ //For using the LLM gemini
+      const preanswer = await sendQuestionToGemini(questionComplete);
+      answer = preanswer.response.text();
+    }
     
     //Return the message
     res.json({ answer });

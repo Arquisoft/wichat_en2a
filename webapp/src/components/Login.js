@@ -16,7 +16,6 @@ const Login = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
-  const apiKey = process.env.REACT_APP_LLM_API_KEY || 'sk-IWStePBOmiuE5KiunSm4Kg';
 
   const loginUser = async () => {
     try {
@@ -26,13 +25,10 @@ const Login = () => {
       const question = "Please, generate a clue that is related to Spain but without saying nothing that includes words like spain or spanish";
       const model = "empathy"
 
-      if (apiKey==='None'){
-        setMessage("LLM API key is not set. Cannot contact the LLM.");
-      }
-      else{
-        const message = await axios.post(`${apiEndpoint}/askllm`, { question, model, apiKey })
-        setMessage(message.data.answer);
-      }
+      
+      const message = await axios.post(`${apiEndpoint}/askllm`, { question, model})
+      setMessage(message.data.answer);
+      
       // Extract data from the response
       const { createdAt: userCreatedAt } = response.data;
 
