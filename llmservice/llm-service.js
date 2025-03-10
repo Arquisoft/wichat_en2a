@@ -13,20 +13,20 @@ app.use(express.json());
 // 
 const llmConfigs = {
   empathy: {
-    url: () => 'https://empathyai.prod.empathy.co/v1/chat/completions',
+    url: () => "https://empathyai.prod.empathy.co/v1/chat/completions",
     transformRequest: (question) => ({
       model: "qwen/Qwen2.5-Coder-7B-Instruct",
       messages: [
         { role: "system", content: "You are a helpful assistant." },
-        { role: "user", content: question }
-      ]
+        { role: "user", content: question },
+      ],
     }),
     transformResponse: (response) => response.data.choices[0]?.message?.content,
     headers: (apiKey) => ({
       Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    })
-  }
+      "Content-Type": "application/json",
+    }),
+  },
 };
 
 // Function to validate required fields in the request body
@@ -116,6 +116,4 @@ const server = app.listen(port, () => {
   console.log(`LLM Service listening at http://localhost:${port}`);
 });
 
-module.exports = server
-
-
+module.exports = server;

@@ -2,11 +2,11 @@ const request = require('supertest');
 const axios = require('axios');
 const app = require('./gateway-service'); 
 
+jest.mock('axios');
+
 afterAll(async () => {
     app.close();
-  });
-
-jest.mock('axios');
+});
 
 describe('Gateway Service', () => {
   // Mock responses from external services
@@ -49,4 +49,101 @@ describe('Gateway Service', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.answer).toBe('llmanswer');
   });
+
+  it('should forward question to the question service', async () =>{
+    const mockResponse = { data: { question: 'https://example.com/flag.png'} };
+      axios.get.mockResolvedValue(mockResponse);
+  
+      const response = await request(app).get('/question');
+  
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockResponse.data);
+  });
+
+  it('should forward check-answer to the question service', async () => {
+    const mockRequestBody = { questionId: 1, answer: 'France' };
+    const mockResponse = { data: { correct: true } };
+
+    axios.post.mockResolvedValue(mockResponse);
+
+    const response = await request(app)
+      .post('/check-answer')
+      .send(mockRequestBody)
+      .set('Content-Type', 'application/json');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse.data);
+  });
+
+   it('should forward fetch-flag-data to the question service', async () => {
+    const mockResponse = [
+      {
+          type: 'flag',
+          imageUrl: 'https://example.com/flag-france.png',
+          options: ['France'],
+          correctAnswer: 'France'
+      },
+      {
+          type: 'flag',
+          imageUrl: 'https://example.com/flag-usa.png',
+          options: ['United States'],
+          correctAnswer: 'United States'
+      }
+  ];
+
+  // Mock response for the /fetch-flag-data endpoint
+  axios.get.mockImplementation((url) => {
+    if (url.includes('wikidata.org/sparql')) {
+        return Promise.resolve({
+            data: {
+                results: {
+                    bindings: [
+                        {
+                            country: { value: 'https://www.wikidata.org/entity/Q142' },
+                            countryLabel: { value: 'France' },
+                            flag: { value: 'https://example.com/flag-france.png' }
+                        },
+                        {
+                            country: { value: 'https://www.wikidata.org/entity/Q30' },
+                            countryLabel: { value: 'United States' },
+                            flag: { value: 'https://example.com/flag-usa.png' }
+                        }
+                    ]
+                }
+            }
+        });
+    }
+});
+
+  // Mock the axios call to Wikidata
+  axios.get.mockResolvedValueOnce({
+      data: {
+          results: {
+              bindings: [
+                  {
+                      country: { value: 'https://www.wikidata.org/entity/Q142' },
+                      countryLabel: { value: 'France' },
+                      flag: { value: 'https://example.com/flag-france.png' }
+                  },
+                  {
+                      country: { value: 'https://www.wikidata.org/entity/Q30' },
+                      countryLabel: { value: 'United States' },
+                      flag: { value: 'https://example.com/flag-usa.png' }
+                  }
+              ]
+          }
+      }
+  });
+
+  // Mock the call to the question service's /fetch-flag-data endpoint
+  axios.post.mockResolvedValueOnce({ data: mockResponse });
+
+  const response = await request(app)
+      .post('/fetch-flag-data')
+      .send();
+
+  expect(response.status).toBe(200);
+  expect(response.body).toEqual(mockResponse);
+  }); 
+
 });
