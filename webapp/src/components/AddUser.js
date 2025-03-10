@@ -13,7 +13,7 @@ const AddUser = ({ onRegisterSuccess }) => {
 
   const addUser = async () => {
 
-    //Error if they are empty
+    //Error if one of them or both are empty
     if (!username || !password) {
       setError('Both username and password are required');
       return;
