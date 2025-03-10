@@ -10,9 +10,10 @@ import Link from '@mui/material/Link';
 function App() {
   const [view, setView] = useState('login'); // Possible values: 'login', 'register', 'home'
 
-  // Handle whether authentication (login/register) worked, and show the Home view if it did.
-  const handleAuthSuccess = () => {
-    setView('home');
+  // Handle whether authentication (login/register) worked, and show the Home view if it did by default.
+  // Otherwise go to the provided view
+  const handleAuthSuccess = (nextView = 'home') => {
+    setView(nextView);
   };
 
   return (
