@@ -13,8 +13,8 @@ function generateTemplateMocks() {
   axios.post.mockImplementation((url, data) => {
     if (url.startsWith("Https://docs.g")) {
       return Promise.resolve({
-        response: { text: () => Promise.resolve("llmanswer") },  // Simula que text() devuelve una promesa resuelta con "llmanswer"
-      });
+        response: { text: () => "llmanswer" },  // Simula que text() devuelve una promesa resuelta con "llmanswer"
+    });
     } else if (url.startsWith("https://empathyai")) {
       // response.data.choices[0]?.message?.content,
       return Promise.resolve({
