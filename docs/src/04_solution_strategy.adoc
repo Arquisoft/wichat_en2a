@@ -27,7 +27,11 @@ The specific components are:
 
 * *WebApp*: This component will be responsible for the user interface. It will be built using React and will be responsible for displaying the information to the user and for sending the user's input to the backend services.
 * *Gateway-Service*: This component will be responsible for routing the requests to the correct service. It will be built using NodeJS and will be responsible for handling the requests from the WebApp and sending them to the correct service.
-* *Users*: This component will be responsible for managing the users. It will be built using NodeJS and will be responsible for handling the user's information and authentication in its database.
+* *Users*: This component will be responsible for managing the users. It will be built using NodeJS and will be responsible for handling the user's information and authentication. Within this service, there are several subcomponents:
+** *User-Service*: This sub-service will be used to handle users within the database.
+** *Auth-Service*: This sub-service will be used to handle the authentication of the users.
+** *Game-Service*: This sub-service will be used to store the games that the users play.
+** *LeaderBoard-Service*: This sub-service will be used to retrieve information about users and games to be displayed ordered (for now by the total score obtained).
 * *Questions-Service*: This component will be responsible for retrieving the questions from Wikidata and storing them in its database. It will be built using NodeJS and will be responsible for handling the requests from the Gateway-Service and sending them to Wikidata.
 * *LLM-Service*: This component will be responsible of any interaction the system performs with the LLM model. It will be built using NodeJS and will be responsible for handling the requests from the Gateway-Service and sending them to the LLM model.
 
