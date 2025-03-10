@@ -4,7 +4,7 @@ import axios from 'axios';
 import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
 import { Typewriter } from "react-simple-typewriter";
 
-const Login = () => {
+const Login = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -37,8 +37,11 @@ const Login = () => {
       setLoginSuccess(true);
 
       setOpenSnackbar(true);
+
+      // Notifies App.js in order to change its view to the Home page
+      onLoginSuccess();
     } catch (error) {
-      setError(error.response.data.error);
+      setError(error.response?.data?.error || 'Login failed');
     }
   };
 

@@ -12,7 +12,8 @@ describe('Login component', () => {
   });
 
   it('should log in successfully', async () => {
-    render(<Login />);
+    const mockOnLoginSuccess = jest.fn();
+    render(<Login onLoginSuccess={mockOnLoginSuccess} />);
 
     const usernameInput = screen.getByLabelText(/Username/i);
     const passwordInput = screen.getByLabelText(/Password/i);
