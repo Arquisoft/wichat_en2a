@@ -2,73 +2,26 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-concepts]]
 == Cross-cutting Concepts
+=== Internacionalization
+In hopes of incresing accessibility for our users, we want to give our application the ability of playing in different languages.
 
+We are starting off only offering English and Spanish, but this offer may be expanded in the future with different prototypes.
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-.Content
-This section describes overall, principal regulations and solution ideas that are relevant in multiple parts (= cross-cutting) of your system.
-Such concepts are often related to multiple building blocks.
-They can include many different topics, such as
+As we know that internacionalization is more than just changing the language of the text in the game, we will have to look further into some library that will make these feature easier to implement.
 
-* models, especially domain models
-* architecture or design patterns
-* rules for using specific technology
-* principal, often technical decisions of an overarching (= cross-cutting) nature
-* implementation rules
-
-
-.Motivation
-Concepts form the basis for _conceptual integrity_ (consistency, homogeneity) of the architecture. 
-Thus, they are an important contribution to achieve inner qualities of your system.
-
-Some of these concepts cannot be assigned to individual building blocks, e.g. security or safety. 
-
-
-.Form
-The form can be varied:
-
-* concept papers with any kind of structure
-* cross-cutting model excerpts or scenarios using notations of the architecture views
-* sample implementations, especially for technical concepts
-* reference to typical usage of standard frameworks (e.g. using Hibernate for object/relational mapping)
-
-.Structure
-A potential (but not mandatory) structure for this section could be:
-
-* Domain concepts
-* User Experience concepts (UX)
-* Safety and security concepts
-* Architecture and design patterns
-* "Under-the-hood"
-* development concepts
-* operational concepts
-
-Note: it might be difficult to assign individual concepts to one specific topic
-on this list.
-
-image::08-concepts-EN.drawio.png["Possible topics for crosscutting concepts"]
-
-
-.Further Information
-
-See https://docs.arc42.org/section-8/[Concepts] in the arc42 documentation.
-****
-endif::arc42help[]
-
-=== _<Concept 1>_
-
-_<explanation>_
+Our first prototype won't be capable of changing the language, but hopefully in the future it will. 
 
 
 
-=== _<Concept 2>_
+=== Security
 
-_<explanation>_
+We also want our users to not only have fun while playing our game, but feel safe. For this purpose, we use the following characteristics:
 
-...
+- **Bcrypt**: used to securely hash and store user passwords, protecting them from breaches. Its adaptive nature makes it resistant to brute-force attacks, ensuring robust user authentication.
 
-=== _<Concept n>_
+- **JWT** (JSON Web Token): it enables secure, stateless user authentication. It allows users to stay logged in without storing session data on the server, enhancing scalability and providing a secure way to transmit user data between client and server.
 
-_<explanation>_
+=== Testing
+We want our team to pay lots of attention to testing while developing the app. A correct testing suite can ensure that the app is evolving correctly and that we won't have problems in the future.
+
+For this, we are using **jest** and testing each individual service as well as the endpoints in the gateway service, before they connect to the webapp directory (front-end).
