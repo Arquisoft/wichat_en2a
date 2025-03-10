@@ -1,24 +1,29 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const scoreSchema = new mongoose.Schema({
+const scoreSchema = new Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', 
-        required: true,
+        ref: 'User',
+        required: true
     },
     score: {
         type: Number,
-        required: true,
+        required: true
     },
-    isVictory: { 
+    isVictory: {
         type: Boolean,
-        required: true,
+        default: false
     },
     createdAt: {
         type: Date,
-        default: Date.now,
-    },
+        default: Date.now
+    }
 });
+
+// indexing 
+scoreSchema.index({ userId: 1 }); //Ascending order for user ids
+scoreSchema.index({ score: -1 }); // Descending for high scores
 
 const Score = mongoose.model('Score', scoreSchema);
 

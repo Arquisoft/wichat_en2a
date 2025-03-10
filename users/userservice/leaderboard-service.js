@@ -1,14 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const Score = require('./score-model');
-const User = require('./user-model');
+const bcrypt = require('bcrypt');
+const User = require('./user-model')
+const Score = require('./score-model')
+const app = express();
+app.disable('x-powered-by');
+const port = 8003; 
 
-
+// Middleware to parse JSON in request body
+app.use(express.json());
 //Claves relevantes nombre coleccion Usuarios! = 'users'
 // en bd llamar totalScore 
-
-const app = express();
-const port = 8004;
 
 // Middleware to parse JSON in request body
 app.use(express.json());
@@ -26,6 +28,7 @@ app.get('/leaderboard', async (req, res) => {
                     _id: '$userId',
                     totalScore: { $sum: '$score' },
                     gamesPlayed: { $count: {} },
+                    victories: { $sum: { $cond: [{ $eq: ['$isVictory', true] }, 1, 0] } } 
                 },
             },
             {
@@ -44,12 +47,23 @@ app.get('/leaderboard', async (req, res) => {
                     username: '$userInfo.username',
                     totalScore: 1,
                     gamesPlayed: 1,
-                    winPercentage: {
-                        $multiply: [
-                            { $divide: ['$totalScore', { $add: ['$totalScore', 1] }] }, // totalScore + 1
-                            100,
-                        ],
+                    avgPointsPerGame: {
+                        $cond: [
+                            { $eq: ['$gamesPlayed', 0] }, // If no games, avoid division by zero
+                            0, // default avg = 0
+                            { $divide: ['$totalScore', '$gamesPlayed'] } // totalScore / gamesPlayed
+                        ]
                     },
+                    winRate: {
+                        $multiply: [
+                            { $cond: [
+                                { $eq: ['$gamesPlayed', 0] }, // If no games, avoid division by zero
+                                0, // default win rate = 0
+                                { $divide: ['$victories', '$gamesPlayed'] } // victories / gamesPlayed
+                            ]},
+                            100 // Convert value to percentage
+                        ]
+                    },                    
                 },
             },
             { $sort: { totalScore: -1 } }, // order in js by total score 
