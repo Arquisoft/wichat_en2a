@@ -17,9 +17,6 @@ mongoose.connect(mongoURI)
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// Gateway Service URL
-const gatewayServiceUrl = process.env.GATEWAY_SERVICE_URL || 'http://localhost:8000';
-
 // Fetch flag data from Wikidata
 async function fetchFlagData() {
     console.time('fetchFlagData');
@@ -30,7 +27,7 @@ async function fetchFlagData() {
                wdt:P41 ?flag.     
       SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
     }
-    LIMIT 10
+    LIMIT 100
     `;
 
     const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=json`;
@@ -42,11 +39,36 @@ async function fetchFlagData() {
             }
         });
 
-        const results = response.data.results.bindings.map((entry) => ({
-            type: 'flag',
-            imageUrl: entry.flag.value,
-            options: [entry.countryLabel.value], // Temporarily only the correct answer
-            correctAnswer: entry.countryLabel.value
+        const results = await Promise.all(response.data.results.bindings.map(async (entry) => {
+            const correctAnswer = entry.countryLabel.value;
+            const imageUrl = entry.flag.value;
+
+            try {
+                // Call the LLM service to generate incorrect answers
+                const llmResponse = await axios.post('http://localhost:8003/generateIncorrectOptions', {
+                    model: "empathy",
+                    apiKey: "", //We cannot put the key here
+                    correctAnswer: correctAnswer
+                });
+
+                const incorrectOptions = llmResponse.data.incorrectOptions;
+                const options = [correctAnswer, ...incorrectOptions];
+
+                return {
+                    type: 'flag',
+                    imageUrl: imageUrl,
+                    options: options,
+                    correctAnswer: correctAnswer
+                };
+            } catch (llmError) {
+                console.error('Failed to generate incorrect options:', llmError.message);
+                return {
+                    type: 'flag',
+                    imageUrl: imageUrl,
+                    options: [correctAnswer],
+                    correctAnswer: correctAnswer
+                };
+            }
         }));
 
         await saveQuestionsToDB(results); // Save questions to the database
@@ -145,6 +167,6 @@ const server = app.listen(port, () => {
 server.on('close', () => {
     mongoose.connection.close();
 });
-//fetchFlagData();
+fetchFlagData();
 
 module.exports = server;
