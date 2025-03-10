@@ -11,7 +11,7 @@ describe('Home component', () => {
 
   it('renders the Home title', () => {
     render(<Home onNavigate={mockOnNavigate} />);
-    expect(screen.getByText(/Home/i)).toBeInTheDocument();
+    expect(screen.getByText(/Home page/i)).toBeInTheDocument();
   });
 
   it('navigates to "scores" when "My Scores" button is clicked', () => {
@@ -28,7 +28,7 @@ describe('Home component', () => {
 
   it('navigates to "leaderboard" when "Leaderboard" button is clicked', () => {
     render(<Home onNavigate={mockOnNavigate} />);
-    fireEvent.click(screen.getByRole('button', { name: /Leaderboard/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Global Leaderboard/i }));
     expect(mockOnNavigate).toHaveBeenCalledWith('leaderboard');
   });
 
@@ -42,7 +42,7 @@ describe('Home component', () => {
     render(<Home onNavigate={mockOnNavigate} />);
     expect(screen.getByRole('button', { name: /My Scores/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Play Game/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Leaderboard/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Global Leaderboard/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Logout/i })).toBeInTheDocument();
   });
 });
