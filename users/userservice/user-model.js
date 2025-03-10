@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema({
       type: String,
       required: true,
     },
+    profilePicture: {
+      type: String,  // store the URL of the image
+      default: null  // default value -> null
+    },
     createdAt: {
       type: Date,
       default: Date.now, 
