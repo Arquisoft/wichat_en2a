@@ -43,7 +43,7 @@ describe('Question Service', () => {
         // Insert a test question into the database
         const testQuestion = {
             type: 'flag',
-            imageUrl: 'http://example.com/flag.png',
+            imageUrl: 'https://example.com/flag.png',
             options: ['CorrectAnswer', 'Incorrect1', 'Incorrect2', 'Incorrect3'],
             correctAnswer: 'CorrectAnswer',
             alreadyShown: false
@@ -58,7 +58,7 @@ describe('Question Service', () => {
         expect(response.statusCode).toBe(200);
         expect(response.body).toMatchObject({
             type: 'flag',
-            imageUrl: 'http://example.com/flag.png',
+            imageUrl: 'https://example.com/flag.png',
             options: ['CorrectAnswer', 'Incorrect1', 'Incorrect2', 'Incorrect3'],
             correctAnswer: 'CorrectAnswer'
         });
@@ -72,7 +72,7 @@ describe('Question Service', () => {
         // Insert a test question into the database
         const testQuestion = {
             type: 'flag',
-            imageUrl: 'http://example.com/flag.png',
+            imageUrl: 'https://example.com/flag.png',
             options: ['CorrectAnswer', 'Incorrect1', 'Incorrect2', 'Incorrect3'],
             correctAnswer: 'CorrectAnswer',
             alreadyShown: false
