@@ -23,7 +23,7 @@ const AddUser = ({ onRegisterSuccess }) => {
       await axios.post(`${apiEndpoint}/adduser`, { username, password });
       setOpenSnackbar(true);
       setError(''); // Errors from before are erased
-      // Notifies App.js in order to change its view to the Home page
+      // Redirects to the login page once a user is registered
       onRegisterSuccess('login');
     } catch (error) {
       setError(error.response?.data?.error || 'Registration failed');
