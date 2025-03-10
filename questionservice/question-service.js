@@ -167,6 +167,5 @@ const server = app.listen(port, () => {
 server.on('close', () => {
     mongoose.connection.close();
 });
-fetchFlagData();
 
 module.exports = server;
