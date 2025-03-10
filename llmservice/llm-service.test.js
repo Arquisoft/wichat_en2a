@@ -40,7 +40,7 @@ describe("LLM Service", () => {
   it("the llm should reply", async () => {
     const response = await request(app)
       .post("/ask")
-      .send({ question: "a question", apiKey: "apiKey", model: "gemini" });
+      .send({ question: "a question", model: "gemini" });
 
     expect(response.statusCode).toBe(200);
     expect(response.body.answer).toBe("llmanswer");
@@ -50,7 +50,7 @@ describe("LLM Service", () => {
   it("the llm should reply", async () => {
     const response = await request(app)
       .post("/ask")
-      .send({ question: "a question", apiKey: "apiKey", model: "empathy" });
+      .send({ question: "a question", model: "empathy" });
 
     expect(response.statusCode).toBe(200);
     expect(response.body.answer).toBe("llmanswer");
@@ -85,7 +85,6 @@ describe("Distractors generation", () => {
   it("should generate distractors", async () => {
     const response = await request(app).post("/generateIncorrectOptions").send({
       model: "empathy",
-      apiKey: "apiKey",
       correctAnswer: "Cote D'Ivoire",
     });
 
@@ -101,7 +100,7 @@ describe("Distractors generation", () => {
   it("should generate distractors", async () => {
     const response = await request(app)
       .post("/generateIncorrectOptions")
-      .send({ model: "gemini", apiKey: "apiKey", correctAnswer: "Somalia" });
+      .send({ model: "gemini", correctAnswer: "Somalia" });
 
     expect(response.statusCode).toBe(200);
     expect(response.body.incorrectOptions).toEqual([
@@ -124,7 +123,7 @@ describe("Error handling", () => {
   it("should fail if the model is not supported when asking a question", async () => {
     const response = await request(app)
       .post("/ask")
-      .send({ question: "a question", apiKey: "apiKey", model: "openai" });
+      .send({ question: "a question", model: "openai" });
 
     expect(response.statusCode).toBe(400);
   });
@@ -132,7 +131,7 @@ describe("Error handling", () => {
   it("should fail if the model is not supported when generating the distractors", async () => {
     const response = await request(app)
       .post("/generateIncorrectOptions")
-      .send({ question: "a question", apiKey: "apiKey", model: "openai" });
+      .send({ question: "a question", model: "openai" });
 
     expect(response.statusCode).toBe(400);
   });
@@ -140,7 +139,7 @@ describe("Error handling", () => {
   it("should fail if the required fields are missing when asking a question", async () => {
     const response = await request(app)
       .post("/ask")
-      .send({ question: "a question", apiKey: "apiKey" });
+      .send({ question: "a question" });
 
     expect(response.statusCode).toBe(400);
   });
@@ -148,7 +147,7 @@ describe("Error handling", () => {
   it("should fail if the required fields are missing when generating the distractors", async () => {
     const response = await request(app)
       .post("/generateIncorrectOptions")
-      .send({ correctAnswer: "an answer", model: "gemini" });
+      .send({ model: "gemini" });
 
     expect(response.statusCode).toBe(400);
   });
