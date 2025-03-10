@@ -11,7 +11,7 @@ jest.mock("axios");
 
 function generateTemplateMocks() {
   axios.post.mockImplementation((url, data) => {
-    if (url.startsWith("https://generativelanguage")) {
+    if (url.startsWith("Https://docs.g")) {
       return Promise.resolve({
         data: {
           candidates: [{ content: { parts: [{ text: "llmanswer" }] } }],
@@ -47,6 +47,18 @@ describe("LLM Service", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.answer).toBe("llmanswer");
   });
+
+  it("the llm should reply", async() => {
+    const response = await request(app)
+      .post("/ask")
+      .send({ question: "a question", model: "gemini" });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.answer).toBe("llmanswer");
+
+
+  });
+
 });
 
 describe("Distractors generation", () => {
