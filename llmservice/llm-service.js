@@ -1,5 +1,8 @@
 const axios = require("axios");
 const express = require("express");
+const dotenv = require("dotenv");
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+dotenv.config();
 
 const app = express();
 const port = 8003;
@@ -7,17 +10,8 @@ const port = 8003;
 // Middleware to parse JSON in request body
 app.use(express.json());
 
-// Define configurations for different LLM APIs
+// 
 const llmConfigs = {
-  gemini: {
-    url: (apiKey) =>
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-    transformRequest: (question) => ({
-      contents: [{ parts: [{ text: question }] }],
-    }),
-    transformResponse: (response) =>
-      response.data.candidates[0]?.content?.parts[0]?.text,
-  },
   empathy: {
     url: () => "https://empathyai.prod.empathy.co/v1/chat/completions",
     transformRequest: (question) => ({
@@ -44,53 +38,95 @@ function validateRequiredFields(req, requiredFields) {
   }
 }
 
-// Generic function to send questions to LLM
-async function sendQuestionToLLM(question, apiKey, model) {
-  const config = llmConfigs[model];
-  if (!config) {
-    // This errror should be catched in the endpoints that call this function
-    throw new Error(`Model "${model}" is not supported.`);
+// Generic function to send questions to LLM (now it's only use for empathy)
+async function sendQuestionToLLM(question) {
+  try {
+    const config = llmConfigs['empathy'];
+    
+    //Transform the url with apiKey passed
+    const url = config.url(process.env.EMPATHY_KEY);
+
+    //With the question passed it transformed it to the request
+    const requestData = config.transformRequest(question);
+
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(config.headers ? config.headers(process.env.EMPATHY_KEY) : {})
+    };
+
+    //Generates de response of the LLM
+    const response = await axios.post(url, requestData, { headers });
+
+    //Return the response already transform 
+    return config.transformResponse(response);
+
+  } catch (error) {
+    console.error(`Error sending question to ${empathy}:`, error.message || error);
+    return null;
   }
-
-  const url = config.url(apiKey);
-  const requestData = config.transformRequest(question);
-
-  const headers = {
-    "Content-Type": "application/json",
-    ...(config.headers ? config.headers(apiKey) : {}),
-  };
-
-  const response = await axios.post(url, requestData, { headers });
-
-  return config.transformResponse(response);
 }
 
-app.post("/ask", async (req, res) => {
+//It returns the answer to the question by using the LLM of gemini (It's only for if in the future empathy's LLM gives problem with the answers change and dont waste time)
+async function sendQuestionToGemini(question){
+    try{
+      const GEMINI_API_URL = 'Https://docs.gemini.com';
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+      const result = await model.generateContent(question);
+
+      return result;
+
+    }catch(error){
+      console.error(`Error sending question to ${model}:`, error.message || error)
+      return null;
+    }
+
+}
+
+//For the getting the hint from the LLM to help the user to answer the question
+app.post('/ask', async (req, res) => {
   try {
     // Check if required fields are present in the request body
-    validateRequiredFields(req, ["question", "model", "apiKey"]);
+    validateRequiredFields(req, ['question', 'model']);
 
-    const { question, model, apiKey } = req.body;
-    const answer = await sendQuestionToLLM(question, apiKey, model);
+    //Get the three fields passed
+    const { question, model} = req.body;
+    
+    let answer;
+    let questionComplete = "Give in a single line and directly a clue for knowing " + question + "but without saying directly what country is";
 
+    //Get the answer of the LLM
+    if (model == 'empathy'){ //For using empathy's LLM
+      answer = await sendQuestionToLLM(questionComplete);
+
+    }else if (model == 'gemini'){ //For using the LLM gemini
+      const preanswer = await sendQuestionToGemini(questionComplete);
+      //answer = preanswer.response.text();
+      answer = preanswer.response.candidates[0].content.parts[0].text;
+    }else{
+      throw new Error(`Model "${model}" is not supported.`);
+    }
+    
+    //Return the message
     res.json({ answer });
+
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-// Generation of incorrect options via llm
 app.post("/generateIncorrectOptions", async (req, res) => {
   try {
-    validateRequiredFields(req, ["model", "apiKey", "correctAnswer"]);
+    validateRequiredFields(req, ["model", "correctAnswer"]);
 
-    const { model, apiKey, correctAnswer } = req.body;
+    const { model, correctAnswer } = req.body;
     let question =
       "I need to generate incorrect options for a multiple choice question of exactly 4 options. The question is: What country is represented by the flag shown? The correct answer to this question is:" +
       correctAnswer +
       ". I need you to generate 3 incorrect options for that question that could be used as distractors. They should be plausible but different from the correct one. Provide them as 3 comma-separated values, nothing more.";
 
-    const answer = await sendQuestionToLLM(question, apiKey, model);
+    const answer = await sendQuestionToLLM(question);
 
     let incorrectOptions = answer.split(",");
     res.json({ incorrectOptions });
@@ -98,6 +134,8 @@ app.post("/generateIncorrectOptions", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+
 
 const server = app.listen(port, () => {
   console.log(`LLM Service listening at http://localhost:${port}`);
