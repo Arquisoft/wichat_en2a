@@ -11,6 +11,15 @@ describe('AddUser component', () => {
     mockAxios.reset();
   });
 
+  it('should disable the Add User button when inputs are empty', () => {
+    render(<AddUser />);
+
+    const addUserButton = screen.getByRole('button', { name: /Add User/i });
+
+    // If fields are empty then button is disabled
+    expect(addUserButton).toBeDisabled();
+  });
+
   it('should add user successfully and call onRegisterSuccess', async () => {
     const mockOnRegisterSuccess = jest.fn();
     render(<AddUser onRegisterSuccess={mockOnRegisterSuccess} />);

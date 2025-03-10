@@ -12,11 +12,18 @@ const AddUser = ({ onRegisterSuccess }) => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const addUser = async () => {
+
+    //Error if they are empty
+    if (!username || !password) {
+      setError('Both username and password are required');
+      return;
+    }
+
     try {
       await axios.post(`${apiEndpoint}/adduser`, { username, password });
       setOpenSnackbar(true);
-      
-      // Redirects to the login page once a user is registered
+      setError(''); // Errors from before are erased
+      // Notifies App.js in order to change its view to the Home page
       onRegisterSuccess('login');
     } catch (error) {
       setError(error.response?.data?.error || 'Registration failed');
@@ -49,7 +56,7 @@ const AddUser = ({ onRegisterSuccess }) => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Button variant="contained" color="primary" onClick={addUser}>
+      <Button variant="contained" color="primary" onClick={addUser} disabled={!username || !password}>
         Add User
       </Button>
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} message="User added successfully" />
