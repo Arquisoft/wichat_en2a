@@ -32,7 +32,7 @@ describe('AddUser component', () => {
     // Wait for the Snackbar to be open
     await waitFor(() => {
       expect(screen.getByText(/User added successfully/i)).toBeInTheDocument();
-      expect(mockOnRegisterSuccess).toHaveBeenCalled();
+      expect(mockOnRegisterSuccess).toHaveBeenCalledWith('login'); // Should go to login view
     });
   });
 

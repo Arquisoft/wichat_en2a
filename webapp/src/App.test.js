@@ -53,11 +53,11 @@ describe('App component', () => {
     // To keep it simple, and since Login is not tested here, 
     // only whether the Home page is rendered or not will be checked.
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /Home/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Home/i, level: 3 })).toBeInTheDocument();
     });
   });
 
-  it('navigates to Home view after successful registration', async() => {
+  it('navigates to Login view after successful registration', async() => {
     mockAxios.onPost('http://localhost:8000/adduser').reply(200, { success: true }); // Mock a successful registration
 
     render(<App />);
@@ -71,10 +71,10 @@ describe('App component', () => {
     fireEvent.change(passwordInput, { target: { value: 'testPassword' } });
     fireEvent.click(addUserButton);
 
-    // Same situation as the Login, only whether the Home page is
+    // Same situation as the Login, only whether the Login page is
     // rendered or not will be checked.
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /Home/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Login/i })).toBeInTheDocument();
     });
   });
 });
