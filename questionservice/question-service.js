@@ -27,7 +27,7 @@ async function fetchFlagData() {
                wdt:P41 ?flag.     
       SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
     }
-    LIMIT 100
+    LIMIT 30
     `;
 
     const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=json`;
@@ -47,7 +47,6 @@ async function fetchFlagData() {
                 // Call the LLM service to generate incorrect answers
                 const llmResponse = await axios.post('http://localhost:8003/generateIncorrectOptions', {
                     model: "empathy",
-                    apiKey: "", //We cannot put the key here
                     correctAnswer: correctAnswer
                 });
 
@@ -149,7 +148,7 @@ app.post('/check-answer', async (req, res) => {
     }
 });
 
-// Endpoint to fetch questions
+// Endpoint to fetch
 app.post('/fetch-flag-data', async (req, res) => {
     try {
         const results = await fetchFlagData();
@@ -168,5 +167,6 @@ const server = app.listen(port, () => {
 server.on('close', () => {
     mongoose.connection.close();
 });
+fetchFlagData();
 
 module.exports = server;
