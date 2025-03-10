@@ -4,67 +4,15 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 
 == Deployment View
-
-ifdef::arc42help[]
-[role="arc42help"]
-****
-.Content
-The deployment view describes:
-
- 1. technical infrastructure used to execute your system, with infrastructure elements like geographical locations, environments, computers, processors, channels and net topologies as well as other infrastructure elements and
-
-2. mapping of (software) building blocks to that infrastructure elements.
-
-Often systems are executed in different environments, e.g. development environment, test environment, production environment. In such cases you should document all relevant environments.
-
-Especially document a deployment view if your software is executed as distributed system with more than one computer, processor, server or container or when you design and construct your own hardware processors and chips.
-
-From a software perspective it is sufficient to capture only those elements of an infrastructure that are needed to show a deployment of your building blocks. Hardware architects can go beyond that and describe an infrastructure to any level of detail they need to capture.
-
-.Motivation
-Software does not run without hardware.
-This underlying infrastructure can and will influence a system and/or some
-cross-cutting concepts. Therefore, there is a need to know the infrastructure.
-
-.Form
-
-Maybe a highest level deployment diagram is already contained in section 3.2. as
-technical context with your own infrastructure as ONE black box. In this section one can
-zoom into this black box using additional deployment diagrams:
-
-* UML offers deployment diagrams to express that view. Use it, probably with nested diagrams,
-when your infrastructure is more complex.
-* When your (hardware) stakeholders prefer other kinds of diagrams rather than a deployment diagram, let them use any kind that is able to show nodes and channels of the infrastructure.
-
-
-.Further Information
-
-See https://docs.arc42.org/section-7/[Deployment View] in the arc42 documentation.
-
-****
-endif::arc42help[]
-
-ifdef::arc42help[]
-[role="arc42help"]
-****
-Describe (usually in a combination of diagrams, tables, and text):
-
-* distribution of a system to multiple locations, environments, computers, processors, .., as well as physical connections between them
-* important justifications or motivations for this deployment structure
-* quality and/or performance features of this infrastructure
-* mapping of software artifacts to elements of this infrastructure
-
-For multiple environments or alternative deployments please copy and adapt this section of arc42 for all relevant environments.
-****
-endif::arc42help[]
-
 **Overview Diagram**
 [.text-center]
 image::../images/07_deployment_view.png[]
 
 Motivation::
 
-The application is build using Docker and an Azure Virtual Machine with Ubuntu. Using both together creates a combination of the portability and efficiency of the containers obtained by the use of Docker with the additional security and isolation provided by virtual machines. Docker will be used for the deployment of the application both while developing (local deployment) and when the final result is ready. It is a containerization platform that packages applications and their dependencies into lightweight, portable containers, ensuring consistency across environments.
+The application is build using Docker and an Azure Virtual Machine with Ubuntu. Using both together creates a combination of the portability and efficiency of the containers obtained by the use of Docker with the additional security and isolation provided by virtual machines. 
+
+Docker will be used for the deployment of the application both while developing (local deployment) and when the final result is ready. It is a containerization platform that packages applications and their dependencies into lightweight, portable containers, ensuring consistency across environments.
 
 Quality and/or Performance Features::
 
@@ -82,7 +30,8 @@ As of now, the current application counts with several building blocks that are 
 - **Gateway**: As its name suggets, it works as the interface that comunicates the webapp with the rest of the services.
 - **Userservice**: It will be in charge of the user management.
 - **Authservice**: On the same level as the previous one, it will be use for the authentication of users.
-- **Llmservice**: This one is also on the same level as the two before it, and it is the one that manages the LLM that will be used in the application. The LLM API used will be the one from Empathy.
+- **Llmservice**: This one is also on the same level as the two before it, and it is the one that manages the LLM that will be used in the application. The LLM API used will be the one from QWen.
+- ** Questionservice**: This service communicates with the Wikidata API and returns a type of question, with a picture attached to it and a correct answer.
 - **Database**: The database that will contain all the data of the application. Currently we only have one database but, further ahead, it may be divided in several databases to manage different features independently (one for users, another for the questions for the game...), but this is yet unclear.
 
 It is also worth mentioning the use of other tools that we be probably or surely implemented in the future:
