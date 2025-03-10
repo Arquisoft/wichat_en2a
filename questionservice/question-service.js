@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Question = require('./question-model');
 
 const app = express();
-const port = 8004; // Use a unique port for the question service
+const port = 8004;
 
 // Middleware to parse JSON in request body
 app.use(express.json());
@@ -149,6 +149,7 @@ app.post('/check-answer', async (req, res) => {
     }
 });
 
+// Endpoint to fetch questions
 app.post('/fetch-flag-data', async (req, res) => {
     try {
         const results = await fetchFlagData();
@@ -167,6 +168,5 @@ const server = app.listen(port, () => {
 server.on('close', () => {
     mongoose.connection.close();
 });
-fetchFlagData();
 
 module.exports = server;
