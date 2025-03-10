@@ -74,6 +74,7 @@ async function sendQuestionToGemini(question){
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
       const result = await model.generateContent(question);
+      
       return result;
 
     }catch(error){

@@ -12,11 +12,7 @@ jest.mock("axios");
 function generateTemplateMocks() {
   axios.post.mockImplementation((url, data) => {
     if (url.startsWith("Https://docs.g")) {
-      return Promise.resolve({
-        data: {
-          candidates: [{ content: { parts: [{ text: "llmanswer" }] } }],
-        },
-      });
+      return Promise.resolve(data.response.text());
     } else if (url.startsWith("https://empathyai")) {
       // response.data.choices[0]?.message?.content,
       return Promise.resolve({
