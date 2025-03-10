@@ -102,6 +102,8 @@ app.post('/ask', async (req, res) => {
     }else if (model == 'gemini'){ //For using the LLM gemini
       const preanswer = await sendQuestionToGemini(questionComplete);
       answer = preanswer.response.text();
+    }else{
+      throw new Error(`Model "${model}" is not supported.`);
     }
     
     //Return the message
