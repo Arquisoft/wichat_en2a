@@ -8,13 +8,24 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Leaderboard from './components/Leaderboard';
+import axios from 'axios';
+
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
 function App() {
   const [view, setView] = useState('login'); // Possible values: 'login', 'register', 'home', 'game'
 
   // Handle whether authentication (login/register) worked, and show the Home view if it did by default.
   // Otherwise go to the provided view
-  const handleAuthSuccess = (nextView = 'home') => {
+  const handleAuthSuccess = async (nextView = 'home') => {
+    try {
+      // Fetch flag data to load questions in the database
+      await axios.post(`${apiEndpoint}/fetch-flag-data`);
+      console.log('Flag data loaded successfully');
+    } catch (error) {
+      console.error('Error fetching flag data:', error);
+    }
+
     setView(nextView);
   };
 

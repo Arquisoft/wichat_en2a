@@ -1,4 +1,3 @@
-// src/components/Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
@@ -23,19 +22,18 @@ const Login = ({ onLoginSuccess }) => {
       const question = "Please, generate a greeting message for a student called " + username + " that is a student of the Software Architecture course in the University of Oviedo. Be nice and polite. Two to three sentences max.";
       const model = "empathy"
 
-      if (apiKey==='None'){
+      if (apiKey === 'None') {
         setMessage("LLM API key is not set. Cannot contact the LLM.");
+      } else {
+        const messageResponse = await axios.post(`${apiEndpoint}/askllm`, { question, model, apiKey });
+        setMessage(messageResponse.data.answer);
       }
-      else{
-        const message = await axios.post(`${apiEndpoint}/askllm`, { question, model, apiKey })
-        setMessage(message.data.answer);
-      }
+
       // Extract data from the response
       const { createdAt: userCreatedAt } = response.data;
 
       setCreatedAt(userCreatedAt);
       setLoginSuccess(true);
-
       setOpenSnackbar(true);
 
       // Notifies App.js in order to change its view to the Home page
