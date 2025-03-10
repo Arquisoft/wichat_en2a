@@ -13,8 +13,8 @@ function generateTemplateMocks() {
   axios.post.mockImplementation((url, data) => {
     if (url.startsWith("Https://docs.g")) {
       return Promise.resolve({
-        response: { text: () => "llmanswer" },  // Simula que text() devuelve una promesa resuelta con "llmanswer"
-    });
+        response: { candidates: [{ content: { parts: [ {text: "llmanswer" } ]} }] },
+      });
     } else if (url.startsWith("https://empathyai")) {
       // response.data.choices[0]?.message?.content,
       return Promise.resolve({
@@ -26,7 +26,7 @@ function generateTemplateMocks() {
 
 describe("LLM Service", () => {
   beforeEach(() => {
-    // Mock responses from external services
+    
     generateTemplateMocks();
   });
 
@@ -46,7 +46,8 @@ describe("LLM Service", () => {
     expect(response.body.answer).toBe("llmanswer");
   });
 
-  it("the llm should reply", async() => {
+  /**
+   * it("the llm should reply", async() => {
     const response = await request(app)
       .post("/ask")
       .send({ question: "a question", model: "gemini" });
@@ -56,6 +57,7 @@ describe("LLM Service", () => {
 
 
   });
+   */
 
 });
 

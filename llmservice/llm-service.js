@@ -74,7 +74,7 @@ async function sendQuestionToGemini(question){
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
       const result = await model.generateContent(question);
-      
+
       return result;
 
     }catch(error){
@@ -102,7 +102,8 @@ app.post('/ask', async (req, res) => {
 
     }else if (model == 'gemini'){ //For using the LLM gemini
       const preanswer = await sendQuestionToGemini(questionComplete);
-      answer = preanswer.response.text();
+      //answer = preanswer.response.text();
+      answer = preanswer.response.candidates[0].content.parts[0].text;
     }else{
       throw new Error(`Model "${model}" is not supported.`);
     }
