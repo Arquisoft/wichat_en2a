@@ -1,11 +1,14 @@
 import React from 'react';
 import { Button, Container, Typography, Box } from '@mui/material';
+import Navbar from './Navbar';
 
 const Home = ({ onNavigate }) => {
   return (
+    <>
+    <Navbar onNavigate={onNavigate}/>
     <Container component="main" maxWidth="md" sx={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' }}>
       <Typography component="h3" variant="h3" sx={{ mt: 8, mb: 4, textAlign: 'center' }}>
-        Home
+        Home page
       </Typography>
 
       <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
@@ -19,7 +22,7 @@ const Home = ({ onNavigate }) => {
           </Button>
 
           <Button variant="contained" color="success" sx={{ px: 6, py: 3, fontSize: '1.5rem' }} onClick={() => onNavigate('leaderboard')}>
-            Leaderboard
+            Global Leaderboard
           </Button>
         </Box>
       </Box>
@@ -30,6 +33,7 @@ const Home = ({ onNavigate }) => {
         </Button>
       </Box>
     </Container>
+    </>
   );
 };
 

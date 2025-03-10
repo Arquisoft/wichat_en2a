@@ -3,51 +3,22 @@ ifndef::imagesdir[:imagesdir: ../images]
 [[section-glossary]]
 == Glossary
 
-ifdef::arc42help[]
-[role="arc42help"]
-****
-.Contents
-The most important domain and technical terms that your stakeholders use when discussing the system.
-
-You can also see the glossary as source for translations if you work in multi-language teams.
-
-.Motivation
-You should clearly define your terms, so that all stakeholders
-
-* have an identical understanding of these terms
-* do not use synonyms and homonyms
-
-
-.Form
-
-A table with columns <Term> and <Definition>.
-
-Potentially more columns in case you need translations.
-
-
-.Further Information
-
-See https://docs.arc42.org/section-12/[Glossary] in the arc42 documentation.
-
-****
-endif::arc42help[]
-
 [cols="e,2e" options="header"]
 |===
 |Term |Definition
 
-|TBD
-|To Be Defined
+| MongoDB
+| A NoSQL, document-oriented database that stores data in flexible, JSON-like documents, making it easy to handle.
 
-|LLM
-|Large Language Model
+| JWT (JSON Web Token)
+| Compact, URL-safe token used for securely transmitting information between parties, commonly for user authentication and authorization in web applications.
 
-|CI
-|Continuous Integration
+| CI/CD Testing
+| Automated process of running tests during Continuous Integration (CI) and Continuous Deployment (CD) pipelines to ensure code changes are reliable, functional, and ready for deployment
 
-|CD
-|Continuous Delivery/Deployment
+| WikiData
+| Knowledge base that stores structured data to support Wikipedia, and external applications, enabling access to facts and relationships.
 
-|UI
-|User Interface
+| LLM (Large Language Model)
+| Artificial intelligence model trained on of text data to understand, generate, and process human language.
 |===
