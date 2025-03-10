@@ -6,6 +6,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
+import Leaderboard from './components/Leaderboard';
 
 function App() {
   const [view, setView] = useState('login'); // Possible values: 'login', 'register', 'home'
@@ -27,6 +28,7 @@ function App() {
       {view === 'login' && <Login onLoginSuccess={handleAuthSuccess} />}
       {view === 'register' && <AddUser onRegisterSuccess={handleAuthSuccess} />}
       {view === 'home' && <Home onNavigate={setView} />}
+      {view === 'leaderboard' && <Leaderboard onNavigate={setView} />}
       
       {/*Links to navigate through views*/}
       <Typography component="div" align="center" sx={{ marginTop: 2 }}>
