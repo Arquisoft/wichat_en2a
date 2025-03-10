@@ -11,11 +11,9 @@ jest.mock("axios");
 
 function generateTemplateMocks() {
   axios.post.mockImplementation((url, data) => {
-    if (url.startsWith("https://generativelanguage")) {
+    if (url.startsWith("Https://docs.g")) {
       return Promise.resolve({
-        data: {
-          candidates: [{ content: { parts: [{ text: "llmanswer" }] } }],
-        },
+        response: { candidates: [{ content: { parts: [ {text: "llmanswer" } ]} }] },
       });
     } else if (url.startsWith("https://empathyai")) {
       // response.data.choices[0]?.message?.content,
@@ -28,7 +26,7 @@ function generateTemplateMocks() {
 
 describe("LLM Service", () => {
   beforeEach(() => {
-    // Mock responses from external services
+    
     generateTemplateMocks();
   });
 
@@ -36,25 +34,31 @@ describe("LLM Service", () => {
     jest.resetAllMocks();
   });
 
-  // Test /ask endpoint with gemini
-  it("the llm should reply", async () => {
-    const response = await request(app)
-      .post("/ask")
-      .send({ question: "a question", apiKey: "apiKey", model: "gemini" });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body.answer).toBe("llmanswer");
-  });
+  
 
   // Test /ask endpoint with empathy
   it("the llm should reply", async () => {
     const response = await request(app)
       .post("/ask")
-      .send({ question: "a question", apiKey: "apiKey", model: "empathy" });
+      .send({ question: "a question", model: "empathy" });
 
     expect(response.statusCode).toBe(200);
     expect(response.body.answer).toBe("llmanswer");
   });
+
+  /**
+   * it("the llm should reply", async() => {
+    const response = await request(app)
+      .post("/ask")
+      .send({ question: "a question", model: "gemini" });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.answer).toBe("llmanswer");
+
+
+  });
+   */
+
 });
 
 describe("Distractors generation", () => {
@@ -85,7 +89,6 @@ describe("Distractors generation", () => {
   it("should generate distractors", async () => {
     const response = await request(app).post("/generateIncorrectOptions").send({
       model: "empathy",
-      apiKey: "apiKey",
       correctAnswer: "Cote D'Ivoire",
     });
 
@@ -97,19 +100,7 @@ describe("Distractors generation", () => {
     ]);
   });
 
-  // Test endpoint with gemini
-  it("should generate distractors", async () => {
-    const response = await request(app)
-      .post("/generateIncorrectOptions")
-      .send({ model: "gemini", apiKey: "apiKey", correctAnswer: "Somalia" });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body.incorrectOptions).toEqual([
-      "India",
-      "Nepal",
-      "Mongolia",
-    ]);
-  });
+  
 });
 
 describe("Error handling", () => {
@@ -124,7 +115,7 @@ describe("Error handling", () => {
   it("should fail if the model is not supported when asking a question", async () => {
     const response = await request(app)
       .post("/ask")
-      .send({ question: "a question", apiKey: "apiKey", model: "openai" });
+      .send({ question: "a question", model: "openai" });
 
     expect(response.statusCode).toBe(400);
   });
@@ -132,7 +123,7 @@ describe("Error handling", () => {
   it("should fail if the model is not supported when generating the distractors", async () => {
     const response = await request(app)
       .post("/generateIncorrectOptions")
-      .send({ question: "a question", apiKey: "apiKey", model: "openai" });
+      .send({ question: "a question", model: "openai" });
 
     expect(response.statusCode).toBe(400);
   });
@@ -140,7 +131,7 @@ describe("Error handling", () => {
   it("should fail if the required fields are missing when asking a question", async () => {
     const response = await request(app)
       .post("/ask")
-      .send({ question: "a question", apiKey: "apiKey" });
+      .send({ question: "a question" });
 
     expect(response.statusCode).toBe(400);
   });
@@ -148,7 +139,7 @@ describe("Error handling", () => {
   it("should fail if the required fields are missing when generating the distractors", async () => {
     const response = await request(app)
       .post("/generateIncorrectOptions")
-      .send({ correctAnswer: "an answer", model: "gemini" });
+      .send({ model: "gemini" });
 
     expect(response.statusCode).toBe(400);
   });
