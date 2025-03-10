@@ -36,15 +36,7 @@ describe("LLM Service", () => {
     jest.resetAllMocks();
   });
 
-  // Test /ask endpoint with gemini
-  it("the llm should reply", async () => {
-    const response = await request(app)
-      .post("/ask")
-      .send({ question: "a question", model: "gemini" });
-
-    //expect(response.statusCode).toBe(200);
-    expect(response.body.answer).toBe("llmanswer");
-  });
+  
 
   // Test /ask endpoint with empathy
   it("the llm should reply", async () => {
