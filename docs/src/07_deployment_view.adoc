@@ -6,7 +6,7 @@ ifndef::imagesdir[:imagesdir: ../images]
 == Deployment View
 **Overview Diagram**
 [.text-center]
-image::../images/07_deployment_view.png[]
+image::../images/deployment.png[]
 
 Motivation::
 

@@ -24,7 +24,7 @@ As we can see in the diagram, the user will interact with the App Internal Syste
 
 ==== Container Diagram
 [.text-center]
-image::../images/Container Diagram.png[]
+image::../images/level2_container.png[]
 
 Motivation::
 This diagram shows in more detail the different (**internal**) parts of the application that interact when a user is playing, as well as outside elements used.
