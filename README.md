@@ -4,6 +4,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_en2a&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_en2a)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=Arquisoft_wichat_en2a&metric=coverage)](https://sonarcloud.io/summary/new_code?id=Arquisoft_wichat_en2a)
 [![CodeScene Average Code Health](https://codescene.io/projects/64832/status-badges/average-code-health)](https://codescene.io/projects/64832)
+[![CodeScene general](https://codescene.io/images/analyzed-by-codescene-badge.svg)](https://codescene.io/projects/64832)
 
 ## Members
 
