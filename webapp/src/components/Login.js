@@ -1,4 +1,3 @@
-// src/components/Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
 //const dotenv = require('dotenv');
@@ -6,7 +5,7 @@ import axios from 'axios';
 import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
 import { Typewriter } from "react-simple-typewriter";
 
-const Login = () => {
+const Login = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -26,18 +25,21 @@ const Login = () => {
       const model = "empathy"
 
       
-      const message = await axios.post(`${apiEndpoint}/askllm`, { question, model})
-      setMessage(message.data.answer);
+      const messageResponse = await axios.post(`${apiEndpoint}/askllm`, { question, model });
+      setMessage(messageResponse.data.answer);
       
+
       // Extract data from the response
       const { createdAt: userCreatedAt } = response.data;
 
       setCreatedAt(userCreatedAt);
       setLoginSuccess(true);
-
       setOpenSnackbar(true);
+
+      // Notifies App.js in order to change its view to the Home page
+      onLoginSuccess();
     } catch (error) {
-      setError(error.response.data.error);
+      setError(error.response?.data?.error || 'Login failed');
     }
   };
 

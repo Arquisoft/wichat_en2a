@@ -11,8 +11,18 @@ describe('AddUser component', () => {
     mockAxios.reset();
   });
 
-  it('should add user successfully', async () => {
+  it('should disable the Add User button when inputs are empty', () => {
     render(<AddUser />);
+
+    const addUserButton = screen.getByRole('button', { name: /Add User/i });
+
+    // If fields are empty then button is disabled
+    expect(addUserButton).toBeDisabled();
+  });
+
+  it('should add user successfully and call onRegisterSuccess', async () => {
+    const mockOnRegisterSuccess = jest.fn();
+    render(<AddUser onRegisterSuccess={mockOnRegisterSuccess} />);
 
     const usernameInput = screen.getByLabelText(/Username/i);
     const passwordInput = screen.getByLabelText(/Password/i);
@@ -31,6 +41,7 @@ describe('AddUser component', () => {
     // Wait for the Snackbar to be open
     await waitFor(() => {
       expect(screen.getByText(/User added successfully/i)).toBeInTheDocument();
+      expect(mockOnRegisterSuccess).toHaveBeenCalledWith('login'); // Should go to login view
     });
   });
 

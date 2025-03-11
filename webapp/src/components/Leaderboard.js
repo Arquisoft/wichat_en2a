@@ -11,8 +11,9 @@ import {
   CircularProgress,
   Box
 } from '@mui/material';
+import Navbar from './Navbar';
 
-const Leaderboard = () => {
+const Leaderboard = ({ onNavigate }) => {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -40,21 +41,29 @@ const Leaderboard = () => {
 
   if (loading) {
     return (
+      <>
+      <Navbar onNavigate={onNavigate}/>
       <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
         <CircularProgress />
       </Box>
+      </>
     );
   }
 
   if (error) {
     return (
+      <>
+      <Navbar onNavigate={onNavigate}/>
       <Box sx={{ my: 2, textAlign: 'center' }}>
         <Typography color="error">{error}</Typography>
       </Box>
+      </>
     );
   }
 
   return (
+    <>
+    <Navbar onNavigate={onNavigate}/>
     <Paper elevation={3} sx={{ width: '100%', overflow: 'hidden', mt: 2 }}>
       <Typography variant="h6" sx={{ p: 2, bgcolor: 'primary.main', color: 'white' }}>
         Leaderboard
@@ -101,6 +110,7 @@ const Leaderboard = () => {
         </Table>
       </TableContainer>
     </Paper>
+    </>
   );
 };
 
