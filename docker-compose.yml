@@ -58,7 +58,7 @@ services:
       - userservice
       - authservice
       - llmservice
-      - questionservice  # ✅ NEW: Gateway now waits for question service
+      - questionservice
     ports:
       - "8000:8000"
     networks:
@@ -67,13 +67,13 @@ services:
       AUTH_SERVICE_URL: http://authservice:8002
       USER_SERVICE_URL: http://userservice:8001
       LLM_SERVICE_URL: http://llmservice:8003
-      QUESTION_SERVICE_URL: http://questionservice:8004  # ✅ NEW: Added question service URL
+      QUESTION_SERVICE_URL: http://questionservice:8004
 
   questionservice:
-    container_name: questionservice-wichat_en2a  # ✅ NEW: Added QuestionService
+    container_name: questionservice-wichat_en2a
     image: ghcr.io/arquisoft/wichat_en2a/questionservice:latest
     profiles: ["dev", "prod"]
-    build: ./questionservice  # ✅ NEW: Add your question service folder
+    build: ./questionservice
     depends_on:
       - mongodb
     ports:
