@@ -1,4 +1,3 @@
-// src/components/Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
 //const dotenv = require('dotenv');
@@ -26,15 +25,15 @@ const Login = ({ onLoginSuccess }) => {
       const model = "empathy"
 
       
-      const message = await axios.post(`${apiEndpoint}/askllm`, { question, model})
-      setMessage(message.data.answer);
+      const messageResponse = await axios.post(`${apiEndpoint}/askllm`, { question, model });
+      setMessage(messageResponse.data.answer);
       
+
       // Extract data from the response
       const { createdAt: userCreatedAt } = response.data;
 
       setCreatedAt(userCreatedAt);
       setLoginSuccess(true);
-
       setOpenSnackbar(true);
 
       // Notifies App.js in order to change its view to the Home page
