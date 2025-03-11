@@ -14,7 +14,7 @@ const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000
 
 function App() {
   const [view, setView] = useState('login'); // Possible values: 'login', 'register', 'home', 'game'
-  const [error, setError] = useState(null); // ✅ FIXED: Added state for error messages
+  const [error, setError] = useState(null);
 
   // Handle whether authentication (login/register) worked, and show the Home view if it did by default.
   // Otherwise, go to the provided view
@@ -24,7 +24,7 @@ function App() {
       await axios.post(`${apiEndpoint}/fetch-flag-data`);
       console.log('Flag data loaded successfully');
     } catch (error) {
-      setError(error.response?.data?.error || 'Fetching flags failed'); // ✅ FIXED: Now it works
+      setError(error.response?.data?.error || 'Fetching flags failed');
       console.error('Error fetching flag data:', error);
     }
 
