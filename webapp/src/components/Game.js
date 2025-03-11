@@ -1,11 +1,64 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Typography, Button, Box } from '@mui/material';
+import { Container, Typography, Button, Box, CircularProgress } from '@mui/material';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
 const Game = ({ onNavigate }) => {
-    
+    const [question, setQuestion] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Fetch question from the API
+    const fetchQuestion = async () => {
+        try {
+            console.log("Fetching question...");
+            const response = await axios.get(`${apiEndpoint}/question`);
+            console.log("Received question:", response.data);
+
+            // Ensure we always have **exactly 4 options**
+            const filledOptions = response.data.options || [];
+            while (filledOptions.length < 4) {
+                filledOptions.push("Option " + (filledOptions.length + 1)); // Placeholder
+            }
+
+            setQuestion({ ...response.data, options: filledOptions });
+        } catch (error) {
+            console.error('Error fetching question:', error);
+            setError('Failed to load question');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchQuestion();
+    }, []);
+
+    // **1️⃣ Handle loading state**
+    if (loading) {
+        return (
+            <Container component="main" maxWidth="xl" sx={{ textAlign: 'center', mt: '2rem', minHeight: '85vh', width: '100%', px: '1rem' }}>
+                <Typography component="h1" variant="h4" sx={{ mb: '2rem' }}>
+                    Quiz Game!
+                </Typography>
+                <CircularProgress />
+            </Container>
+        );
+    }
+
+    // **2️⃣ Handle error state**
+    if (error) {
+        return (
+            <Container component="main" maxWidth="xl" sx={{ textAlign: 'center', mt: '2rem', minHeight: '85vh', width: '100%', px: '1rem' }}>
+                <Typography component="h1" variant="h4" sx={{ mb: '2rem', color: 'red' }}>
+                    {error}
+                </Typography>
+            </Container>
+        );
+    }
+
+    // **3️⃣ Ensure `question` is not null before accessing properties**
     return (
         <Container component="main" maxWidth="xl" sx={{ textAlign: 'center', mt: '2rem', minHeight: '85vh', width: '100%', px: '1rem' }}>
             <Typography component="h1" variant="h4" sx={{ mb: '2rem' }}>
@@ -20,16 +73,22 @@ const Game = ({ onNavigate }) => {
                     
                     {/* Upper part of left side - 1 half */}
                     <Box sx={{ flex: 1, p: '1rem', border: '1px solid gray', borderRadius: '0.5rem', display: 'flex', flexDirection: 'column', width: '100%' }}>
-                        <Typography variant="h6" sx={{ mb: '1rem' }}>Question text goes here</Typography>
-                        <Button variant="contained" fullWidth sx={{ mb: '0.5rem', py: '1rem' }}>Option 1</Button>
-                        <Button variant="contained" fullWidth sx={{ mb: '0.5rem', py: '1rem' }}>Option 2</Button>
-                        <Button variant="contained" fullWidth sx={{ mb: '0.5rem', py: '1rem' }}>Option 3</Button>
-                        <Button variant="contained" fullWidth sx={{ py: '1rem' }}>Option 4</Button>
+                        <Typography variant="h6" sx={{ mb: '1rem' }}>{"Which country is this flag from?"}</Typography>
+                        
+                        {question?.options.map((option, index) => (
+                            <Button key={index} variant="contained" fullWidth sx={{ mb: '0.5rem', py: '1rem' }}>
+                                {option}
+                            </Button>
+                        ))}
                     </Box>
 
                     {/* Lower part of left side - 1 half  */}
                     <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid gray', borderRadius: '0.5rem', width: '100%' }}>
-                        <img src="https://via.placeholder.com/300" alt="Question related" style={{ width: '100%', height: 'auto', maxHeight: '100%' }} />
+                        {question?.imageUrl ? (
+                            <img src={question.imageUrl} alt="Question related" style={{ width: '100%', height: 'auto', maxHeight: '100%' }} />
+                        ) : (
+                            <Typography variant="h6">No image available</Typography>
+                        )}
                     </Box>
                 </Box>
 
