@@ -8,6 +8,7 @@ const Game = ({ onNavigate }) => {
     const [question, setQuestion] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [answerSelected, setAnswerSelected] = useState(false);
 
     // Fetch question from the API
     const fetchQuestion = async () => {
@@ -15,19 +16,13 @@ const Game = ({ onNavigate }) => {
             console.log("Fetching question...");
             const response = await axios.get(`${apiEndpoint}/question`);
             console.log("Received question:", response.data);
-
-            // Ensure we always have **exactly 4 options**
-            const filledOptions = response.data.options || [];
-            while (filledOptions.length < 4) {
-                filledOptions.push("Option " + (filledOptions.length + 1)); // Placeholder
-            }
-
-            setQuestion({ ...response.data, options: filledOptions });
+            setQuestion(response.data);
         } catch (error) {
             console.error('Error fetching question:', error);
             setError('Failed to load question');
         } finally {
             setLoading(false);
+            setAnswerSelected(false);  // Reset the state for answer selection
         }
     };
 
@@ -35,7 +30,6 @@ const Game = ({ onNavigate }) => {
         fetchQuestion();
     }, []);
 
-    // **1️⃣ Handle loading state**
     if (loading) {
         return (
             <Container component="main" maxWidth="xl" sx={{ textAlign: 'center', mt: '2rem', minHeight: '85vh', width: '100%', px: '1rem' }}>
@@ -47,7 +41,6 @@ const Game = ({ onNavigate }) => {
         );
     }
 
-    // **2️⃣ Handle error state**
     if (error) {
         return (
             <Container component="main" maxWidth="xl" sx={{ textAlign: 'center', mt: '2rem', minHeight: '85vh', width: '100%', px: '1rem' }}>
@@ -58,7 +51,6 @@ const Game = ({ onNavigate }) => {
         );
     }
 
-    // **3️⃣ Ensure `question` is not null before accessing properties**
     return (
         <Container component="main" maxWidth="xl" sx={{ textAlign: 'center', mt: '2rem', minHeight: '85vh', width: '100%', px: '1rem' }}>
             <Typography component="h1" variant="h4" sx={{ mb: '2rem' }}>
@@ -74,12 +66,18 @@ const Game = ({ onNavigate }) => {
                     {/* Upper part of left side - 1 half */}
                     <Box sx={{ flex: 1, p: '1rem', border: '1px solid gray', borderRadius: '0.5rem', display: 'flex', flexDirection: 'column', width: '100%' }}>
                         <Typography variant="h6" sx={{ mb: '1rem' }}>{"Which country is this flag from?"}</Typography>
-                        
-                        {question?.options.map((option, index) => (
-                            <Button key={index} variant="contained" fullWidth sx={{ mb: '0.5rem', py: '1rem' }}>
-                                {option}
-                            </Button>
-                        ))}
+                        <Button key={0} variant="contained" fullWidth sx={{ mb: '0.5rem', py: '1rem' }} onClick={() => setAnswerSelected(true)}>
+                            {question.options[0]}
+                        </Button>
+                        <Button key={1} variant="contained" fullWidth sx={{ mb: '0.5rem', py: '1rem' }} onClick={() => setAnswerSelected(true)}>
+                            {question.options[1]}
+                        </Button>
+                        <Button key={2} variant="contained" fullWidth sx={{ mb: '0.5rem', py: '1rem' }} onClick={() => setAnswerSelected(true)}>
+                            {question.options[2]}
+                        </Button>
+                        <Button key={3} variant="contained" fullWidth sx={{ mb: '0.5rem', py: '1rem' }} onClick={() => setAnswerSelected(true)}>
+                            {question.options[3]}
+                        </Button>
                     </Box>
 
                     {/* Lower part of left side - 1 half  */}
@@ -106,6 +104,9 @@ const Game = ({ onNavigate }) => {
             <Box sx={{ mt: '2rem', display: 'flex', justifyContent: 'flex-start', width: '100%' }}>
                 <Button variant="contained" color="error" onClick={() => onNavigate('home')}>
                     Back
+                </Button>
+                <Button variant="contained" color="primary" disabled={!answerSelected} onClick={fetchQuestion} sx={{ ml: '1rem' }}>
+                    Next Question
                 </Button>
             </Box>
         </Container>
