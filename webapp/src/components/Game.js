@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Typography, Button, Box, CircularProgress } from '@mui/material';
+import Navbar from './Navbar';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -9,10 +10,12 @@ const Game = ({ onNavigate }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [answerSelected, setAnswerSelected] = useState(false);
+    const [hint, setHint] = useState(null);
 
     // Fetch question from the API
     const fetchQuestion = async () => {
         try {
+            setHint(null); // Delete hint text if any
             console.log("Fetching question...");
             const response = await axios.get(`${apiEndpoint}/question`);
             console.log("Received question:", response.data);
@@ -23,6 +26,20 @@ const Game = ({ onNavigate }) => {
         } finally {
             setLoading(false);
             setAnswerSelected(false);  // Reset the state for answer selection
+        }
+    };
+
+    const retrieveHint = async () => {
+        try {
+          // Send request to LLM to get a hint based on our question
+          const response = await axios.post(`${apiEndpoint}/askllm`, { question: question.correctAnswer , model: "empathy" });
+          
+          // Log or store the hint response
+          console.log('Hint received:', response.data.answer);
+          setHint(response.data.answer);
+        } catch (error) {
+          setError(error.response?.data?.error || 'Fetching hint failed');
+          console.error('Error fetching hint:', error);
         }
     };
 
@@ -52,6 +69,8 @@ const Game = ({ onNavigate }) => {
     }
 
     return (
+        <>
+        <Navbar onNavigate={onNavigate}/>
         <Container component="main" maxWidth="xl" sx={{ textAlign: 'center', mt: '2rem', minHeight: '85vh', width: '100%', px: '1rem' }}>
             <Typography component="h1" variant="h4" sx={{ mb: '2rem' }}>
                 Quiz Game!
@@ -93,10 +112,10 @@ const Game = ({ onNavigate }) => {
                 {/* Right side - 1 third */}
                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: '1.5rem', border: '1px solid gray', borderRadius: '0.5rem', width: '100%' }}>
                     {/* LLM text space - 4/5 */}
-                    <Typography variant="h6" sx={{ flex: 4 }}>Information text here</Typography>
+                    <Typography variant="h6" sx={{ flex: 4 }}>{hint || "Information hint here"}</Typography>
 
                     {/* ? button - 1/5 */}
-                    <Button variant="contained" sx={{ alignSelf: 'center', py: '1.5rem', fontSize: '1.5rem' }}>?</Button>
+                    <Button variant="contained" sx={{ alignSelf: 'center', py: '1.5rem', fontSize: '1.5rem' }} onClick={retrieveHint}>?</Button>
                 </Box>
             </Box>
 
@@ -110,6 +129,7 @@ const Game = ({ onNavigate }) => {
                 </Button>
             </Box>
         </Container>
+        </>
     );
 };
 
