@@ -5,18 +5,28 @@ import { Container, Typography, TextField, Button, Snackbar } from '@mui/materia
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
-const AddUser = () => {
+const AddUser = ({ onRegisterSuccess }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const addUser = async () => {
+
+    //Error if one of them or both are empty
+    if (!username || !password) {
+      setError('Both username and password are required');
+      return;
+    }
+
     try {
       await axios.post(`${apiEndpoint}/adduser`, { username, password });
       setOpenSnackbar(true);
+      setError(''); // Errors from before are erased
+      // Redirects to the login page once a user is registered
+      onRegisterSuccess('login');
     } catch (error) {
-      setError(error.response.data.error);
+      setError(error.response?.data?.error || 'Registration failed');
     }
   };
 
@@ -46,7 +56,7 @@ const AddUser = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Button variant="contained" color="primary" onClick={addUser}>
+      <Button variant="contained" color="primary" onClick={addUser} disabled={!username || !password}>
         Add User
       </Button>
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} message="User added successfully" />

@@ -9,12 +9,14 @@
   "license": "ISC",
   "description": "",
   "homepage": "https://github.com/arquisoft/wichat_en2a#readme",
-  "dependencies": {
-    "axios": "^1.8.2",
-    "express": "^4.21.2"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0",
-    "supertest": "^7.0.0"
-  }
+    "dependencies": {
+        "axios": "^1.8.2",
+        "express": "^4.21.2",
+        "dotenv": "^16.0.0",
+        "@google/generative-ai": "0.8.0"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0",
+        "supertest": "^7.0.0"
+    }
 }

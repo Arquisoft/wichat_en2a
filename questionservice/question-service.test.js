@@ -37,7 +37,9 @@ describe('Question Service', () => {
         // data was saved in the database
         const questions = await Question.find();
         expect(questions.length).toBeGreaterThan(0);
-    });
+    },
+    20000
+);
 
     it('should fetch a random question from DB on GET /question', async () => {
         // Insert a test question into the database

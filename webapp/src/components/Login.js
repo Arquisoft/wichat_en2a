@@ -1,10 +1,11 @@
-// src/components/Login.js
 import React, { useState } from 'react';
 import axios from 'axios';
+//const dotenv = require('dotenv');
+//dotenv.config();
 import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
 import { Typewriter } from "react-simple-typewriter";
 
-const Login = () => {
+const Login = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -14,31 +15,31 @@ const Login = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
-  const apiKey = process.env.REACT_APP_LLM_API_KEY || 'None';
 
   const loginUser = async () => {
     try {
       const response = await axios.post(`${apiEndpoint}/login`, { username, password });
 
-      const question = "Please, generate a greeting message for a student called " + username + " that is a student of the Software Architecture course in the University of Oviedo. Be nice and polite. Two to three sentences max.";
+      //const question = "Please, generate a greeting message for a student called " + username + " that is a student of the Software Architecture course in the University of Oviedo. Be nice and polite. Two to three sentences max.";
+      const question = "Please, generate a clue that is related to Spain but without saying nothing that includes words like spain or spanish";
       const model = "empathy"
 
-      if (apiKey==='None'){
-        setMessage("LLM API key is not set. Cannot contact the LLM.");
-      }
-      else{
-        const message = await axios.post(`${apiEndpoint}/askllm`, { question, model, apiKey })
-        setMessage(message.data.answer);
-      }
+      
+      const messageResponse = await axios.post(`${apiEndpoint}/askllm`, { question, model });
+      setMessage(messageResponse.data.answer);
+      
+
       // Extract data from the response
       const { createdAt: userCreatedAt } = response.data;
 
       setCreatedAt(userCreatedAt);
       setLoginSuccess(true);
-
       setOpenSnackbar(true);
+
+      // Notifies App.js in order to change its view to the Home page
+      onLoginSuccess();
     } catch (error) {
-      setError(error.response.data.error);
+      setError(error.response?.data?.error || 'Login failed');
     }
   };
 
