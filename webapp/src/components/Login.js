@@ -24,12 +24,10 @@ const Login = ({ onLoginSuccess }) => {
       const question = "Please, generate a clue that is related to Spain but without saying nothing that includes words like spain or spanish";
       const model = "empathy"
 
-      if (apiKey === 'None') {
-        setMessage("LLM API key is not set. Cannot contact the LLM.");
-      } else {
-        const messageResponse = await axios.post(`${apiEndpoint}/askllm`, { question, model, apiKey });
-        setMessage(messageResponse.data.answer);
-      }
+      
+      const messageResponse = await axios.post(`${apiEndpoint}/askllm`, { question, model });
+      setMessage(messageResponse.data.answer);
+      
 
       // Extract data from the response
       const { createdAt: userCreatedAt } = response.data;
