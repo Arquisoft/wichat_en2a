@@ -1,22 +1,13 @@
 const request = require("supertest");
 const axios = require("axios");
 const app = require("./llm-service");
-const e = require("express");
+const { generateTemplateMocks } = require("./__mocks__/testUtils");
 
 afterAll(async () => {
   app.close();
 });
 
 jest.mock("axios");
-
-function generateTemplateMocks() {
-  axios.post.mockImplementation((url, data) => {
-    // response.data.choices[0]?.message?.content,
-    return Promise.resolve({
-      data: { choices: [{ message: { content: "llmanswer" } }] },
-    });
-  });
-}
 
 describe("Error handling", () => {
   beforeEach(() => {
