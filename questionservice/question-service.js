@@ -45,7 +45,7 @@ async function fetchFlagData() {
 
             try {
                 // Call the LLM service to generate incorrect answers
-                const llmResponse = await axios.post('http://localhost:8003/generateIncorrectOptions', {
+                const llmResponse = await axios.post('http://llmservice:8003/generateIncorrectOptions', {
                     model: "empathy",
                     correctAnswer: correctAnswer
                 });
