@@ -76,6 +76,7 @@ services:
     build: ./questionservice
     depends_on:
       - mongodb
+      - llmservice
     ports:
       - "8004:8004"
     networks:
