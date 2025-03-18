@@ -44,8 +44,9 @@ async function fetchFlagData() {
             const imageUrl = entry.flag.value;
 
             try {
-                // Call the LLM service to generate incorrect answers
-                const llmResponse = await axios.post('http://localhost:8003/generateIncorrectOptions', {
+                // Call the LLM service to generate incorrect answers, if you are running the application with npm start, then
+                // use this link: 'http://localhost:8003/generateIncorrectOptions'
+                const llmResponse = await axios.post('http://llmservice:8003/generateIncorrectOptions', {
                     model: "empathy",
                     correctAnswer: correctAnswer
                 });
