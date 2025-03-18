@@ -83,6 +83,7 @@ services:
       - mynetwork
     environment:
       MONGODB_URI: mongodb://mongodb:27017/mongo-db-wichat_en2a
+      LLM_SERVICE_URL: http://llmservice:8003
 
   webapp:
     container_name: webapp-wichat_en2a

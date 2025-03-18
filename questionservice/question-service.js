@@ -11,6 +11,7 @@ app.use(express.json());
 
 // Define the connection URL
 const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mongo-db-wichat_en2a';
+const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
 
 // Connect to MongoDB
 mongoose.connect(mongoURI)
@@ -46,7 +47,8 @@ async function fetchFlagData() {
             try {
                 // Call the LLM service to generate incorrect answers, if you are running the application with npm start, then
                 // use this link: 'http://localhost:8003/generateIncorrectOptions'
-                const llmResponse = await axios.post('http://llmservice:8003/generateIncorrectOptions', {
+                console.log('Link to llm is ', llmServiceUrl);
+                const llmResponse = await axios.post(llmServiceUrl + '/generateIncorrectOptions', {
                     model: "empathy",
                     correctAnswer: correctAnswer
                 });
