@@ -22,7 +22,7 @@ jobs:
     - run: npm --prefix users/authservice test -- --coverage
     - run: npm --prefix users/userservice test -- --coverage
     - run: npm --prefix llmservice test -- --coverage
-    - run: npm --prefix questionservice -- --coverage
+    - run: npm --prefix questionservice test -- --coverage
     - run: npm --prefix gatewayservice test -- --coverage
     - run: npm --prefix webapp test -- --coverage
     - name: Analyze with SonarQube
