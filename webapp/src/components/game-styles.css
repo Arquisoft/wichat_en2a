@@ -1,0 +1,9 @@
+/* styles.css */
+.MuiContainer-maxWidthXs {
+    max-width: none !important;
+    width: 100vw;
+    height: 100vh;
+    margin: 0 auto;
+    text-align: center;
+    padding: 1rem;
+}
