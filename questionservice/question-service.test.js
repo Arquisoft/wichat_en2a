@@ -1,9 +1,37 @@
 const request = require('supertest');
+const axios = require('axios');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const Question = require('./question-model');
 
 let mongoServer;
 let app;
+
+jest.mock('axios');
+
+axios.post.mockImplementation((url) => {
+    if (url.includes('generateIncorrectOptions')) {
+      return Promise.resolve({
+        data: { incorrectOptions: ["Incorrect1", "Incorrect2", "Incorrect3"] },
+      });
+    }
+});
+
+axios.get.mockImplementation((url) => {
+    if (url.includes('wikidata')) {
+        return Promise.resolve({
+            data: {
+            results: {
+                bindings: [
+                {
+                    countryLabel: { value: 'CorrectAnswer' },
+                    flag: { value: 'https://example.com/flag.png' },
+                },
+                ],
+            },
+            },
+        });
+    }
+});
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -37,8 +65,7 @@ describe('Question Service', () => {
         // data was saved in the database
         const questions = await Question.find();
         expect(questions.length).toBeGreaterThan(0);
-    },
-    20000
+    }
 );
 
     it('should fetch a random question from DB on GET /question', async () => {
