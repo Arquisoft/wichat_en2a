@@ -175,4 +175,25 @@ describe("Question Service Error Handling", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({ isCorrect: false });
   });
+
+  it("should return the question with only the correct answer on POST /fetch-flag-data if the LLM throws an error", async () => {
+    axios.post.mockImplementationOnce(() => {
+      if (url.includes("generateIncorrectOptions")) {
+        return new Error("The LLM has thrown an error");
+      }
+    });
+
+    const response = await request(app).post("/fetch-flag-data");
+
+    // Check the response status and body
+    expect(response.statusCode).toBe(200); //200 is HTTP status code for a successful request
+    expect(response.body).toBeInstanceOf(Array);
+    expect(response.body.length).toBeGreaterThan(0);
+
+    // data was saved in the database
+    const questions = await Question.find();
+    expect(questions.length).toBeGreaterThan(0);
+
+
+  });
 });
