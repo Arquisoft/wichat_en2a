@@ -55,12 +55,12 @@ async function fetchFlagData() {
 
                 const incorrectOptions = llmResponse.data.incorrectOptions;
                 const options = [correctAnswer, ...incorrectOptions];
-                const optionsShuffled = options.sort(() => Math.random() - 0.5);
+                options.sort(() => Math.random() - 0.5);
 
                 return {
                     type: 'flag',
                     imageUrl: imageUrl,
-                    options: optionsShuffled,
+                    options: options,
                     correctAnswer: correctAnswer
                 };
             } catch (llmError) {
