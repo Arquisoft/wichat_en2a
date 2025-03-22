@@ -140,7 +140,7 @@ describe("Question Service Error Handling", () => {
 
   it("should return an error if questionId is missing on POST /check-answer", async () => {
     // Insert a test question into the database
-    const savedQuestion = await addMockQuestionToDB();
+    await addMockQuestionToDB();
 
     // Make a POST request to /check-answer without questionId
     const response = await request(app)
