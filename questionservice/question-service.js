@@ -137,7 +137,11 @@ app.get('/question', async (req, res) => {
     }
 });
 
-// Endpoint to check an answer
+/**
+ * Endpoint to check if the selected answer is correct
+ * 
+ * @returns {Object} - A JSON object with the key isCorrect and a boolean value indicating if the answer is correct. It will also return false if the question is not found.
+ */
 app.post('/check-answer', async (req, res) => {
     try {
         const { questionId, selectedAnswer } = req.body;
