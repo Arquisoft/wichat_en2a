@@ -11,6 +11,7 @@ app.use(express.json());
 
 // Define the connection URL
 const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mongo-db-wichat_en2a';
+const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
 
 // Connect to MongoDB
 mongoose.connect(mongoURI)
@@ -44,14 +45,17 @@ async function fetchFlagData() {
             const imageUrl = entry.flag.value;
 
             try {
-                // Call the LLM service to generate incorrect answers
-                const llmResponse = await axios.post('http://localhost:8003/generateIncorrectOptions', {
+                // Call the LLM service to generate incorrect answers, if you are running the application with npm start, then
+                // use this link: 'http://localhost:8003/generateIncorrectOptions'
+                console.log('Link to llm is ', llmServiceUrl);
+                const llmResponse = await axios.post(llmServiceUrl + '/generateIncorrectOptions', {
                     model: "empathy",
                     correctAnswer: correctAnswer
                 });
 
                 const incorrectOptions = llmResponse.data.incorrectOptions;
                 const options = [correctAnswer, ...incorrectOptions];
+                options.sort(() => Math.random() - 0.5);
 
                 return {
                     type: 'flag',
@@ -133,7 +137,11 @@ app.get('/question', async (req, res) => {
     }
 });
 
-// Endpoint to check an answer
+/**
+ * Endpoint to check if the selected answer is correct
+ * 
+ * @returns {Object} - A JSON object with the key isCorrect and a boolean value indicating if the answer is correct. It will also return false if the question is not found.
+ */
 app.post('/check-answer', async (req, res) => {
     try {
         const { questionId, selectedAnswer } = req.body;
