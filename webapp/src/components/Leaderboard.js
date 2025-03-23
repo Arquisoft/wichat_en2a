@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { 
-  Paper, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
+import React, {useEffect, useState} from "react";
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
   TableRow,
   Typography,
   CircularProgress,
@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import Navbar from './Navbar';
 
-const Leaderboard = ({ onNavigate }) => {
+const Leaderboard = () => {
   const [players, setPlayers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,81 +36,94 @@ const Leaderboard = ({ onNavigate }) => {
         setLoading(false);
       }
     }
+
     fetchLeaderboard();
   }, []);
 
   if (loading) {
     return (
-      <>
-      <Navbar onNavigate={onNavigate}/>
-      <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-        <CircularProgress />
-      </Box>
-      </>
+        <>
+          <Navbar/>
+          <Box sx={{display: 'flex', justifyContent: 'center', my: 4}}>
+            <CircularProgress/>
+          </Box>
+        </>
     );
   }
 
   if (error) {
     return (
-      <>
-      <Navbar onNavigate={onNavigate}/>
-      <Box sx={{ my: 2, textAlign: 'center' }}>
-        <Typography color="error">{error}</Typography>
-      </Box>
-      </>
+        <>
+          <Navbar/>
+          <Box sx={{my: 2, textAlign: 'center'}}>
+            <Typography color="error">{error}</Typography>
+          </Box>
+        </>
     );
   }
 
   return (
-    <>
-    <Navbar onNavigate={onNavigate}/>
-    <Paper elevation={3} sx={{ width: '100%', overflow: 'hidden', mt: 2 }}>
-      <Typography variant="h6" sx={{ p: 2, bgcolor: 'primary.main', color: 'white' }}>
-        Leaderboard
-      </Typography>
-      <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="leaderboard table" size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>User</TableCell>
-              <TableCell align="right">Total Score</TableCell>
-              <TableCell align="right">Games</TableCell>
-              <TableCell align="right">Avg. Score</TableCell>
-              <TableCell align="right">Win-rate (%)</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {players.length > 0 ? (
-              players.map((player, index) => (
-                <TableRow 
-                  key={player._id}
-                  sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {player.username}
-                  </TableCell>
-                  <TableCell align="right">{player.totalScore}</TableCell>
-                  <TableCell align="right">{player.gamesPlayed}</TableCell>
-                  <TableCell align="right">
-                    {player.avgPointsPerGame?.toFixed(2) || "N/A"}
-                  </TableCell>
-                  <TableCell align="right">
-                    {player.winRate?.toFixed(2) || "0.00"}%
-                  </TableCell>
+      <>
+        <Navbar/>
+        <Paper elevation={3}
+               sx={{
+                 width: '100%',
+                 overflow: 'hidden',
+                 mt: 2
+               }}
+        >
+          <Typography variant="h6"
+                      sx={{
+                        p: 2,
+                        bgcolor: 'primary.main',
+                        color: 'white'
+                      }}
+          >
+            Leaderboard
+          </Typography>
+          <TableContainer sx={{maxHeight: 440}}>
+            <Table stickyHeader aria-label="leaderboard table" size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>User</TableCell>
+                  <TableCell align="right">Total Score</TableCell>
+                  <TableCell align="right">Games</TableCell>
+                  <TableCell align="right">Avg. Score</TableCell>
+                  <TableCell align="right">Win-rate (%)</TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} align="center">
-                  No player data available
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
-    </>
+              </TableHead>
+              <TableBody>
+                {players.length > 0 ? (
+                    players.map((player, index) => (
+                        <TableRow
+                            key={player._id}
+                            sx={{'&:nth-of-type(odd)': {bgcolor: 'action.hover'}}}
+                        >
+                          <TableCell component="th" scope="row">
+                            {player.username}
+                          </TableCell>
+                          <TableCell align="right">{player.totalScore}</TableCell>
+                          <TableCell align="right">{player.gamesPlayed}</TableCell>
+                          <TableCell align="right">
+                            {player.avgPointsPerGame?.toFixed(2) || "N/A"}
+                          </TableCell>
+                          <TableCell align="right">
+                            {player.winRate?.toFixed(2) || "0.00"}%
+                          </TableCell>
+                        </TableRow>
+                    ))
+                ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center">
+                        No player data available
+                      </TableCell>
+                    </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      </>
   );
 };
 
