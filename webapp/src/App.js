@@ -1,72 +1,102 @@
-import React, { useState } from 'react';
-import AddUser from './components/AddUser';
+import React, { useEffect, useState } from 'react';
+import {Routes, Route, Link, useNavigate} from 'react-router-dom';
+import Register from './components/Register';
 import Login from './components/Login';
 import Home from './components/Home';
 import Game from './components/Game';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
 import Leaderboard from './components/Leaderboard';
 import axios from 'axios';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
 function App() {
-  const [view, setView] = useState('login'); // Possible values: 'login', 'register', 'home', 'game'
-  const [error, setError] = useState(null); // ✅ FIXED: Added state for error messages
+    const navigate = useNavigate(); // Hook for routes
+    const [error, setError] = useState(null); // state of error messages
+    const [initializing, setInitializing] = useState(true); //state for tracking initialization
 
-  // Handle whether authentication (login/register) worked, and show the Home view if it did by default.
-  // Otherwise, go to the provided view
-  const handleAuthSuccess = async (nextView = 'home') => {
-    try {
-      // Fetch flag data to load questions in the database
-      await axios.post(`${apiEndpoint}/fetch-flag-data`);
-      console.log('Flag data loaded successfully');
-    } catch (error) {
-      setError(error.response?.data?.error || 'Fetching flags failed'); // ✅ FIXED: Now it works
-      console.error('Error fetching flag data:', error);
+    //Load question from wikidata just when deploying the application
+    useEffect(() => {
+        const initializeQuestions = async () => {
+            try {
+                console.log("Checking and initializing question data...");
+                await axios.post(`${apiEndpoint}/fetch-flag-data`);
+                console.log('Database initialized successfully');
+            } catch (error) {
+                setError(error.response?.data?.error || 'Error initializing database');
+                console.error('Error during initialization:', error);
+            } finally {
+                setInitializing(false); // Finaliza la inicialización
+            }
+        };
+
+        initializeQuestions(); // Llama al inicializador
+    }, []);
+
+    //Load message when initializing
+    if (initializing) {
+        return (
+            <Container component="main" maxWidth="xs">
+                <CssBaseline />
+                <Typography component="h1" variant="h5" align="center" sx={{ marginTop: 2 }}>
+                    Initializing the game... Please wait
+                </Typography>
+            </Container>
+        );
     }
 
-    setView(nextView);
-  };
+    return (
+        <Container component="main" maxWidth="xs">
+            <CssBaseline/>
+            <Typography component="h1" variant="h5" align="center" sx={{marginTop: 2}}>
+                Welcome to our Quiz game!
+            </Typography>
 
-  return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Typography component="h1" variant="h5" align="center" sx={{ marginTop: 2 }}>
-        Welcome to our Quiz game!
-      </Typography>
+            {/* Muestra mensaje de error si existe */}
+            {error && (
+                <Typography color="error" sx={{textAlign: 'center', mt: 2}}>
+                    {error}
+                </Typography>
+            )}
 
-      {/* Show error message if exists */}
-      {error && (
-        <Typography color="error" sx={{ textAlign: 'center', mt: 2 }}>
-          {error}
-        </Typography>
-      )}
+            {/* Rutas principales */}
+            <Routes>
+                <Route path="/" element={<Login onLoginSuccess={
+                    () => navigate('/home')} />} />
+                <Route path="/register" element={<Register onRegisterSuccess={
+                    () => navigate('/home')} />} />
+                <Route path="/home" element={<Home/>}/>
+                <Route path="/game" element={<Game/>}/>
+                <Route path="/leaderboard" element={<Leaderboard/>}/>
+            </Routes>
 
-      {/* Show the correct view depending on the current view */}
-      {view === 'login' && <Login onLoginSuccess={handleAuthSuccess} />}
-      {view === 'register' && <AddUser onRegisterSuccess={handleAuthSuccess} />}
-      {view === 'home' && <Home onNavigate={setView} />}
-      {view === 'leaderboard' && <Leaderboard onNavigate={setView} />}
-      {view === 'game' && <Game onNavigate={setView} />}
-
-      {/* Links to navigate through login and registration */}
-      <Typography component="div" align="center" sx={{ marginTop: 2 }}>
-        {view === 'login' && (
-          <Link name="gotoregister" component="button" variant="body2" onClick={() => setView('register')}>
-            Don't have an account? Register here.
-          </Link>
-        )}
-        {view === 'register' && (
-          <Link component="button" variant="body2" onClick={() => setView('login')}>
-            Already have an account? Login here.
-          </Link>
-        )}
-      </Typography>
-    </Container>
-  );
+            {/* Enlaces para navegación (solo visibles desde login/register) */}
+            <Typography component="div" align="center" sx={{marginTop: 2}}>
+                <Routes>
+                    <Route
+                        path="/"
+                        element={
+                            <Link name="gotoregister" component="button" variant="body2"
+                                  onClick={() => navigate('/register')}>
+                                Don't have an account? Register here.
+                            </Link>
+                        }
+                    />
+                    <Route
+                        path="/register"
+                        element={
+                            <Link component="button" variant="body2" onClick={() => navigate('/')}>
+                                Already have an account? Login here.
+                            </Link>
+                        }
+                    />
+                </Routes>
+            </Typography>
+        </Container>
+    );
 }
+
 
 export default App;
