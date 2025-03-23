@@ -101,9 +101,9 @@ app.post("/ask", async (req, res) => {
     2. If the user is asking for a hint, clue or help what you MUST do is giving a helpful hint without saying the correct answer or giving it away directly.
     3. If the user is asking for the answer or trying to guess the answer (e.g., "Is it ___?", "Tell me the answer", "What is it?"), respond ONLY with:
       "My apologies, I can not give you the answer to the question, nor confirming any of your guesses, but you can ask for a hint."
-    4. If the user says something unrelated to the original question, reply with:
+    4. If the user says something unrelated to the original question or if it is empty, reply with:
       "My apologies, that is not related to the question. Do you want a hint?"
-    5. Never say, under ANY CIRCUNSTANCES the answer directly, you just must provide hints.
+    5. Never say the answer directly under ANY CIRCUNSTANCES. You just must provide hints.
     `;  
 
     let answer;
