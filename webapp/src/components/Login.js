@@ -11,7 +11,6 @@ const Login = ({ onLoginSuccess }) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loginSuccess, setLoginSuccess] = useState(false);
-  const [createdAt, setCreatedAt] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
@@ -19,21 +18,6 @@ const Login = ({ onLoginSuccess }) => {
   const loginUser = async () => {
     try {
       const response = await axios.post(`${apiEndpoint}/login`, { username, password });
-
-      //const question = "Please, generate a greeting message for a student called " + username + " that is a student of the Software Architecture course in the University of Oviedo. Be nice and polite. Two to three sentences max.";
-      const question = "Please, generate a clue that is related to Spain but without saying nothing that includes words like spain or spanish";
-      const model = "empathy"
-
-      
-      const messageResponse = await axios.post(`${apiEndpoint}/askllm`, { question, model });
-      setMessage(messageResponse.data.answer);
-      
-
-      // Extract data from the response
-      const { createdAt: userCreatedAt } = response.data;
-
-      setCreatedAt(userCreatedAt);
-      setLoginSuccess(true);
       setOpenSnackbar(true);
 
       // Notifies App.js in order to change its view to the Home page
@@ -57,9 +41,6 @@ const Login = ({ onLoginSuccess }) => {
             cursorStyle="|"
             typeSpeed={50} // Typing speed in ms
           />
-          <Typography component="p" variant="body1" sx={{ textAlign: 'center', marginTop: 2 }}>
-            Your account was created on {new Date(createdAt).toLocaleDateString()}.
-          </Typography>
         </div>
       ) : (
         <div>
