@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import {Routes, Route, Link, useNavigate} from 'react-router-dom';
 import AddUser from './components/AddUser';
 import Login from './components/Login';
 import Home from './components/Home';
@@ -12,48 +13,68 @@ import axios from 'axios';
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
 function App() {
-  const [view, setView] = useState('login'); // Possible values: 'login', 'register', 'home', 'game'
-  const [error, setError] = useState(null);
+    const navigate = useNavigate(); // Hook for routes
+    const [error, setError] = useState(null); // state of error messages
+    const [initializing, setInitializing] = useState(true); //state for tracking initialization
 
-  // Handle whether authentication (login/register) worked, and show the Home view if it did by default.
-  // Otherwise, go to the provided view
-  const handleAuthSuccess = async (nextView = 'home') => {
-    if (nextView =='home'){
-      try {
-        // Fetch flag data to load questions in the database
-        await axios.post(`${apiEndpoint}/fetch-flag-data`);
-        console.log('Flag data loaded successfully');
-      } catch (error) {
-        setError(error.response?.data?.error || 'Fetching flags failed');
-        console.error('Error fetching flag data:', error);
-      }
-    }
+    //Load question from wikidata just when deploying the application
+    useEffect(() => {
+        const initializeQuestions = async () => {
+            try {
+                console.log("Checking and initializing question data...");
+                await axios.post(`${apiEndpoint}/fetch-flag-data`);
+                console.log('Database initialized successfully');
+            } catch (error) {
+                setError(error.response?.data?.error || 'Error initializing database');
+                console.error('Error during initialization:', error);
+            } finally {
+                setInitializing(false); // Finaliza la inicialización
+            }
+        };
+        navigate('/login');
 
-    setView(nextView);
-  };
+        initializeQuestions(); // Llama al inicializador
+    }, []);
 
-  return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
-      <Typography component="h1" variant="h5" align="center" sx={{ marginTop: 2 }}>
-        Welcome to our Quiz game!
-      </Typography>
+    //Load message when initializing
+    /*if (initializing) {
+        return (
+            <Container component="main" maxWidth="xs">
+                <CssBaseline />
+                <Typography component="h1" variant="h5" align="center" sx={{ marginTop: 2 }}>
+                    Initializing the game... Please wait
+                </Typography>
+            </Container>
+        );
+    }*/
 
-      {/* Show error message if exists */}
-      {error && (
-        <Typography color="error" sx={{ textAlign: 'center', mt: 2 }}>
-          {error}
-        </Typography>
-      )}
+    return (
+        <Container component="main" maxWidth="xs">
+            <CssBaseline/>
+            <Typography component="h1" variant="h5" align="center" sx={{marginTop: 2}}>
+                Welcome to our Quiz game!
+            </Typography>
 
-      {/* Show the correct view depending on the current view */}
-      {view === 'login' && <Login onLoginSuccess={handleAuthSuccess} />}
-      {view === 'register' && <AddUser onRegisterSuccess={handleAuthSuccess} />}
-      {view === 'home' && <Home onNavigate={setView} />}
-      {view === 'leaderboard' && <Leaderboard onNavigate={setView} />}
-      {view === 'game' && <Game onNavigate={setView} />}
-    </Container>
-  );
+            {/* Muestra mensaje de error si existe */}
+            {error && (
+                <Typography color="error" sx={{textAlign: 'center', mt: 2}}>
+                    {error}
+                </Typography>
+            )}
+
+            {/* Rutas principales */}
+            <Routes>
+                <Route path="/login" element={<Login onLoginSuccess={
+                    () => navigate('/home')} />} />
+                <Route path="/register" element={<AddUser onRegisterSuccess={
+                    () => navigate('/login')} />} />
+                <Route path="/home" element={<Home/>}/>
+                <Route path="/game" element={<Game/>}/>
+                <Route path="/leaderboard" element={<Leaderboard/>}/>
+            </Routes>
+        </Container>
+    );
 }
+
 
 export default App;
