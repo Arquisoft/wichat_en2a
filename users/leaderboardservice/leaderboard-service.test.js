@@ -1,8 +1,8 @@
 const request = require('supertest');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
-const User = require('./user-model');
-const Score = require('./score-model');
+const User = require('../userservice/user-model');
+const Score = require('../common/score-model');
 
 let mongoServer;
 let app;

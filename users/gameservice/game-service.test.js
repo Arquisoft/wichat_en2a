@@ -1,7 +1,7 @@
 const request = require('supertest');
 const { MongoMemoryServer } = require('mongodb-memory-server');
-const User = require('./user-model');
-const Score = require('./score-model');
+const User = require('../userservice/user-model');
+const Score = require('../common/score-model');
 const mongoose = require('mongoose');
 const TEST_PASSWORD = 'test_password_123'; // NOSONAR
 

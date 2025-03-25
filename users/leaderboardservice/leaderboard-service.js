@@ -1,11 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const User = require('./user-model')
-const Score = require('./score-model')
+const User = require('../userservice/user-model')
+const Score = require('../common/score-model')
 const app = express();
 app.disable('x-powered-by');
-const port = 8003; 
+const port = 8006; 
 
 // Middleware to parse JSON in request body
 app.use(express.json());
@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.json());
 
 // Connect to MongoDB
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/leaderboarddb';
 mongoose.connect(mongoUri);
 
 // endpoint for LEaderboard
