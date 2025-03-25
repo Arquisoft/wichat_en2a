@@ -3,16 +3,30 @@ import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import AddUser from './AddUser';
+import { MemoryRouter } from 'react-router-dom';
 
 const mockAxios = new MockAdapter(axios);
 
+//useNavigate Mock
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: jest.fn(),
+}));
+
 describe('AddUser component', () => {
+  const mockNavigate = jest.fn();
+
   beforeEach(() => {
-    mockAxios.reset();
+    mockNavigate.mockClear(); // Clear mock before the start of each test
+    jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(mockNavigate);
   });
 
   it('should disable the Add User button when inputs are empty', () => {
-    render(<AddUser />);
+    render(
+        <MemoryRouter>
+          <AddUser />
+        </MemoryRouter>
+    );
 
     const addUserButton = screen.getByRole('button', { name: /Add User/i });
 
@@ -20,9 +34,12 @@ describe('AddUser component', () => {
     expect(addUserButton).toBeDisabled();
   });
 
-  it('should add user successfully and call onRegisterSuccess', async () => {
-    const mockOnRegisterSuccess = jest.fn();
-    render(<AddUser onRegisterSuccess={mockOnRegisterSuccess} />);
+  it('should add user successfully and navigate to login', async () => {
+    render(
+        <MemoryRouter>
+          <AddUser />
+        </MemoryRouter>
+    );
 
     const usernameInput = screen.getByLabelText(/Username/i);
     const passwordInput = screen.getByLabelText(/Password/i);
@@ -41,12 +58,16 @@ describe('AddUser component', () => {
     // Wait for the Snackbar to be open
     await waitFor(() => {
       expect(screen.getByText(/User added successfully/i)).toBeInTheDocument();
-      expect(mockOnRegisterSuccess).toHaveBeenCalledWith('login'); // Should go to login view
+      expect(mockNavigate).toHaveBeenCalledWith('/login'); // Should go to login view
     });
   });
 
   it('should handle error when adding user', async () => {
-    render(<AddUser />);
+    render(
+        <MemoryRouter>
+          <AddUser />
+        </MemoryRouter>
+    );
 
     const usernameInput = screen.getByLabelText(/Username/i);
     const passwordInput = screen.getByLabelText(/Password/i);

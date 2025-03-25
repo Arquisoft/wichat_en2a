@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Container, Typography, TextField, Button, Snackbar, Link } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
-const AddUser = ({ onRegisterSuccess }) => {
+const AddUser = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const navigate = useNavigate();
 
   const addUser = async () => {
     if (!username || !password) {
@@ -20,7 +22,7 @@ const AddUser = ({ onRegisterSuccess }) => {
       await axios.post(`${apiEndpoint}/adduser`, { username, password });
       setOpenSnackbar(true);
       setError('');
-      onRegisterSuccess('login'); // Redirects to the login page once a user is registered
+      navigate('/login'); // Redirects to the login page once a user is registered
     } catch (error) {
       setError(error.response?.data?.error || 'Registration failed');
     }
@@ -62,13 +64,14 @@ const AddUser = ({ onRegisterSuccess }) => {
         Add User
       </Button>
       <Typography align="center" sx={{ mt: 2 }}>
-        <Link component="button" variant="body2" onClick={() => onRegisterSuccess('login')}>
+        <Link component="button" variant="body2" onClick={() => navigate('/login')}>
           Already have an account? Login here.
         </Link>
       </Typography>
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} message="User added successfully" />
       {error && (
-        <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')} message={`Error: ${error}`} />
+        <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')}
+                  message={`Error: ${error}`} />
       )}
     </Container>
   );

@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Game from './Game';
+import { MemoryRouter } from 'react-router-dom';
 
 const mockAxios = new MockAdapter(axios);
 const apiEndpoint = 'http://localhost:8000';
@@ -15,7 +16,11 @@ describe('Game Component', () => {
     });
 
     test('renders loading state initially', () => {
-        render(<Game onNavigate={mockOnNavigate} />);
+        render(
+            <MemoryRouter>
+                <Game onNavigate={mockOnNavigate} />
+            </MemoryRouter>
+        );
         expect(screen.getByRole('progressbar')).toBeInTheDocument();
     });
 
@@ -28,7 +33,11 @@ describe('Game Component', () => {
 
         mockAxios.onGet(`${apiEndpoint}/question`).reply(200, mockQuestion);
 
-        render(<Game onNavigate={mockOnNavigate} />);
+        render(
+            <MemoryRouter>
+                <Game onNavigate={mockOnNavigate} />
+            </MemoryRouter>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
@@ -46,7 +55,11 @@ describe('Game Component', () => {
     test('shows an error message if fetching fails', async () => {
         mockAxios.onGet(`${apiEndpoint}/question`).reply(500);
 
-        render(<Game onNavigate={mockOnNavigate} />);
+        render(
+            <MemoryRouter>
+                <Game onNavigate={mockOnNavigate} />
+            </MemoryRouter>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/Failed to load question/i)).toBeInTheDocument();
@@ -65,7 +78,11 @@ describe('Game Component', () => {
         mockAxios.onGet(`${apiEndpoint}/question`).reply(200, mockQuestion);
         mockAxios.onPost(`${apiEndpoint}/askllm`).reply(200, mockHint);
 
-        render(<Game onNavigate={mockOnNavigate} />);
+        render(
+            <MemoryRouter>
+                <Game onNavigate={mockOnNavigate} />
+            </MemoryRouter>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
@@ -88,7 +105,11 @@ describe('Game Component', () => {
 
         mockAxios.onGet(`${apiEndpoint}/question`).reply(200, mockQuestion);
 
-        render(<Game onNavigate={mockOnNavigate} />);
+        render(
+            <MemoryRouter>
+                <Game onNavigate={mockOnNavigate} />
+            </MemoryRouter>
+        );
 
         await waitFor(() => {
             expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
