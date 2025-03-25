@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-//const dotenv = require('dotenv');
-//dotenv.config();
-import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
+import { Container, Typography, TextField, Button, Snackbar, Link } from '@mui/material';
 import { Typewriter } from "react-simple-typewriter";
 
 const Login = ({ onLoginSuccess }) => {
@@ -11,7 +9,6 @@ const Login = ({ onLoginSuccess }) => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loginSuccess, setLoginSuccess] = useState(false);
-  const [createdAt, setCreatedAt] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
@@ -19,25 +16,8 @@ const Login = ({ onLoginSuccess }) => {
   const loginUser = async () => {
     try {
       const response = await axios.post(`${apiEndpoint}/login`, { username, password });
-
-      //const question = "Please, generate a greeting message for a student called " + username + " that is a student of the Software Architecture course in the University of Oviedo. Be nice and polite. Two to three sentences max.";
-      const question = "Please, generate a clue that is related to Spain but without saying nothing that includes words like spain or spanish";
-      const model = "empathy"
-
-      
-      const messageResponse = await axios.post(`${apiEndpoint}/askllm`, { question, model });
-      setMessage(messageResponse.data.answer);
-      
-
-      // Extract data from the response
-      const { createdAt: userCreatedAt } = response.data;
-
-      setCreatedAt(userCreatedAt);
-      setLoginSuccess(true);
       setOpenSnackbar(true);
-
-      // Notifies App.js in order to change its view to the Home page
-      onLoginSuccess();
+      onLoginSuccess(); // Notifies App.js in order to change its view to the Home page
     } catch (error) {
       setError(error.response?.data?.error || 'Login failed');
     }
@@ -52,14 +32,11 @@ const Login = ({ onLoginSuccess }) => {
       {loginSuccess ? (
         <div>
           <Typewriter
-            words={[message]} // Pass your message as an array of strings
+            words={[message]}
             cursor
             cursorStyle="|"
-            typeSpeed={50} // Typing speed in ms
+            typeSpeed={50}
           />
-          <Typography component="p" variant="body1" sx={{ textAlign: 'center', marginTop: 2 }}>
-            Your account was created on {new Date(createdAt).toLocaleDateString()}.
-          </Typography>
         </div>
       ) : (
         <div>
@@ -81,9 +58,19 @@ const Login = ({ onLoginSuccess }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <Button variant="contained" color="primary" onClick={loginUser}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={loginUser}
+            sx={{ mt: 2 }}
+          >
             Login
           </Button>
+          <Typography align="center" sx={{ mt: 2 }}>
+            <Link component="button" variant="body2" onClick={() => onLoginSuccess('register')}>
+              Don't have an account? Register here.
+            </Link>
+          </Typography>
           <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} message="Login successful" />
           {error && (
             <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')} message={`Error: ${error}`} />
