@@ -2,17 +2,17 @@ import React from 'react';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import Register from './Register';
+import AddUser from './AddUser';
 
 const mockAxios = new MockAdapter(axios);
 
-describe('Register component', () => {
+describe('AddUser component', () => {
   beforeEach(() => {
     mockAxios.reset();
   });
 
   it('should disable the Add User button when inputs are empty', () => {
-    render(<Register />);
+    render(<AddUser />);
 
     const addUserButton = screen.getByRole('button', { name: /Add User/i });
 
@@ -22,7 +22,7 @@ describe('Register component', () => {
 
   it('should add user successfully and call onRegisterSuccess', async () => {
     const mockOnRegisterSuccess = jest.fn();
-    render(<Register onRegisterSuccess={mockOnRegisterSuccess} />);
+    render(<AddUser onRegisterSuccess={mockOnRegisterSuccess} />);
 
     const usernameInput = screen.getByLabelText(/Username/i);
     const passwordInput = screen.getByLabelText(/Password/i);
@@ -46,7 +46,7 @@ describe('Register component', () => {
   });
 
   it('should handle error when adding user', async () => {
-    render(<Register />);
+    render(<AddUser />);
 
     const usernameInput = screen.getByLabelText(/Username/i);
     const passwordInput = screen.getByLabelText(/Password/i);

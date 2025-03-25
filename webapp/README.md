@@ -43,13 +43,13 @@ test('renders welcome message', () => {
 This example is pretty simple as it is only checking that the app is rendering correctly. Other tests are more complex as they depend on other components. As we are performing unitary testing, we need to decouple these dependencies, mocking the components that we do not want to test. For instance:
 
 ```javascript
-describe('Register component', () => {
+describe('AddUser component', () => {
   beforeEach(() => {
     mockAxios.reset();
   });
 
   it('should add user successfully', async () => {
-    render(<Register />);
+    render(<AddUser />);
 
     const usernameInput = screen.getByLabelText(/Username/i);
     const passwordInput = screen.getByLabelText(/Password/i);
@@ -72,7 +72,7 @@ describe('Register component', () => {
   });
 ...
 ```
-This would be a test for adding a user in the `Register` component. As you can see, the call to the service handling new users is mocked so its returning an OK response. If you check the file `Register.test.js` you can see a similar example but returning a negative response.
+This would be a test for adding a user in the `AddUser` component. As you can see, the call to the service handling new users is mocked so its returning an OK response. If you check the file `AddUser.test.js` you can see a similar example but returning a negative response.
 
 In order to execute these unitary tests we need to execute `npm test`. The tests are executed using jest. 
 

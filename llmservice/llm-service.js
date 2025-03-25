@@ -9,7 +9,8 @@ const port = 8003;
 
 // Middleware to parse JSON in request body
 app.use(express.json());
- 
+
+// 
 const llmConfigs = {
   empathy: {
     url: () => "https://empathyai.prod.empathy.co/v1/chat/completions",
@@ -68,6 +69,7 @@ async function sendQuestionToLLM(question) {
 //It returns the answer to the question by using the LLM of gemini (It's only for if in the future empathy's LLM gives problem with the answers change and dont waste time)
 async function sendQuestionToGemini(question){
     try{
+      const GEMINI_API_URL = 'Https://docs.gemini.com';
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -100,6 +102,7 @@ app.post('/ask', async (req, res) => {
 
     }else if (model == 'gemini'){ //For using the LLM gemini
       const preanswer = await sendQuestionToGemini(questionComplete);
+      //answer = preanswer.response.text();
       answer = preanswer.response.candidates[0].content.parts[0].text;
     }else{
       throw new Error(`Model "${model}" is not supported.`);
@@ -117,7 +120,7 @@ app.post("/generateIncorrectOptions", async (req, res) => {
   try {
     validateRequiredFields(req, ["model", "correctAnswer"]);
 
-    const { correctAnswer } = req.body;
+    const { model, correctAnswer } = req.body;
     let question =
       "I need to generate incorrect options for a multiple choice question of exactly 4 options. The question is: What country is represented by the flag shown? The correct answer to this question is:" +
       correctAnswer +
@@ -132,7 +135,8 @@ app.post("/generateIncorrectOptions", async (req, res) => {
   }
 });
 
-// Start the service
+
+
 const server = app.listen(port, () => {
   console.log(`LLM Service listening at http://localhost:${port}`);
 });
