@@ -1,44 +1,20 @@
-jest.mock('./llm-service', () => {
-    return {
-      sendQuestionToGemini: jest.fn().mockResolvedValue({
-        response: {
-          candidates: [
-            {
-              content: {
-                parts: [
-                  {
-                    text: 'Mocked Gemini response',
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      }),
-    };
+const request = require("supertest");
+const server = require("./llm-service.js"); // Asegúrate de que la ruta sea correcta
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+
+jest.mock("@google/generative-ai");
+
+describe("/ask endpoint with Gemini", () => {
+  afterAll(() => {
+    server.close();
   });
-  
-  const { sendQuestionToGemini } = require('./llm-service');
-  
-  describe('sendQuestionToGemini', () => {
-    it('should return a mocked response from Gemini', async () => {
-      const question = 'What is the capital of France?';
-      const result = await sendQuestionToGemini(question);
-  
-      expect(result).toEqual({
-        response: {
-          candidates: [
-            {
-              content: {
-                parts: [
-                  {
-                    text: 'Mocked Gemini response',
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      });
-    });
+
+  it("should return a clue for the given question using gemini model", async () => {
+    const response = await request(server)
+      .post("/ask")
+      .send({ question: "What is the capital of France?", model: "gemini" });
+
+    expect(response.status).toBe(200);
+    expect(response.body.answer).toBe("llmAnswer");
   });
+});
