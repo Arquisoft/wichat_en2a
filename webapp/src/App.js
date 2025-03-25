@@ -18,13 +18,15 @@ function App() {
   // Handle whether authentication (login/register) worked, and show the Home view if it did by default.
   // Otherwise, go to the provided view
   const handleAuthSuccess = async (nextView = 'home') => {
-    try {
-      // Fetch flag data to load questions in the database
-      await axios.post(`${apiEndpoint}/fetch-flag-data`);
-      console.log('Flag data loaded successfully');
-    } catch (error) {
-      setError(error.response?.data?.error || 'Fetching flags failed');
-      console.error('Error fetching flag data:', error);
+    if (nextView =='home'){
+      try {
+        // Fetch flag data to load questions in the database
+        await axios.post(`${apiEndpoint}/fetch-flag-data`);
+        console.log('Flag data loaded successfully');
+      } catch (error) {
+        setError(error.response?.data?.error || 'Fetching flags failed');
+        console.error('Error fetching flag data:', error);
+      }
     }
 
     setView(nextView);
