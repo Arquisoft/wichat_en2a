@@ -3,4 +3,3 @@ coverage
 docs/build
 .env
 webapp/.env
-.idea
