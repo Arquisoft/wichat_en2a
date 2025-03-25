@@ -6,7 +6,6 @@ import Game from './components/Game';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Link from '@mui/material/Link';
 import Leaderboard from './components/Leaderboard';
 import axios from 'axios';
 
@@ -51,20 +50,6 @@ function App() {
       {view === 'home' && <Home onNavigate={setView} />}
       {view === 'leaderboard' && <Leaderboard onNavigate={setView} />}
       {view === 'game' && <Game onNavigate={setView} />}
-
-      {/* Links to navigate through login and registration */}
-      <Typography component="div" align="center" sx={{ marginTop: 2 }}>
-        {view === 'login' && (
-          <Link name="gotoregister" component="button" variant="body2" onClick={() => setView('register')}>
-            Don't have an account? Register here.
-          </Link>
-        )}
-        {view === 'register' && (
-          <Link component="button" variant="body2" onClick={() => setView('login')}>
-            Already have an account? Login here.
-          </Link>
-        )}
-      </Typography>
     </Container>
   );
 }
