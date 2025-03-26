@@ -30,19 +30,24 @@ app.post('/adduser', async (req, res) => {
         // Check if required fields are present in the request body
         validateRequiredFields(req, ['username', 'password']);
 
+        // Check if username already exists
+        const existingUser = await User.findOne({ username: req.body.username });
+        if (existingUser) {
+            return res.status(409).json({ error: 'Username already exists' });
+        }
+
         // Encrypt the password before saving it
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
         const newUser = new User({
             username: req.body.username,
             password: hashedPassword,
         });
-
         await newUser.save();
-        res.json(newUser);
+        res.status(201).json(newUser);
     } catch (error) {
-        res.status(400).json({ error: error.message }); 
-}});
+        res.status(400).json({ error: error.message });
+    }
+});
 
 // delete user endpoint
 app.delete('/users/:userId', async (req, res) => {
