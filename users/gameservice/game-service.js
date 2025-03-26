@@ -1,8 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const User = require('../userservice/user-model')
-const Score = require('../common/score-model')
+//const bcrypt = require('bcrypt');
+// const User = require('../userservice/user-model')
+const Score = require('./users/common/score-model')
 const app = express();
 
 app.disable('x-powered-by');
