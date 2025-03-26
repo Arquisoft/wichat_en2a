@@ -15,6 +15,8 @@ const questionServiceUrl = process.env.QUESTION_SERVICE_URL || 'http://localhost
 const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
 const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
+const gameServiceUrl = process.env.GAME_SERVICE_URL || 'http://localhost:8005';
+
 
 app.use(cors());
 app.use(express.json());
@@ -83,6 +85,16 @@ app.post('/fetch-flag-data', async (req, res) => {
     // Forward fetch flag data request to the question service
     const fetchFlagDataResponse = await axios.post(`${questionServiceUrl}/fetch-flag-data`);
     res.json(fetchFlagDataResponse.data);
+  } catch (error) {
+      res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+app.post('/saveScore', async (req, res) => {
+  try {
+    // Forward check answer request to the question service
+    const checkAnswerResponse = await axios.post(`${gameServiceUrl}/check-answer`, req.body);
+    res.json(checkAnswerResponse.data);
   } catch (error) {
       res.status(error.response.status).json({ error: error.response.data.error });
   }

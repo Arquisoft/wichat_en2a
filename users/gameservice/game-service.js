@@ -1,12 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const User = require('./user-model')
 const Score = require('./score-model')
 const app = express();
 
 app.disable('x-powered-by');
-const port = 8002; 
+const port = 8005; 
 
 // Middleware to parse JSON in request body
 app.use(express.json());
