@@ -39,24 +39,35 @@ describe('User Service', () => {
 
   it('should add a new user on POST /adduser', async () => {
     const newUser = {
-      username: 'testuser',
+      username: 'newuser', // Changed to a unique username
       password: 'testpassword',
     };
 
     const response = await request(app).post('/adduser').send(newUser);
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('username', 'testuser');
+    expect(response.status).toBe(201); // Note: Changed to 201 as per your service implementation
+    expect(response.body).toHaveProperty('username', 'newuser');
 
     // Check if the user is inserted into the database
-    const userInDb = await User.findOne({ username: 'testuser' });
+    const userInDb = await User.findOne({ username: 'newuser' });
 
     // Assert that the user exists in the database
     expect(userInDb).not.toBeNull();
-    expect(userInDb.username).toBe('testuser');
+    expect(userInDb.username).toBe('newuser');
 
     // Assert that the password is encrypted
     const isPasswordValid = await bcrypt.compare('testpassword', userInDb.password);
     expect(isPasswordValid).toBe(true);
+  });
+
+  it('should return 409 when trying to add a user with an existing username', async () => {
+    const existingUser = {
+      username: 'testuser', // Same username as in beforeEach
+      password: 'testpassword',
+    };
+
+    const response = await request(app).post('/adduser').send(existingUser);
+    expect(response.status).toBe(409);
+    expect(response.body).toHaveProperty('error', 'Username already exists');
   });
 
   it('should delete a user on DELETE /users/:userId', async () => {

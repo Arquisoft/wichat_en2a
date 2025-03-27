@@ -43,7 +43,7 @@ app.post('/adduser', async (req, res) => {
             password: hashedPassword,
         });
         await newUser.save();
-        res.status(201).json(newUser);
+        res.status(201).json(newUser); //201 means created, not just 200 OK, clearer this way
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
