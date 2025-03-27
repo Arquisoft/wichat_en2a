@@ -16,7 +16,6 @@ const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
 const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
 const gameServiceUrl = process.env.GAME_SERVICE_URL || 'http://localhost:8005';
-const leaderboardServiceUrl = process.env.GAME_SERVICE_URL || 'http://localhost:8006';
 
 
 
