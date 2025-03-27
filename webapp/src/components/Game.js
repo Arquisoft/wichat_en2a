@@ -12,6 +12,11 @@ const Game = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [answerSelected, setAnswerSelected] = useState(false);
+
+    const [correctAnswer, setCorrectAnswer] = useState(null);
+    const [isCorrect, setIsCorrect] = useState(null);
+    const [chosenAnswer, setChosenAnswer] = useState(null);
+
     const [hint, setHint] = useState(null);
 
     const navigate = useNavigate();
@@ -49,6 +54,28 @@ const Game = () => {
         } catch (error) {
             setError(error.response?.data?.error || 'Fetching hint failed');
             console.error('Error fetching hint:', error);
+        }
+    };
+
+    const checkAnswer = async (answer) => {
+        if (!question || !question.id) return; // no se ha detectado ninguna pregunta
+
+        try {
+            const response = await axios.post(`${apiEndpoint}/check-answer`, {
+                questionId: question.id,
+                selectedAnswer: answer,
+            });
+
+            setChosenAnswer(answer);
+            setIsCorrect(response.data.isCorrect);
+
+            if (!response.data.isCorrect) {
+                setCorrectAnswer(question.correctAnswer);
+                // Aunque el usuario haya fallado, guardo la correcta
+            }
+        } catch (error) {
+            console.error('Error checking answer:', error);
+            setError('Failed to check answer');
         }
     };
 
@@ -110,12 +137,45 @@ const Game = () => {
                             width: '100%'
                         }}>
                             <Typography variant="h6" sx={{mb: '1rem'}}>Which country is this flag from?</Typography>
-                            {question.options.map((option, index) => (
-                                <Button key={index} variant="contained" fullWidth sx={{mb: '0.5rem', py: '1rem'}}
-                                        onClick={() => setAnswerSelected(true)}>
-                                    {option}
-                                </Button>
-                            ))}
+                            {question.options.map((option, index) => {
+                                let bgColor = "primary"; // Azul por defecto
+
+                                // Solo cambiamos el color después de haber seleccionado una respuesta
+                                if (chosenAnswer) {
+                                    if (option === chosenAnswer) {
+                                        bgColor = isCorrect ? "success" : "error"; // ✅ Verde si es correcta, ❌ Roja si es incorrecta
+                                    } else if (option === correctAnswer) {
+                                        bgColor = "success"; // ✅ Muestra la respuesta correcta en verde si el usuario falló
+                                    }
+                                }
+
+                                return (
+                                    <Button
+                                        key={index}
+                                        variant="contained"
+                                        fullWidth
+                                        sx={{
+                                            mb: '0.5rem',
+                                            py: '1rem',
+                                            bgcolor: bgColor, // Material UI usa `bgcolor` en vez de `backgroundColor`
+                                            color: "white",
+                                            transition: "background-color 0.3s ease",
+                                            "&:hover": {
+                                                bgcolor: chosenAnswer ? bgColor : "darkblue", // Mantiene el color tras responder
+                                            },
+                                        }}
+                                        disabled={!!chosenAnswer} // Bloquea cambios después de responder
+                                        onClick={() => {
+                                            if (!chosenAnswer) {
+                                                setAnswerSelected(true);
+                                                checkAnswer(option);
+                                            }
+                                        }}
+                                    >
+                                        {option}
+                                    </Button>
+                                );
+                            })}
                         </Box>
 
                         {/* Lower part - Hint box */}
@@ -162,10 +222,22 @@ const Game = () => {
                     <Button variant="contained" color="error" onClick={() => navigate('/home')}>
                         Back
                     </Button>
-                    <Button variant="contained" color="primary" disabled={!answerSelected} onClick={fetchQuestion}
-                            sx={{ml: '1rem'}}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={!answerSelected} // Solo habilitado si se ha seleccionado una respuesta
+                        onClick={() => {
+                            setChosenAnswer(null);  // Reseteamos la respuesta elegida
+                            setCorrectAnswer(null); // Reseteamos la respuesta correcta
+                            setIsCorrect(null);     // Reseteamos el estado de corrección
+                            setAnswerSelected(false);
+                            setTimeout(() => fetchQuestion(), 100); // Cargamos nueva pregunta
+                        }}
+                        sx={{ ml: '1rem' }}
+                    >
                         Next Question
                     </Button>
+
                 </Box>
             </Container>
         </>
