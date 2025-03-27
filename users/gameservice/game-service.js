@@ -73,11 +73,34 @@ app.get('/scoresByUser/:userId', async (req, res) => {
     }
 });
 
-//endpint
+//endpoint Ladearboard
+/* Possible calls:
+   - GET http://localhost:8005/leaderboard
+   - GET http://localhost:8005/leaderboard?sortBy=totalScore&sortOrder=asc
+   - GET http://localhost:8005/leaderboard?sortBy=gamesPlayed&sortOrder=desc
+   - GET http://localhost:8005/leaderboard?sortBy=winRate&sortOrder=desc
+*/
 app.get('/leaderboard', async (req, res) => {
     try {
-        const scoreCount = await Score.countDocuments();
-        console.log(`Total score documents: ${scoreCount}`);
+        // Default sorting
+        const sortBy = req.query.sortBy || 'totalScore';
+        const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+
+        // Permitted sortings
+        const sortFields = {
+            'totalScore': 'totalScore',
+            'gamesPlayed': 'gamesPlayed',
+            'avgPointsPerGame': 'avgPointsPerGame',
+            'winRate': 'winRate'
+        };
+
+        // Validate sorting
+        if (!sortFields[sortBy]) {
+            return res.status(400).json({ 
+                error: 'Invalid sort field', 
+                validFields: Object.keys(sortFields) 
+            });
+        }
 
         const scores = await Score.aggregate([
             {
@@ -90,7 +113,7 @@ app.get('/leaderboard', async (req, res) => {
             },
             {
                 $lookup: {
-                    from: 'users', // Ensure this matches your exact collection name
+                    from: 'users',
                     localField: '_id',
                     foreignField: '_id',
                     as: 'userInfo',
@@ -99,7 +122,7 @@ app.get('/leaderboard', async (req, res) => {
             {
                 $unwind: {
                     path: '$userInfo',
-                    preserveNullAndEmptyArrays: true // This will keep documents even if no user match
+                    preserveNullAndEmptyArrays: true
                 }
             },
             {
@@ -127,11 +150,13 @@ app.get('/leaderboard', async (req, res) => {
                     },                    
                 },
             },
-            { $sort: { totalScore: -1 } },
+            // Execute sorting 
+            { 
+                $sort: { 
+                    [sortFields[sortBy]]: sortOrder 
+                } 
+            },
         ]);
-
-        // Log the raw aggregation results for debugging
-        console.log('Leaderboard Results:', JSON.stringify(scores, null, 2));
 
         res.json(scores);
     } catch (error) {
