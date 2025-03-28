@@ -38,6 +38,20 @@ services:
     environment:
       MONGODB_URI: mongodb://mongodb:27017/userdb
 
+  gameservice:
+    container_name: gameservice-wichat_en2a
+    image: ghcr.io/arquisoft/wichat_en2a/gameservice:latest
+    profiles: ["dev", "prod"]
+    build: ./users/gameservice
+    depends_on:
+      - mongodb
+    ports:
+      - "8005:8005"
+    networks:
+      - mynetwork
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/gamedb
+
   llmservice:
     container_name: llmservice-wichat_en2a
     image: ghcr.io/arquisoft/wichat_en2a/llmservice:latest
@@ -59,6 +73,7 @@ services:
       - authservice
       - llmservice
       - questionservice
+      - gameservice
     ports:
       - "8000:8000"
     networks:
@@ -68,6 +83,8 @@ services:
       USER_SERVICE_URL: http://userservice:8001
       LLM_SERVICE_URL: http://llmservice:8003
       QUESTION_SERVICE_URL: http://questionservice:8004
+      GAME_SERVICE_URL: http://gameservice:8004
+
 
   questionservice:
     container_name: questionservice-wichat_en2a

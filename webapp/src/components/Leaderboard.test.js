@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Leaderboard from './Leaderboard';
+import { MemoryRouter } from 'react-router-dom';
 
 global.fetch = jest.fn();
 
@@ -14,7 +15,11 @@ describe('Leaderboard component', () => {
     // Simulate pending fetch
     global.fetch.mockImplementationOnce(() => new Promise(() => {}));
     
-    render(<Leaderboard />);
+    render(
+        <MemoryRouter>
+          <Leaderboard />
+        </MemoryRouter>
+    );
     
     // Check if progessbar is displayed
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
@@ -24,7 +29,11 @@ describe('Leaderboard component', () => {
     // Mock fetch to return an error
     global.fetch.mockRejectedValueOnce(new Error('Network error'));
     
-    render(<Leaderboard />);
+    render(
+        <MemoryRouter>
+          <Leaderboard />
+        </MemoryRouter>
+    );
     
     // Wait for the error message to appear
     await waitFor(() => {
@@ -39,7 +48,11 @@ describe('Leaderboard component', () => {
       status: 500
     });
     
-    render(<Leaderboard />);
+    render(
+        <MemoryRouter>
+          <Leaderboard />
+        </MemoryRouter>
+    );
     
     // Wait for the error message to appear
     await waitFor(() => {
@@ -54,7 +67,11 @@ describe('Leaderboard component', () => {
       json: async () => []
     });
     
-    render(<Leaderboard />);
+    render(
+        <MemoryRouter>
+          <Leaderboard />
+        </MemoryRouter>
+    );
     
     // Wait for the table to load and check for the empty message
     await waitFor(() => {
@@ -94,7 +111,11 @@ describe('Leaderboard component', () => {
       json: async () => mockPlayers
     });
     
-    render(<Leaderboard />);
+    render(
+        <MemoryRouter>
+          <Leaderboard />
+        </MemoryRouter>
+    );
     
     // Wait for the table to load with data
     await waitFor(() => {
@@ -140,7 +161,11 @@ describe('Leaderboard component', () => {
       json: async () => mockPlayers
     });
     
-    render(<Leaderboard />);
+    render(
+        <MemoryRouter>
+          <Leaderboard />
+        </MemoryRouter>
+    );
     
     // Wait loading data
     await waitFor(() => {
@@ -157,7 +182,11 @@ describe('Leaderboard component', () => {
       json: async () => []
     });
     
-    render(<Leaderboard />);
+    render(
+        <MemoryRouter>
+          <Leaderboard />
+        </MemoryRouter>
+    );
     
     // Verify the correct URL, maybe 3000, pendant of change if fail
     expect(global.fetch).toHaveBeenCalledWith("http://localhost:8003/leaderboard");
