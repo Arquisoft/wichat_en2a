@@ -10,17 +10,17 @@ const Timer = ({ duration = 40, onTimeUp, answerSelected }) => {
     }, [duration]);
 
     useEffect(() => {
-        if (answerSelected || timeLeft === 0) {
-            if (timeLeft === 0) onTimeUp(); // Llamar a la función cuando el tiempo llega a 0
+        if (answerSelected || timeLeft <= 0) {
+            if (timeLeft === 0) onTimeUp(); // Llamar a la función solo una vez
             return;
         }
 
         const timerInterval = setInterval(() => {
-            setTimeLeft((prevTime) => prevTime - 1);
+            setTimeLeft((prevTime) => Math.max(prevTime - 1, 0)); // 🔹 Evita valores negativos
         }, 1000);
 
         return () => clearInterval(timerInterval);
-    }, [duration, answerSelected]); // 🔹 Se ejecuta solo cuando cambia `duration` o `answerSelected`
+    }, [timeLeft, answerSelected]); // 🔹 Ahora depende de `timeLeft` también
 
     return (
         <Box sx={{ width: "100%", bgcolor: "#ddd", borderRadius: "5px", mt: 2 }}>

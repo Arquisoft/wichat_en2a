@@ -71,15 +71,15 @@ const Game = () => {
     };
 
     const checkAnswer = async (answer) => {
-        if (!question || !question.id) return; // no se ha detectado ninguna pregunta
+        // if (!question || !question._id) return; // no se ha detectado ninguna pregunta
 
         try {
+            setChosenAnswer(answer);
             const response = await axios.post(`${apiEndpoint}/check-answer`, {
-                questionId: question.id,
+                questionId: question._id,
                 selectedAnswer: answer,
             });
 
-            setChosenAnswer(answer);
             setIsCorrect(response.data.isCorrect);
 
             if (!response.data.isCorrect) {
@@ -179,11 +179,11 @@ const Game = () => {
                                 let bgColor = COLORS.primary; // Azul por defecto
 
                                 // Solo cambiamos el color después de haber seleccionado una respuesta
-                                if (chosenAnswer) {
+                                if (answerSelected) {
                                     if (option === chosenAnswer) {
-                                        bgColor = isCorrect ? COLORS.success : COLORS.error; // ✅ Verde si es correcta, ❌ Roja si es incorrecta
+                                        bgColor = isCorrect ? COLORS.success : COLORS.error;
                                     } else if (option === correctAnswer) {
-                                        bgColor = COLORS.success; // ✅ Muestra la respuesta correcta en verde si el usuario falló
+                                        bgColor = COLORS.success;
                                     }
                                 }
 
@@ -195,14 +195,19 @@ const Game = () => {
                                         sx={{
                                             mb: '0.5rem',
                                             py: '1rem',
-                                            backgroundColor: bgColor,  // ✅ Color de fondo personalizado
+                                            backgroundColor: bgColor,
                                             "&:hover": {
-                                                backgroundColor: chosenAnswer ? undefined : COLORS.hover,
+                                                backgroundColor: answerSelected ? undefined : COLORS.hover,
                                             },
+                                            "&.Mui-disabled": {
+                                                backgroundColor: bgColor,
+                                                color: "white", // Asegura que el texto siga siendo visible si es necesario
+                                                opacity: 1, // Elimina la opacidad que Material-UI pone en los botones deshabilitados
+                                            }
                                         }}
-                                        disabled={!!chosenAnswer}
+                                        disabled={!!answerSelected}
                                         onClick={() => {
-                                            if (!chosenAnswer) {
+                                            if (!answerSelected) {
                                                 setAnswerSelected(true);
                                                 checkAnswer(option);
                                             }
