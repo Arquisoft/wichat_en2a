@@ -50,6 +50,7 @@ async function fetchFlagData() {
                 console.log('Link to llm is ', llmServiceUrl);
                 const llmResponse = await axios.post(llmServiceUrl + '/generateIncorrectOptions', {
                     model: "empathy",
+                    quizzQuestion  : "What country is represented by the flag shown?",
                     correctAnswer: correctAnswer
                 });
 
@@ -83,6 +84,72 @@ async function fetchFlagData() {
         throw new Error('Failed to fetch flag data from Wikidata');
     }
 }
+
+// Fetch Pokémon data from Wikidata
+async function fetchPokemonData() {
+    console.time('fetchPokemonData');
+
+    const query = `
+        SELECT ?pokemon ?pokemonLabel ?image WHERE {
+            ?pokemon wdt:P31 wd:Q3966183;  # instance of Pokémon species
+                     wdt:P18 ?image.       # image
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+        }
+        LIMIT 30
+    `;
+
+    const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=json`;
+
+    try {
+        const response = await axios.get(url, {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
+        const results = await Promise.all(response.data.results.bindings.map(async (entry) => {
+            const correctAnswer = entry.pokemonLabel.value;
+            const imageUrl = entry.image.value;
+
+            try {
+                console.log('Link to llm is', llmServiceUrl);
+                const llmResponse = await axios.post(llmServiceUrl + '/generateIncorrectOptions', {
+                    model: "empathy",
+                    quizzQuestion: "What is the name of this Pokémon?",
+                    correctAnswer: correctAnswer
+                });
+
+                const incorrectOptions = llmResponse.data.incorrectOptions;
+                const options = [correctAnswer, ...incorrectOptions];
+                const optionsShuffled = options.sort(() => Math.random() - 0.5);
+
+                return {
+                    type: 'pokemon',
+                    imageUrl: imageUrl,
+                    options: optionsShuffled,
+                    correctAnswer: correctAnswer
+                };
+            } catch (llmError) {
+                console.error('Failed to generate incorrect options:', llmError.message);
+                return {
+                    type: 'pokemon',
+                    imageUrl: imageUrl,
+                    options: [correctAnswer],
+                    correctAnswer: correctAnswer
+                };
+            }
+        }));
+
+        await saveQuestionsToDB(results);
+        console.log('Fetched Pokémon Data:', results);
+        console.timeEnd('fetchPokemonData');
+        return results;
+    } catch (error) {
+        console.timeEnd('fetchPokemonData');
+        throw new Error('Failed to fetch Pokémon data from Wikidata');
+    }
+}
+
 
 // Save questions to the database
 async function saveQuestionsToDB(questions) {
@@ -155,7 +222,7 @@ app.post('/check-answer', async (req, res) => {
 // Endpoint to fetch
 app.post('/fetch-flag-data', async (req, res) => {
     try {
-        const results = await fetchFlagData();
+        const results = await fetchFlagData(req.question);
         res.json(results);
     } catch (error) {
         console.error("Error while fetching questions");

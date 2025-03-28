@@ -132,11 +132,11 @@ app.post("/ask", async (req, res) => {
 
 app.post("/generateIncorrectOptions", async (req, res) => {
   try {
-    validateRequiredFields(req, ["model", "correctAnswer"]);
+    validateRequiredFields(req, ["model", "quizzQuestion", "correctAnswer"]);
 
     const { correctAnswer } = req.body;
     let question =
-      "I need to generate incorrect options for a multiple choice question of exactly 4 options. The question is: What country is represented by the flag shown? The correct answer to this question is:" +
+      "I need to generate incorrect options for a multiple choice question of exactly 4 options. The question is: " + quizzQuestion + " The correct answer to this question is:" +
       correctAnswer +
       ". I need you to generate 3 incorrect options for that question that could be used as distractors. They should be plausible but different from the correct one. Provide them as 3 comma-separated values, nothing more.";
 
