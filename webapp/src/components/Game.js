@@ -4,6 +4,7 @@ import {Container, Typography, Button, Box, CircularProgress} from '@mui/materia
 import Navbar from './Navbar';
 import './game-styles.css';
 import {useNavigate} from 'react-router-dom';
+import Timer from './Timer';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -17,7 +18,17 @@ const Game = () => {
     const [isCorrect, setIsCorrect] = useState(null);
     const [chosenAnswer, setChosenAnswer] = useState(null);
 
+    const [timeLeft, setTimeLeft] = useState(40);
+
     const [hint, setHint] = useState(null);
+
+    const COLORS = {
+        primary: '#1976d2',
+        success: '#4CAF50',
+        error: '#F44336',
+        hover: '#1565c0',
+        textOnColor: 'white'
+    };
 
     const navigate = useNavigate();
     // Fetch question from the API
@@ -79,6 +90,28 @@ const Game = () => {
         }
     };
 
+    // // Timer
+    // useEffect(() => { // detecta cambios de estado
+    //     if (timeLeft > 0 && !answerSelected) {
+    //         const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+    //         return () => clearTimeout(timer);
+    //     } else if (timeLeft === 0) {
+    //         setAnswerSelected(true);
+    //         setChosenAnswer(null);
+    //         setCorrectAnswer(question.correctAnswer);
+    //     }
+    // }, [timeLeft, answerSelected]); // se ejecuta cuando una de estas cambia, si [] -> al crearse solo
+
+    // Función que se ejecuta cuando el tiempo se agota
+    const handleTimeUp = () => {
+        if (!answerSelected) {
+            setChosenAnswer(question.correctAnswer); // Marca la respuesta correcta
+            setIsCorrect(false); // No fue seleccionada por el usuario, así que es incorrecta
+            setCorrectAnswer(question.correctAnswer); // Muestra la respuesta correcta en verde
+            setAnswerSelected(true); // Evita más respuestas
+        }
+    };
+
     useEffect(() => {
         fetchQuestion();
     }, []);
@@ -115,6 +148,9 @@ const Game = () => {
                     Quiz Game!
                 </Typography>
 
+                {/* Timer */}
+                <Timer duration={40} onTimeUp={handleTimeUp} answerSelected={answerSelected} />
+
                 <Box sx={{
                     display: 'flex',
                     width: '100%',
@@ -138,14 +174,14 @@ const Game = () => {
                         }}>
                             <Typography variant="h6" sx={{mb: '1rem'}}>Which country is this flag from?</Typography>
                             {question.options.map((option, index) => {
-                                let bgColor = "primary"; // Azul por defecto
+                                let bgColor = COLORS.primary; // Azul por defecto
 
                                 // Solo cambiamos el color después de haber seleccionado una respuesta
                                 if (chosenAnswer) {
                                     if (option === chosenAnswer) {
-                                        bgColor = isCorrect ? "success" : "error"; // ✅ Verde si es correcta, ❌ Roja si es incorrecta
+                                        bgColor = isCorrect ? COLORS.success : COLORS.error; // ✅ Verde si es correcta, ❌ Roja si es incorrecta
                                     } else if (option === correctAnswer) {
-                                        bgColor = "success"; // ✅ Muestra la respuesta correcta en verde si el usuario falló
+                                        bgColor = COLORS.success; // ✅ Muestra la respuesta correcta en verde si el usuario falló
                                     }
                                 }
 
@@ -157,14 +193,12 @@ const Game = () => {
                                         sx={{
                                             mb: '0.5rem',
                                             py: '1rem',
-                                            bgcolor: bgColor, // Material UI usa `bgcolor` en vez de `backgroundColor`
-                                            color: "white",
-                                            transition: "background-color 0.3s ease",
+                                            backgroundColor: bgColor,  // ✅ Color de fondo personalizado
                                             "&:hover": {
-                                                bgcolor: chosenAnswer ? bgColor : "darkblue", // Mantiene el color tras responder
+                                                backgroundColor: chosenAnswer ? undefined : COLORS.hover,
                                             },
                                         }}
-                                        disabled={!!chosenAnswer} // Bloquea cambios después de responder
+                                        disabled={!!chosenAnswer}
                                         onClick={() => {
                                             if (!chosenAnswer) {
                                                 setAnswerSelected(true);
