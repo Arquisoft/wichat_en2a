@@ -1,19 +1,18 @@
-// src/components/AddUser.js
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Container, Typography, TextField, Button, Snackbar } from '@mui/material';
+import { Container, Typography, TextField, Button, Snackbar, Link } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
-const AddUser = ({ onRegisterSuccess }) => {
+const AddUser = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const navigate = useNavigate();
 
   const addUser = async () => {
-
-    //Error if one of them or both are empty
     if (!username || !password) {
       setError('Both username and password are required');
       return;
@@ -22,9 +21,8 @@ const AddUser = ({ onRegisterSuccess }) => {
     try {
       await axios.post(`${apiEndpoint}/adduser`, { username, password });
       setOpenSnackbar(true);
-      setError(''); // Errors from before are erased
-      // Redirects to the login page once a user is registered
-      onRegisterSuccess('login');
+      setError('');
+      navigate('/login'); // Redirects to the login page once a user is registered
     } catch (error) {
       setError(error.response?.data?.error || 'Registration failed');
     }
@@ -56,12 +54,24 @@ const AddUser = ({ onRegisterSuccess }) => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Button variant="contained" color="primary" onClick={addUser} disabled={!username || !password}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={addUser}
+        disabled={!username || !password}
+        sx={{ mt: 2 }}
+      >
         Add User
       </Button>
+      <Typography align="center" sx={{ mt: 2 }}>
+        <Link component="button" variant="body2" onClick={() => navigate('/login')}>
+          Already have an account? Login here.
+        </Link>
+      </Typography>
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar} message="User added successfully" />
       {error && (
-        <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')} message={`Error: ${error}`} />
+        <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')}
+                  message={`Error: ${error}`} />
       )}
     </Container>
   );

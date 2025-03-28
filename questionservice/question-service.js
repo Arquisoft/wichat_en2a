@@ -56,12 +56,12 @@ async function fetchFlagData() {
 
                 const incorrectOptions = llmResponse.data.incorrectOptions;
                 const options = [correctAnswer, ...incorrectOptions];
-                const optionsShuffled = options.sort(() => Math.random() - 0.5);
+                options.sort(() => Math.random() - 0.5);
 
                 return {
                     type: 'flag',
                     imageUrl: imageUrl,
-                    options: optionsShuffled,
+                    options: options,
                     correctAnswer: correctAnswer
                 };
             } catch (llmError) {
@@ -204,7 +204,11 @@ app.get('/question', async (req, res) => {
     }
 });
 
-// Endpoint to check an answer
+/**
+ * Endpoint to check if the selected answer is correct
+ * 
+ * @returns {Object} - A JSON object with the key isCorrect and a boolean value indicating if the answer is correct. It will also return false if the question is not found.
+ */
 app.post('/check-answer', async (req, res) => {
     try {
         const { questionId, selectedAnswer } = req.body;
