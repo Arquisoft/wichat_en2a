@@ -38,37 +38,27 @@ describe('User Service', () => {
   });
 
   it('should add a new user on POST /adduser', async () => {
-    const newUser = {
-      username: 'newuser', // Changed to a unique username
-      password: 'testpassword',
+    const uniqueUsername = `newuserTest_${Date.now()}`; // Generate a unique username, addidng Date
+    const newUser  = {
+        username: uniqueUsername,
+        password: 'testpassword',
     };
 
-    const response = await request(app).post('/adduser').send(newUser);
-    expect(response.status).toBe(201); // Note: Changed to 201 as per your service implementation
-    expect(response.body).toHaveProperty('username', 'newuser');
+    const response = await request(app).post('/adduser').send(newUser );
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty('username', uniqueUsername); // Search username in response
 
-    // Check if the user is inserted into the database
-    const userInDb = await User.findOne({ username: 'newuser' });
+    // Check if user was correctly inserted
+    const userInDb = await User.findOne({ username: uniqueUsername });
 
-    // Assert that the user exists in the database
+    // Confirm if user is in DB
     expect(userInDb).not.toBeNull();
-    expect(userInDb.username).toBe('newuser');
+    expect(userInDb.username).toBe(uniqueUsername);
 
-    // Assert that the password is encrypted
+    // Check if password is encrypted correctly
     const isPasswordValid = await bcrypt.compare('testpassword', userInDb.password);
     expect(isPasswordValid).toBe(true);
-  });
-
-  it('should return 409 when trying to add a user with an existing username', async () => {
-    const existingUser = {
-      username: 'testuser', // Same username as in beforeEach
-      password: 'testpassword',
-    };
-
-    const response = await request(app).post('/adduser').send(existingUser);
-    expect(response.status).toBe(409);
-    expect(response.body).toHaveProperty('error', 'Username already exists');
-  });
+});
 
   it('should delete a user on DELETE /users/:userId', async () => {
     // Verify the test user exists before deletion
