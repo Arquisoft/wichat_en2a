@@ -22,7 +22,7 @@ const Leaderboard = () => {
         async function fetchLeaderboard() {
             try {
                 setLoading(true);
-                const response = await fetch("http://localhost:8003/leaderboard");
+                const response = await fetch("http://localhost:8005/leaderboard");
                 if (!response.ok) {
                     throw new Error(`Error: ${response.status}`);
                 }

@@ -30,19 +30,24 @@ app.post('/adduser', async (req, res) => {
         // Check if required fields are present in the request body
         validateRequiredFields(req, ['username', 'password']);
 
+        // Check if username already exists
+        const existingUser = await User.findOne({ username: req.body.username });
+        if (existingUser) {
+            return res.status(409).json({ error: 'Username already exists' });
+        }
+
         // Encrypt the password before saving it
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
         const newUser = new User({
             username: req.body.username,
             password: hashedPassword,
         });
-
         await newUser.save();
-        res.json(newUser);
+        res.status(201).json(newUser); //201 means created, not just 200 OK, clearer this way
     } catch (error) {
-        res.status(400).json({ error: error.message }); 
-}});
+        res.status(400).json({ error: error.message });
+    }
+});
 
 // delete user endpoint
 app.delete('/users/:userId', async (req, res) => {
@@ -116,10 +121,32 @@ app.put('/users/:userId', async (req, res) => {
   }
 });
 
+app.get('/getUserById/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Validate that userId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ error: 'Invalid userId format' });
+        }
+
+        const user = await User.findById(userId).select('username');
+        
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json({ userId: user._id, username: user.username });
+    } catch (error) {
+        console.error('Error getting user:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);
 });
-
 
 // Listen for the 'close' event on the Express.js server
 server.on('close', () => {

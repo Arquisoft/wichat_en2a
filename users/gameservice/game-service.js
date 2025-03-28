@@ -10,7 +10,7 @@ const port = 8005;
 app.use(express.json());
 
 // Connect to MongoDB
-const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/gamedb';
 mongoose.connect(mongoUri);
 
 // endpoitn to save game score
@@ -70,6 +70,98 @@ app.get('/scoresByUser/:userId', async (req, res) => {
         res.json(scores);
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+//endpoint Ladearboard
+/* Possible calls:
+   - GET http://localhost:8005/leaderboard
+   - GET http://localhost:8005/leaderboard?sortBy=totalScore&sortOrder=asc
+   - GET http://localhost:8005/leaderboard?sortBy=gamesPlayed&sortOrder=desc
+   - GET http://localhost:8005/leaderboard?sortBy=winRate&sortOrder=desc
+*/
+app.get('/leaderboard', async (req, res) => {
+    try {
+        // Default sorting
+        const sortBy = req.query.sortBy || 'totalScore';
+        const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+
+        // Permitted sortings
+        const sortFields = {
+            'totalScore': 'totalScore',
+            'gamesPlayed': 'gamesPlayed',
+            'avgPointsPerGame': 'avgPointsPerGame',
+            'winRate': 'winRate'
+        };
+
+        // Validate sorting
+        if (!sortFields[sortBy]) {
+            return res.status(400).json({ 
+                error: 'Invalid sort field', 
+                validFields: Object.keys(sortFields) 
+            });
+        }
+
+        const scores = await Score.aggregate([
+            {
+                $group: {
+                    _id: '$userId',
+                    totalScore: { $sum: '$score' },
+                    gamesPlayed: { $count: {} },
+                    victories: { $sum: { $cond: [{ $eq: ['$isVictory', true] }, 1, 0] } } 
+                },
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'userInfo',
+                },
+            },
+            {
+                $unwind: {
+                    path: '$userInfo',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    username: { $ifNull: ['$userInfo.username', 'Unknown User'] },
+                    userId: '$_id',
+                    totalScore: 1,
+                    gamesPlayed: 1,
+                    avgPointsPerGame: {
+                        $cond: [
+                            { $eq: ['$gamesPlayed', 0] },
+                            0,
+                            { $divide: ['$totalScore', '$gamesPlayed'] }
+                        ]
+                    },
+                    winRate: {
+                        $multiply: [
+                            { $cond: [
+                                { $eq: ['$gamesPlayed', 0] },
+                                0,
+                                { $divide: ['$victories', '$gamesPlayed'] }
+                            ]},
+                            100
+                        ]
+                    },                    
+                },
+            },
+            // Execute sorting 
+            { 
+                $sort: { 
+                    [sortFields[sortBy]]: sortOrder 
+                } 
+            },
+        ]);
+
+        res.json(scores);
+    } catch (error) {
+        console.error('Leaderboard Error:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 });
 

@@ -38,26 +38,27 @@ describe('User Service', () => {
   });
 
   it('should add a new user on POST /adduser', async () => {
-    const newUser = {
-      username: 'testuser',
-      password: 'testpassword',
+    const uniqueUsername = `newuserTest_${Date.now()}`; // Generate a unique username, addidng Date
+    const newUser  = {
+        username: uniqueUsername,
+        password: 'testpassword',
     };
 
-    const response = await request(app).post('/adduser').send(newUser);
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('username', 'testuser');
+    const response = await request(app).post('/adduser').send(newUser );
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty('username', uniqueUsername); // Search username in response
 
-    // Check if the user is inserted into the database
-    const userInDb = await User.findOne({ username: 'testuser' });
+    // Check if user was correctly inserted
+    const userInDb = await User.findOne({ username: uniqueUsername });
 
-    // Assert that the user exists in the database
+    // Confirm if user is in DB
     expect(userInDb).not.toBeNull();
-    expect(userInDb.username).toBe('testuser');
+    expect(userInDb.username).toBe(uniqueUsername);
 
-    // Assert that the password is encrypted
+    // Check if password is encrypted correctly
     const isPasswordValid = await bcrypt.compare('testpassword', userInDb.password);
     expect(isPasswordValid).toBe(true);
-  });
+});
 
   it('should delete a user on DELETE /users/:userId', async () => {
     // Verify the test user exists before deletion

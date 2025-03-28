@@ -83,7 +83,7 @@ services:
       USER_SERVICE_URL: http://userservice:8001
       LLM_SERVICE_URL: http://llmservice:8003
       QUESTION_SERVICE_URL: http://questionservice:8004
-      GAME_SERVICE_URL: http://gameservice:8004
+      GAME_SERVICE_URL: http://gameservice:8005
 
 
   questionservice:

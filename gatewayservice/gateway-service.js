@@ -18,6 +18,7 @@ const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
 const gameServiceUrl = process.env.GAME_SERVICE_URL || 'http://localhost:8005';
 
 
+
 app.use(cors());
 app.use(express.json());
 
@@ -91,6 +92,16 @@ app.post('/fetch-flag-data', async (req, res) => {
 });
 
 app.post('/saveScore', async (req, res) => {
+  try {
+    // Forward check answer request to the question service
+    const checkAnswerResponse = await axios.post(`${gameServiceUrl}/check-answer`, req.body);
+    res.json(checkAnswerResponse.data);
+  } catch (error) {
+      res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+app.post('/leaderboard', async (req, res) => {
   try {
     // Forward check answer request to the question service
     const checkAnswerResponse = await axios.post(`${gameServiceUrl}/check-answer`, req.body);
