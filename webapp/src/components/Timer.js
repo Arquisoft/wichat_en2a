@@ -4,14 +4,15 @@ import { Box, Typography } from "@mui/material";
 const Timer = ({ duration = 40, onTimeUp, answerSelected }) => {
     const [timeLeft, setTimeLeft] = useState(duration);
 
+    // 🔹 Reiniciar el temporizador cuando `duration` cambie
     useEffect(() => {
-        if (timeLeft === 0) {
-            onTimeUp(); // Marca la respuesta correcta automáticamente
-            return;
-        }
+        setTimeLeft(duration);
+    }, [duration]);
 
-        if (answerSelected) {
-            return; // Si el usuario ya respondió, detenemos el timer
+    useEffect(() => {
+        if (answerSelected || timeLeft === 0) {
+            if (timeLeft === 0) onTimeUp(); // Llamar a la función cuando el tiempo llega a 0
+            return;
         }
 
         const timerInterval = setInterval(() => {
@@ -19,7 +20,7 @@ const Timer = ({ duration = 40, onTimeUp, answerSelected }) => {
         }, 1000);
 
         return () => clearInterval(timerInterval);
-    }, [timeLeft, answerSelected, onTimeUp]);
+    }, [duration, answerSelected]); // 🔹 Se ejecuta solo cuando cambia `duration` o `answerSelected`
 
     return (
         <Box sx={{ width: "100%", bgcolor: "#ddd", borderRadius: "5px", mt: 2 }}>

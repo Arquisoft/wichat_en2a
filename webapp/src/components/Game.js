@@ -19,6 +19,7 @@ const Game = () => {
     const [chosenAnswer, setChosenAnswer] = useState(null);
 
     const [timeLeft, setTimeLeft] = useState(40);
+    const [timerKey, setTimerKey] = useState(0);
 
     const [hint, setHint] = useState(null);
 
@@ -45,6 +46,7 @@ const Game = () => {
                 response = await axios.get(`${apiEndpoint}/question`);
             }
             setQuestion(response.data);
+            setTimerKey((prevKey) => prevKey + 1); //to reload timer
         } catch (error) {
             console.error('Error fetching question:', error);
             setError('Failed to load question');
@@ -149,7 +151,7 @@ const Game = () => {
                 </Typography>
 
                 {/* Timer */}
-                <Timer duration={40} onTimeUp={handleTimeUp} answerSelected={answerSelected} />
+                <Timer key={timerKey} duration={40} onTimeUp={handleTimeUp} answerSelected={answerSelected} />
 
                 <Box sx={{
                     display: 'flex',
