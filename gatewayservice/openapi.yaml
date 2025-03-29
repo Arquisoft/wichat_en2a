@@ -13,6 +13,8 @@ tags:
     description: Authentication operations
   - name: LLM
     description: Interactions with the LLM service
+  - name: Questions
+    description: Questions operations
 paths:
   /health:
     get:
@@ -211,3 +213,75 @@ paths:
                     type: string
                     description: Error information.
                     example: Internal Server Error
+  /question:
+    get:
+      summary: Fetch a question from the database.
+      operationId: fetchQuestion
+      tags:
+        - Questions
+      responses:
+        '200':
+          description: The system returns a question.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    description: Unique identifier for the question.
+                  type:
+                    type: string
+                    description: Type of question.
+                    example: "flag"
+                  imageUrl:
+                    type: string
+                    format: uri
+                    description: URL of an image related to the question.
+                    example: "http://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Spain.svg"
+                  options:
+                    type: array
+                    description: List of possible answers.
+                    items:
+                      type: string
+                    example:
+                      - "Netherlands"
+                      - "France"
+                      - "Syria"
+                      - "Egypt"
+                  correctAnswer:
+                    type: string
+                    description: The correct answer.
+                    example: "Spain"
+                  alreadyShown:
+                    type: boolean
+                    description: Indicates if the question has been shown before.
+                    example: true
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Timestamp when the question was created.
+                    example: "2025-03-18T18:37:03.978Z"
+        '404':
+          description: No questions available.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: No questions available.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+
