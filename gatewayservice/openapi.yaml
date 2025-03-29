@@ -5,7 +5,7 @@ info:
   version: 0.2.0
 servers:
   - url: http://localhost:8000
-    description: Development server
+    description: Gateway service
 tags:
   - name: Health
     description: Health check operations
