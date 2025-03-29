@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const promBundle = require('express-prom-bundle');
+
 //libraries required for OpenAPI-Swagger
 const swaggerUi = require('swagger-ui-express'); 
 const fs = require("fs");
@@ -51,6 +52,43 @@ app.post('/adduser', async (req, res) => {
   }
 });
 
+// Endpoint to get username by one userId
+app.post('/getUserById', async (req, res) => {
+  try {
+      // Forward the request to the user service
+      const userResponse = await axios.post(`${userServiceUrl}/getUserById`, req.body);
+      res.json(userResponse.data);
+  } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error', details: error.message });
+  }
+});
+
+// Endpoint to get usernames by multiple userIds
+app.post('/getAllUsernamesWithIds', async (req, res) => {
+  try {
+    // Forward the request to the user service
+    const usernamesResponse = await axios.post(`${userServiceUrl}/getAllUsernamesWithIds`, req.body);
+    res.json(usernamesResponse.data);
+  } catch (error) {
+    console.error('Error fetching usernames:', error);
+    res.status(error.response?.status || 500).json({ 
+      error: error.response?.data?.error || 'Internal Server Error' 
+    });
+  }
+});
+
+// Endpoint to get a list of users
+app.get('/users', async (req, res) => {
+  try {
+      // Forward the request to the user service
+      const userResponse = await axios.get(`${userServiceUrl}/users`);
+      res.json(userResponse.data);
+  } catch (error) {
+      res.status(error.response.status).json({ error: error.response.data.error });
+      
+  }
+});
+
 app.post('/askllm', async (req, res) => {
   try {
     // Forward the add user request to the user service
@@ -94,20 +132,45 @@ app.post('/fetch-flag-data', async (req, res) => {
 app.post('/saveScore', async (req, res) => {
   try {
     // Forward check answer request to the question service
-    const checkAnswerResponse = await axios.post(`${gameServiceUrl}/check-answer`, req.body);
+    const checkAnswerResponse = await axios.post(`${gameServiceUrl}/saveScore`, req.body);
     res.json(checkAnswerResponse.data);
   } catch (error) {
       res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
 
-app.post('/leaderboard', async (req, res) => {
+// 8000!!!!!!!!!
+app.get('/leaderboard', async (req, res) => {
   try {
-    // Forward check answer request to the question service
-    const checkAnswerResponse = await axios.post(`${gameServiceUrl}/check-answer`, req.body);
-    res.json(checkAnswerResponse.data);
+    // Fetch leaderboard from the game service
+    const leaderboardResponse = await axios.get(`${gameServiceUrl}/leaderboard`, {
+      params: req.query, // Forward sorting params if any
+    });
+
+    const leaderboardData = leaderboardResponse.data;
+    
+    // Extract userIds from the leaderboard response
+    const userIds = leaderboardData.map(entry => entry.userId);
+
+    // Fetch usernames from the user service
+    const usernamesResponse = await axios.post(`${userServiceUrl}/getAllUsernamesWithIds`, {
+      userIds
+    });
+
+    const usernamesMap = usernamesResponse.data; // Assuming it returns an object { userId: username }
+
+    // Merge leaderboard data with usernames
+    const leaderboardWithUsernames = leaderboardData.map(entry => ({
+      ...entry,
+      username: usernamesMap[entry.userId] || 'Unknown User'
+    }));
+
+    res.json(leaderboardWithUsernames);
   } catch (error) {
-      res.status(error.response.status).json({ error: error.response.data.error });
+    console.error('Leaderboard Fetch Error:', error);
+    res.status(error.response?.status || 500).json({ 
+      error: error.response?.data?.error || 'Internal Server Error' 
+    });
   }
 });
 

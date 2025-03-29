@@ -82,11 +82,9 @@ app.get('/scoresByUser/:userId', async (req, res) => {
 */
 app.get('/leaderboard', async (req, res) => {
     try {
-        // Default sorting
         const sortBy = req.query.sortBy || 'totalScore';
         const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
 
-        // Permitted sortings
         const sortFields = {
             'totalScore': 'totalScore',
             'gamesPlayed': 'gamesPlayed',
@@ -94,7 +92,6 @@ app.get('/leaderboard', async (req, res) => {
             'winRate': 'winRate'
         };
 
-        // Validate sorting
         if (!sortFields[sortBy]) {
             return res.status(400).json({ 
                 error: 'Invalid sort field', 
@@ -112,22 +109,7 @@ app.get('/leaderboard', async (req, res) => {
                 },
             },
             {
-                $lookup: {
-                    from: 'users',
-                    localField: '_id',
-                    foreignField: '_id',
-                    as: 'userInfo',
-                },
-            },
-            {
-                $unwind: {
-                    path: '$userInfo',
-                    preserveNullAndEmptyArrays: true
-                }
-            },
-            {
                 $project: {
-                    username: { $ifNull: ['$userInfo.username', 'Unknown User'] },
                     userId: '$_id',
                     totalScore: 1,
                     gamesPlayed: 1,
@@ -150,7 +132,6 @@ app.get('/leaderboard', async (req, res) => {
                     },                    
                 },
             },
-            // Execute sorting 
             { 
                 $sort: { 
                     [sortFields[sortBy]]: sortOrder 
@@ -164,6 +145,7 @@ app.get('/leaderboard', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 });
+
 
 // Start the server
 const server = app.listen(port, () => {

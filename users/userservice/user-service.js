@@ -49,6 +49,7 @@ app.post('/adduser', async (req, res) => {
     }
 });
 
+
 // delete user endpoint
 app.delete('/users/:userId', async (req, res) => {
   try {
@@ -121,6 +122,7 @@ app.put('/users/:userId', async (req, res) => {
   }
 });
 
+// Endpoint to get username of one userId
 app.get('/getUserById/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
@@ -130,16 +132,58 @@ app.get('/getUserById/:userId', async (req, res) => {
             return res.status(400).json({ error: 'Invalid userId format' });
         }
 
-        const user = await User.findById(userId).select('username');
-        
+        // Fetch user and select only the necessary fields
+        const user = await User.findById(userId).select('username _id');
+       
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        res.json({ userId: user._id, username: user.username });
+        // Return an object with both _id and username
+        res.json({
+            _id: user._id.toString(), // Ensure it's a string
+            username: user.username
+        });
     } catch (error) {
         console.error('Error getting user:', error);
         res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// Endpoint to get usernames by multiple userIds
+// In user service
+app.post('/getAllUsernamesWithIds', async (req, res) => {
+    try {
+      const { userIds } = req.body;
+      
+      // Ensure userIds is an array
+      if (!Array.isArray(userIds) || userIds.length === 0) {
+        return res.status(400).json({ error: 'Invalid userIds array' });
+      }
+  
+      const users = await User.find({ _id: { $in: userIds } }, { _id: 1, username: 1 });
+  
+      // Convert array to object map { userId: username }
+      const userMap = users.reduce((acc, user) => {
+        acc[user._id] = user.username;
+        return acc;
+      }, {});
+  
+      res.json(userMap);
+    } catch (error) {
+      console.error('Error fetching usernames:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+  
+// Endpoint to get a list of users
+app.get('/users', async (req, res) => {
+    try {
+        // Fetch all users from the database
+        const users = await User.find({}, 'username _id'); // Use _id not *id
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 });
 
