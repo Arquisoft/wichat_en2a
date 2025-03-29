@@ -9,140 +9,205 @@ servers:
 tags:
   - name: Health
     description: Health check operations
-    paths:
-      /health:
-      get:
-        summary: Check the health status of the service.
-        operationId: checkHealth
-        responses:
-          '200':
-            description: Service is healthy.
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    status:
-                      type: string
-                      description: Health status.
-                      example: OK
   - name: Authentication
     description: Authentication operations
-    paths:
-      /adduser:
-        post:
-          summary: Add a new user to the database.
-          operationId: addUser
-          requestBody:
-            required: true
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    username:
-                      type: string
-                      description: User ID.
-                      example: student
-                    password:
-                      type: string
-                      description: User password.
-                      example: pass
-          responses:
-            '200':
-              description: User added successfully.
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      username:
-                        type: string
-                        description: User ID
-                      password:
-                        type: string
-                        description: Hashed password
-                        example: $2b$10$ZKdNYLWFQxzt5Rei/YTc/OsZNi12YiWz30JeUFHNdAt7MyfmkTuvC
-                      _id:
-                        type: string
-                        description: Identification
-                        example: 65f756db3fa22d227a4b7c7d
-                      createdAt:
-                        type: string
-                        description: Creation date.
-                        example: '2024-03-17T20:47:23.935Z'
-                      ___v:
-                        type: integer
-                        example: '0'                                        
-            '400':
-              description: Failed to add user.
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      error:
-                        type: string
-                        description: Error information.
-                        example: getaddrinfo EAI_AGAIN mongodb
-      /login:
-        post:
-          summary: Log in to the system.
-          operationId: loginUser
-          requestBody:
-            required: true
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    username:
-                      type: string
-                      description: User ID.
-                      example: student
-                    password:
-                      type: string
-                      description: User password.
-                      example: pass
-          responses:
-            '200':
-              description: Login successful. Returns user token, username, and creation date.
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      token:
-                        type: string
-                        description: User token.
-                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY3NTZkYjNmYTIyZDIyN2E0YjdjN2QiLCJpYXQiOjE3MTA3MDg3NDUsImV4cCI6MTcxMDcxMjM0NX0.VMG_5DOyQ4GYlJQRcu1I6ICG1IGzuo2Xuei093ONHxw
-                      username:
-                        type: string
-                        description: Username.
-                        example: student
-                      createdAt:
-                        type: string
-                        description: Creation date.
-                        example: '2024-03-17T20:47:23.935Z'
-            '401':
-              description: Invalid credentials.
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      error:
-                        type: string
-                        description: Shows the error info..
-                        example: Invalid credentials
-            '500':
-              description: Internal server error.
-              content:
-                application/json:
-                  schema:
-                    type: object
-                    properties:
-                      error:
-                        type: string
-                        description: Error information.
-                        example: Internal Server Error
+  - name: LLM
+    description: Interactions with the LLM service
+paths:
+  /health:
+    get:
+      summary: Check the health status of the service.
+      operationId: checkHealth
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Service is healthy.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Health status.
+                    example: OK 
+  /adduser:
+    post:
+      summary: Add a new user to the database.
+      operationId: addUser
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: User ID.
+                  example: student
+                password:
+                  type: string
+                  description: User password.
+                  example: pass
+      responses:
+        '200':
+          description: User added successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    description: User ID
+                  password:
+                    type: string
+                    description: Hashed password
+                    example: $2b$10$ZKdNYLWFQxzt5Rei/YTc/OsZNi12YiWz30JeUFHNdAt7MyfmkTuvC
+                  _id:
+                    type: string
+                    description: Identification
+                    example: 65f756db3fa22d227a4b7c7d
+                  createdAt:
+                    type: string
+                    description: Creation date.
+                    example: '2024-03-17T20:47:23.935Z'
+                  ___v:
+                    type: integer
+                    example: '0'                                        
+        '400':
+          description: Failed to add user.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: getaddrinfo EAI_AGAIN mongodb
+  /login:
+    post:
+      summary: Log in to the system.
+      operationId: loginUser
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: User ID.
+                  example: student
+                password:
+                  type: string
+                  description: User password.
+                  example: pass
+      responses:
+        '200':
+          description: Login successful. Returns user token, username, and creation date.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: User token.
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWY3NTZkYjNmYTIyZDIyN2E0YjdjN2QiLCJpYXQiOjE3MTA3MDg3NDUsImV4cCI6MTcxMDcxMjM0NX0.VMG_5DOyQ4GYlJQRcu1I6ICG1IGzuo2Xuei093ONHxw
+                  username:
+                    type: string
+                    description: Username.
+                    example: student
+                  createdAt:
+                    type: string
+                    description: Creation date.
+                    example: '2024-03-17T20:47:23.935Z'
+        '401':
+          description: Invalid credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Shows the error info..
+                    example: Invalid credentials
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
+  /askllm:
+    post:
+      summary: Ask a question to the LLM service.
+      operationId: askLLM
+      tags:
+        - LLM
+      requestBody:
+        required: true
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  description: The question to ask the LLM.
+                  example: What do I need to do to pass the Software Architecture course?
+                model:
+                  oneOf:
+                    - type: string
+                      enum:
+                        - empathy
+                        - gemini
+                  description: The model to use for the LLM.
+      responses:
+        '200':
+          description: LLM response.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    description: The answer from the LLM.
+                    example: To pass the Software Architecture course, you need to complete all assignments and pass the final exam.
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Invalid model specified.
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
