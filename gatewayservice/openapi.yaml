@@ -285,7 +285,7 @@ paths:
                     description: Error information.
                     example: Internal Server Error
   /fetch-flag-data:
-    get:
+    post:
       summary: Fetches questions from Wikidata and stores them in the database.
       operationId: fetchFlagData
       tags:
@@ -296,10 +296,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  type: array
-                  items:
+                type: array
+                items:
+                  type: object
+                  properties:
                     type:
                       type: string
                       description: The type of quiz question.
