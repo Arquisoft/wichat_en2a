@@ -284,4 +284,53 @@ paths:
                     type: string
                     description: Error information.
                     example: Internal Server Error
-
+  /fetch-flag-data:
+    get:
+      summary: Fetches questions from Wikidata and stores them in the database.
+      operationId: fetchFlagData
+      tags:
+        - Questions
+      responses:
+        '200':
+          description: Questions fetched and stored successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type: array
+                  items:
+                    type:
+                      type: string
+                      description: The type of quiz question.
+                      example: "flag"
+                    imageUrl:
+                      type: string
+                      format: uri
+                      description: URL of an image related to the question.
+                      example: "http://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Japan.svg"
+                    options:
+                      type: array
+                      description: List of possible answers.
+                      items:
+                        type: string
+                      example:
+                        - "Japan"
+                        - "India"
+                        - "Korea"
+                        - "China"
+                    correctAnswer:
+                      type: string
+                      description: The correct answer to the question.
+                      example: "Japan"
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
