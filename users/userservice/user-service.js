@@ -24,14 +24,20 @@ function validateRequiredFields(req, requiredFields) {
     }
 }
 
-//add user endpint
+//add user endpoint
 app.post('/adduser', async (req, res) => {
     try {
         // Check if required fields are present in the request body
         validateRequiredFields(req, ['username', 'password']);
 
+        // Validate username format (example: alphanumeric only)
+        const username = req.body.username;
+        if (typeof username !== 'string' || !username.match(/^[a-zA-Z0-9_]+$/)) {
+            return res.status(400).json({ error: 'Invalid username format' });
+        }
+
         // Check if username already exists
-        const existingUser = await User.findOne({ username: req.body.username });
+        const existingUser = await User.findOne({ username: username });
         if (existingUser) {
             return res.status(409).json({ error: 'Username already exists' });
         }
@@ -39,7 +45,7 @@ app.post('/adduser', async (req, res) => {
         // Encrypt the password before saving it
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const newUser = new User({
-            username: req.body.username,
+            username: username,
             password: hashedPassword,
         });
         await newUser.save();
@@ -54,6 +60,11 @@ app.post('/adduser', async (req, res) => {
 app.delete('/users/:userId', async (req, res) => {
   try {
       const userId = req.params.userId;
+      
+      // Validate userId format
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+          return res.status(400).json({ error: 'Invalid userId format' });
+      }
       
       // Check if exists
       const user = await User.findById(userId);
@@ -76,6 +87,11 @@ app.put('/users/:userId', async (req, res) => {
       const userId = req.params.userId;
       const updateData = {};
       
+      // Validate userId format
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+          return res.status(400).json({ error: 'Invalid userId format' });
+      }
+      
       // Check if user exists
       const user = await User.findById(userId);
       if (!user) {
@@ -86,6 +102,10 @@ app.put('/users/:userId', async (req, res) => {
       if (req.body.username !== undefined) {
           if (req.body.username.trim() === '') {
               return res.status(400).json({ error: 'Username cannot be empty' });
+          }
+          // Validate username format
+          if (typeof req.body.username !== 'string' || !req.body.username.match(/^[a-zA-Z0-9_]+$/)) {
+              return res.status(400).json({ error: 'Invalid username format' });
           }
           updateData.username = req.body.username;
       }
@@ -151,7 +171,6 @@ app.get('/getUserById/:userId', async (req, res) => {
 });
 
 // Endpoint to get usernames by multiple userIds
-// In user service
 app.post('/getAllUsernamesWithIds', async (req, res) => {
     try {
       const { userIds } = req.body;
@@ -161,7 +180,19 @@ app.post('/getAllUsernamesWithIds', async (req, res) => {
         return res.status(400).json({ error: 'Invalid userIds array' });
       }
   
-      const users = await User.find({ _id: { $in: userIds } }, { _id: 1, username: 1 });
+      // Validate each userId is a valid ObjectId and create safe array
+      const validUserIds = [];
+      for (const id of userIds) {
+        if (mongoose.Types.ObjectId.isValid(id)) {
+          validUserIds.push(mongoose.Types.ObjectId(id));
+        }
+      }
+      
+      if (validUserIds.length === 0) {
+        return res.status(400).json({ error: 'No valid user IDs provided' });
+      }
+
+      const users = await User.find({ _id: { $in: validUserIds } }, { _id: 1, username: 1 });
   
       // Convert array to object map { userId: username }
       const userMap = users.reduce((acc, user) => {
@@ -186,7 +217,6 @@ app.get('/users', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error', details: error.message });
     }
 });
-
 
 const server = app.listen(port, () => {
   console.log(`User Service listening at http://localhost:${port}`);
