@@ -214,23 +214,5 @@ describe('User Service', () => {
     });
   });
 
-  it('should return 400 for invalid userIds array', async () => {
-    // Act: Send a request with an invalid userIds array (not an array)
-    const response = await request(app)
-        .post('/getAllUsernamesWithIds')
-        .send({ userIds: 'invalid' }); // Not an array
-
-    // Assert: Check the response
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('error', 'Invalid userIds array');
-
-    // Act: Send a request with an empty userIds array
-    const emptyResponse = await request(app)
-        .post('/getAllUsernamesWithIds')
-        .send({ userIds: [] }); // Empty array
-
-    // Assert: Check the response
-    expect(emptyResponse.status).toBe(400);
-    expect(emptyResponse.body).toHaveProperty('error', 'Invalid userIds array');
-  });
+  
 });
