@@ -91,19 +91,18 @@ app.post("/ask", async (req, res) => {
 
     //What will be send to the LLM
     const prompt = `
-    You are assisting a user to get the answer to the following question: "${question}"
-    The correct answer to this question is: "${correctAnswer}" (this is just for you to know — DO NOT say it by ANY MEANS).
+    You are an assitant for a user who is trying to find the answer to a question.
+    Question the user is trying to solve: "${question}"
+    Answer to the question the user is trying to solve: "${correctAnswer}" (DO NOT say it by ANY MEANS).
+    What the user tells you: "${userMessage}"
 
-    The user now is telling you this: "${userMessage}"
-
-    Below are some strict RULES you must follow:
-    1. The ONLY text that you must send back is the answer to the question. You are talking to THE USER, NOT ME.
-    2. If the user is asking for a hint, clue or help what you MUST do is giving a helpful hint without saying the correct answer or giving it away directly.
-    3. If the user is asking for the answer or trying to guess the answer (e.g., "Is it ___?", "Tell me the answer", "What is it?"), respond ONLY with:
-      "My apologies, I can not give you the answer to the question, nor confirming any of your guesses, but you can ask for a hint."
-    4. If the user says something unrelated to the original question or if it is empty, reply with:
-      "My apologies, that is not related to the question. Do you want a hint?"
-    5. Never say the answer directly under ANY CIRCUNSTANCES. You just must provide hints.
+    Below are your strict RULES that you MUST follow:
+    1. NEVER WRITE "${correctAnswer}" in your message.
+    2. NEVER ASK QUESTIONS TO THE USER.
+    3. If the user asks directly for the answer tell: "My apologies, I cannot give you the answer directly".
+    4. If the user asks for a hint or some help, provide them with a useful hint but DO NOT WRITE "${correctAnswer}".
+    5. If the user asks something related to the question, answer ONLY IF answering does not give them the answer directly.
+    6. NEVER EVER WRITE "${correctAnswer}" ANYWHERE IN YOUR RESPONSE.
     `;  
 
     let answer;
