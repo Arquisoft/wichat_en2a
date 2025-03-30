@@ -243,3 +243,114 @@ describe('Gateway Service', () => {
   }); 
 
 });
+
+// Add these tests to your existing test file
+describe('Gateway Service Error Handling', () => {
+  // Test health endpoint
+  it('should respond to health check', async () => {
+    const response = await request(app).get('/health');
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({ status: 'OK' });
+  });
+
+  // Test error handling for login endpoint
+  it('should handle errors from auth service on login', async () => {
+    axios.post.mockRejectedValueOnce({
+      response: { status: 401, data: { error: 'Invalid credentials' } }
+    });
+
+    const response = await request(app)
+      .post('/login')
+      .send({ username: 'testuser', password: 'wrong' });
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toEqual({ error: 'Invalid credentials' });
+  });
+
+  // Test error handling for adduser endpoint
+  it('should handle errors from user service on adduser', async () => {
+    axios.post.mockRejectedValueOnce({
+      response: { status: 409, data: { error: 'Username already exists' } }
+    });
+
+    const response = await request(app)
+      .post('/adduser')
+      .send({ username: 'existinguser', password: 'password' });
+
+    expect(response.statusCode).toBe(409);
+    expect(response.body).toEqual({ error: 'Username already exists' });
+  });
+
+  // Test error handling for getAllUsernamesWithIds endpoint
+  it('should handle errors from user service on getAllUsernamesWithIds', async () => {
+    axios.post.mockRejectedValueOnce({
+      response: { status: 400, data: { error: 'Invalid user IDs' } }
+    });
+
+    const response = await request(app)
+      .post('/getAllUsernamesWithIds')
+      .send({ userIds: ['invalid'] });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toEqual({ error: 'Invalid user IDs' });
+  });
+
+  // Test error handling when response is missing
+  it('should handle network errors on getAllUsernamesWithIds', async () => {
+    axios.post.mockRejectedValueOnce(new Error('Network Error'));
+
+    const response = await request(app)
+      .post('/getAllUsernamesWithIds')
+      .send({ userIds: ['123'] });
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal Server Error' });
+  });
+
+  // Test error handling for leaderboard endpoint
+  it('should handle errors from game service on leaderboard', async () => {
+    axios.get.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'Database error' } }
+    });
+
+    const response = await request(app).get('/leaderboard');
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toEqual({ error: 'Database error' });
+  });
+
+  // Test error handling when leaderboard service returns an error but username service works
+  it('should handle network errors on leaderboard', async () => {
+    axios.get.mockRejectedValueOnce(new Error('Network Error'));
+
+    const response = await request(app).get('/leaderboard');
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal Server Error' });
+  });
+
+  // Test errors in other endpoints
+  it('should handle errors from question service', async () => {
+    axios.get.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'Question service error' } }
+    });
+
+    const response = await request(app).get('/question');
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toEqual({ error: 'Question service error' });
+  });
+
+  it('should handle errors from llm service', async () => {
+    axios.post.mockRejectedValueOnce({
+      response: { status: 400, data: { error: 'Invalid LLM parameters' } }
+    });
+
+    const response = await request(app)
+      .post('/askllm')
+      .send({ question: 'test' });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toEqual({ error: 'Invalid LLM parameters' });
+  });
+});
