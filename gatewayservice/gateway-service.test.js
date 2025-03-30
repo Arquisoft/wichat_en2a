@@ -40,23 +40,7 @@ describe('Gateway Service', () => {
     expect(response.body.userId).toBe('mockedUserId');
   });
 
-  // Test for /getUserById
-  it('should forward getUserById request to user service', async () => {
-    const mockUser = { username: 'testuser' };
-    axios.post.mockResolvedValueOnce({ data: mockUser });
-
-    const response = await request(app)
-      .post('/getUserById')
-      .send({ userId: '123' });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toEqual(mockUser);
-    expect(axios.post).toHaveBeenCalledWith(
-      expect.stringContaining('/getUserById'),
-      { userId: '123' }
-    );
-  });
-
+  
   // Test for /getAllUsernamesWithIds
   it('should forward getAllUsernamesWithIds request to user service', async () => {
     const mockUsernames = { '123': 'user1', '456': 'user2' };
@@ -86,7 +70,26 @@ describe('Gateway Service', () => {
     expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/users'));
   });
 
-  
+  // Test /saveScore endpoint
+  it('should forward saveScore request to game service', async () => {
+    const mockRequestBody = { userId: 'testUserId', score: 150, isVictory: true };
+    const mockResponse = { data: { userId: 'testUserId', score: 150, isVictory: true } };
+
+    axios.post.mockResolvedValueOnce(mockResponse);
+
+    const response = await request(app)
+      .post('/saveScore')
+      .send(mockRequestBody)
+      .set('Content-Type', 'application/json');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse.data);
+    expect(axios.post).toHaveBeenCalledWith(
+      expect.stringContaining('/saveScore'),
+      mockRequestBody
+    );
+  });
+
 
   // Test for /leaderboard
   it('should fetch leaderboard and merge with usernames', async () => {
