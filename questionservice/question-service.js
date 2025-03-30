@@ -128,6 +128,7 @@ async function saveQuestionsToDB(questions) {
 
 // Fetch a question from the database
 async function getQuestion() {
+
     try {
         return await Question.findOneAndUpdate(
             {alreadyShown: false},
