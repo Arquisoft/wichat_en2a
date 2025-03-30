@@ -191,7 +191,7 @@ describe('User Service', () => {
 
     // Assert: Check the response
     expect(response.status).toBe(404);
-    expect(response.body).toHaveProperty('error', 'User  not found');
+    expect(response.body).toHaveProperty('error', 'User not found');
   });
 
   it('should return usernames for valid userIds', async () => {
