@@ -21,8 +21,13 @@ mongoose
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // Fetch flag data from Wikidata
-async function fetchFlagData() {
+async function fetchFlagData(numberOfQuestions) {
   console.time("fetchFlagData");
+
+  // Validate the number of questions
+  if (numberOfQuestions == null || numberOfQuestions < 1 || !Number.isInteger(numberOfQuestions)) {
+    numberOfQuestions = 30; // Default to 30 if invalid
+  }
 
   const query = `
         SELECT ?country ?countryLabel ?flag WHERE {
@@ -30,7 +35,7 @@ async function fetchFlagData() {
                wdt:P41 ?flag.     
       SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
     }
-    LIMIT 30
+    LIMIT ${numberOfQuestions}
     `;
 
   const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(
@@ -188,7 +193,8 @@ app.post("/check-answer", async (req, res) => {
 // Endpoint to fetch
 app.post("/fetch-flag-data", async (req, res) => {
   try {
-    const results = await fetchFlagData();
+    const { numberOfQuestions } = req.body;
+    const results = await fetchFlagData(numberOfQuestions);
     res.json(results);
   } catch (error) {
     console.error("Error while fetching questions");
