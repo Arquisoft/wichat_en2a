@@ -63,15 +63,6 @@ async function addUser(req, res) {
     }
 }
 
-// Helper function to validate required fields 
-function validateRequiredFields(req, requiredFields) {
-    requiredFields.forEach((field) => {
-        if (!req.body[field]) {
-            throw new Error(`Missing required field: ${field}`);
-        }
-    });
-}
-
 // Remove dangerous characters from the username to avoid security issues
 function sanitize(input) {
     return input.replace(/[^a-zA-Z0-9_]/g, ''); // Allow only alphanumeric and underscores
