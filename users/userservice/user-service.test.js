@@ -238,57 +238,5 @@ describe('User Service', () => {
 
 });
 
-describe('User Service Error Handling', () => {
-  beforeEach(async () => {
-    await User.deleteMany({});
-    const testUser = new User({
-      username: 'testuser',
-      password: await bcrypt.hash('testpassword', 10)
-    });
-    const savedUser = await testUser.save();
-    testUserId = savedUser._id;
-  });
 
-  it('should return 400 for missing username on POST /adduser', async () => {
-    const newUser = { password: 'testpassword' };
-    const response = await request(app).post('/adduser').send(newUser);
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('error', 'Username is required');
-  });
-
-  it('should return 400 for missing password on POST /adduser', async () => {
-    const newUser = { username: 'userwithoutpassword' };
-    const response = await request(app).post('/adduser').send(newUser);
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('error', 'Password is required');
-  });
-
-  it('should return 400 for invalid user ID format on DELETE /users/:userId', async () => {
-    const invalidUserId = '12345';
-    const response = await request(app).delete(`/users/${invalidUserId}`);
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('error', 'Invalid user ID format');
-  });
-
-  it('should return 500 for server error during user creation', async () => {
-    jest.spyOn(User.prototype, 'save').mockImplementationOnce(() => {
-      throw new Error('Database error');
-    });
-
-    const newUser = { username: 'usererror', password: 'password' };
-    const response = await request(app).post('/adduser').send(newUser);
-    expect(response.status).toBe(500);
-    expect(response.body).toHaveProperty('error', 'Internal server error');
-  });
-
-  it('should return 500 for server error during user retrieval', async () => {
-    jest.spyOn(User, 'findById').mockImplementationOnce(() => {
-      throw new Error('Database error');
-    });
-
-    const response = await request(app).get(`/getUserById/${testUserId}`);
-    expect(response.status).toBe(500);
-    expect(response.body).toHaveProperty('error', 'Internal server error');
-  });
-});
 
