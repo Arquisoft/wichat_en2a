@@ -261,7 +261,7 @@ describe('Gateway Service Error Handling', () => {
 
     const response = await request(app)
       .post('/login')
-      .send({ username: 'testuser', password: 'wrong' });
+      .send({ username: 'testuser', password: 'wrong' }); // NOSONAR: Hardcoded password is for test purposes only.
 
     expect(response.statusCode).toBe(401);
     expect(response.body).toEqual({ error: 'Invalid credentials' });
@@ -275,7 +275,8 @@ describe('Gateway Service Error Handling', () => {
 
     const response = await request(app)
       .post('/adduser')
-      .send({ username: 'existinguser', password: 'password' });
+      .send({ username: 'existinguser', password: 'password' }); // NOSONAR: Hardcoded password is for test purposes only.
+
 
     expect(response.statusCode).toBe(409);
     expect(response.body).toEqual({ error: 'Username already exists' });
