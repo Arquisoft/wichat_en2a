@@ -83,31 +83,48 @@ async function sendQuestionToGemini(question){
 }
 
 //For the getting the hint from the LLM to help the user to answer the question
-app.post('/ask', async (req, res) => {
+app.post("/ask", async (req, res) => {
   try {
-    // Check if required fields are present in the request body
-    validateRequiredFields(req, ['question', 'model']);
+    validateRequiredFields(req, ["question", "userMessage", "model", "correctAnswer"]);
 
-    //Get the three fields passed
-    const { question, model} = req.body;
-    
+    const {question, userMessage, model, correctAnswer} = req.body;
+
+    //What will be send to the LLM
+    const prompt = `
+    You are assisting a user to get the answer to the following question: "${question}"
+    The correct answer to this question is: "${correctAnswer}" (this is just for you to know — DO NOT say it by ANY MEANS).
+
+    The user now is telling you this: "${userMessage}"
+
+    Below are some strict RULES you must follow:
+    1. The ONLY text that you must send back is the answer to the question. You are talking to THE USER, NOT ME.
+    2. If the user is asking for a hint, clue or help what you MUST do is giving a helpful hint without saying the correct answer or giving it away directly.
+    3. If the user is asking for the answer or trying to guess the answer (e.g., "Is it ___?", "Tell me the answer", "What is it?"), respond ONLY with:
+      "My apologies, I can not give you the answer to the question, nor confirming any of your guesses, but you can ask for a hint."
+    4. If the user says something unrelated to the original question or if it is empty, reply with:
+      "My apologies, that is not related to the question. Do you want a hint?"
+    5. Never say the answer directly under ANY CIRCUNSTANCES. You just must provide hints.
+    `;  
+
     let answer;
-    let questionComplete = "Give in a single line and directly a clue for knowing " + question + "but without saying directly what country is";
 
-    //Get the answer of the LLM
-    if (model == 'empathy'){ //For using empathy's LLM
-      answer = await sendQuestionToLLM(questionComplete);
-
-    }else if (model == 'gemini'){ //For using the LLM gemini
-      const preanswer = await sendQuestionToGemini(questionComplete);
-      answer = preanswer.response.candidates[0].content.parts[0].text;
-    }else{
+    //Getting the answer from the LLM
+    if (model === "empathy") { //For using Empathy
+      answer = await sendQuestionToLLM(prompt);
+    } else if (model === "gemini") { //For using LLM Gemini
+      const preanswer = await sendQuestionToGemini(prompt);
+      answer = preanswer?.response?.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
+    } else {
       throw new Error(`Model "${model}" is not supported.`);
     }
-    
+
+    //Error if there is no answer
+    if (!answer) {
+      throw new Error("The LLM did not return a valid response.");
+    }
+
     //Return the message
     res.json({ answer });
-
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
