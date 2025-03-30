@@ -1,19 +1,7 @@
 import React from 'react';
-import {Button, Container, Typography, Box} from '@mui/material';
+import {Button, Typography, Box} from '@mui/material';
 import Navbar from './Navbar';
 import {useNavigate} from "react-router-dom";
-
-//Used to delete scroll bar
-const globalStyles = document.createElement("style");
-globalStyles.innerHTML = `
-  body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden;
-  }
-`;
-document.head.appendChild(globalStyles);
 
 const Home = () => {
     const navigate = useNavigate();
@@ -23,16 +11,27 @@ const Home = () => {
             <Navbar/>
             <Box sx={{
                 minHeight: '100vh',
+                width: '100vw',
                 backgroundColor: '#6A5ACD', // Purple background
                 display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                justifyContent: 'center',
+                gap: { xs: 4, md: 8 },
                 padding: '0 5%',
+                textAlign: { xs: 'center', md: 'left' }
             }}>
                 {/* Left container */}
-                <Box sx={{display: 'flex', flexDirection: 'column', gap: 3}}>
-                    <Typography component="h1" variant="h1" sx={{color: 'white', fontWeight: 'bold'}}>
-                        Welcome back user_name!
+                <Box sx={{
+                    flex: 1,
+                    minWidth: '300px',
+                    maxWidth: { xs: '100%', md: '50%' }, // Full width on small, half on larger
+                }}>
+                    <Typography
+                        component="h1"
+                        variant={{ xs: 'h3', sm: 'h2', md: 'h1' }} // Adjusts size for different screens
+                        sx={{color: 'white', fontWeight: 'bold'}}>
+                        Welcome back!
                     </Typography>
                     <Button
                         variant="contained"
@@ -41,17 +40,27 @@ const Home = () => {
                             color: 'black',
                             fontWeight: 'bold',
                             padding: '15px 40px',
-                            fontSize: '1.5rem',
-                            borderRadius: '30px',
-                            '&:hover': {backgroundColor: '#FFC107'}
+                            fontSize: { xs: '1.2rem', md: '1.5rem' },                            borderRadius: '30px',
+                            '&:hover': {backgroundColor: '#FFC107'},
+                            marginTop: 2 //Space below text
                         }}
                         onClick={() => navigate('/game')}>
                         Play Game
                     </Button>
                 </Box>
                 {/* Imagen a la derecha */}
-                <Box>
-                    <img src="/questionMark.webp" alt="Trivia Logo" />
+                <Box sx={{
+                    flex: 1,
+                    minWidth: '300px',
+                    maxWidth: { xs: '80%', md: '50%' },
+                    display: 'flex',
+                    justifyContent: 'center'
+                }}>
+                    <img
+                        src="/questionMark.webp"
+                        alt="Trivia Logo"
+                        style={{ width: 'auto', height: 'auto' }}
+                    />
                 </Box>
             </Box>
         </>
