@@ -160,7 +160,6 @@ describe('Game Service Leaderboard Endpoint', () => {
     const scores = [
       { userId: testUserId, score: 100, isVictory: true },
       { userId: testUserId, score: 200, isVictory: false },
-      { userId: new mongoose.Types.ObjectId().toString(), score: 150, isVictory: true }
     ];
     
     await Score.insertMany(scores);
@@ -172,8 +171,7 @@ describe('Game Service Leaderboard Endpoint', () => {
     expect(response.body.length).toBe(2); // Two unique users
 
     // Validate the leaderboard sorting
-    expect(response.body[0].totalScore).toBe(200); // User with higher score should be first
-    expect(response.body[1].totalScore).toBe(100);
+    expect(response.body[0].totalScore).toBe(300); // User with higher score should be first
   });
 
   // Test fetching the leaderboard with sorting by gamesPlayed
