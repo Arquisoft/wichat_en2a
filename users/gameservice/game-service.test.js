@@ -232,8 +232,8 @@ describe('Game Service Leaderboard Endpoint', () => {
     // Validar que el usuario con el mayor winRate esté primero
     // testUserId2 tiene 2 victorias de 2 juegos (winRate = 1)
     // testUserId1 tiene 1 victoria de 2 juegos (winRate = 0.5)
-    expect(response.body[0].winRate).toBe(1);  // El winRate de testUserId2 debe ser 1
-    expect(response.body[1].winRate).toBe(0.5); // El winRate de testUserId1 debe ser 0.5
+    expect(response.body[0].winRate).toBe(100);  // El winRate de testUserId2 debe ser 100%
+    expect(response.body[1].winRate).toBe(50); // El winRate de testUserId1 debe ser 50%
   });
 
   // Test error handling for invalid sort field
