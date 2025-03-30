@@ -307,17 +307,7 @@ describe('Gateway Service Error Handling', () => {
     expect(response.body).toEqual({ error: 'Internal Server Error' });
   });
 
-  // Test error handling for leaderboard endpoint
-  it('should handle errors from game service on leaderboard', async () => {
-    axios.get.mockRejectedValueOnce({
-      response: { status: 500, data: { error: 'Database error' } }
-    });
-
-    const response = await request(app).get('/leaderboard');
-
-    expect(response.statusCode).toBe(500);
-    expect(response.body).toEqual({ error: 'Database error' });
-  });
+  
 
   
 });

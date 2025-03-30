@@ -238,3 +238,67 @@ describe('User Service', () => {
 
   
 });
+
+
+describe('User Service Error Handling', () => {
+  // Test validateRequiredFields function
+  it('should throw an error when a required field is missing', () => {
+      const req = { body: { username: 'testuser' } }; // Missing password
+      const requiredFields = ['username', 'password'];
+      
+      expect(() => validateRequiredFields(req, requiredFields))
+          .toThrow('Missing required field: password');
+  });
+
+  // Test invalid username format
+  it('should return 400 for invalid username format', async () => {
+      const response = await request(app)
+          .post('/users')
+          .send({ username: 'invalid user', password: 'test123' });
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body).toEqual({ error: 'Invalid username format' });
+  });
+
+  // Test username already exists
+  it('should return 409 if username already exists', async () => {
+      User.findOne = jest.fn().mockResolvedValue({ username: 'existinguser' });
+      
+      const response = await request(app)
+          .post('/users')
+          .send({ username: 'existinguser', password: 'test123' });
+
+      expect(response.statusCode).toBe(409);
+      expect(response.body).toEqual({ error: 'Username already exists' });
+  });
+
+  // Test invalid userId format
+  it('should return 400 for invalid userId format', async () => {
+      const response = await request(app)
+          .get('/users/invalidUserId');
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body).toEqual({ error: 'Invalid userId format' });
+  });
+
+  // Test missing update data
+  it('should return 400 if no valid fields to update', async () => {
+      const response = await request(app)
+          .put('/users/validUserId')
+          .send({});
+
+      expect(response.statusCode).toBe(400);
+      expect(response.body).toEqual({ error: 'No valid fields to update' });
+  });
+
+  // Test internal server error handling
+  it('should return 500 for unexpected errors', async () => {
+      User.findOne = jest.fn().mockRejectedValue(new Error('Database error'));
+      
+      const response = await request(app)
+          .get('/users/validUserId');
+      
+      expect(response.statusCode).toBe(500);
+      expect(response.body).toEqual({ error: 'Database error' });
+  });
+});
