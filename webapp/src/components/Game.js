@@ -87,6 +87,9 @@ const Game = () => {
                 <Typography component="h1" variant="h4" sx={{mb: '1rem'}}>
                     Quiz Game!
                 </Typography>
+                <Typography variant="body2" sx={{ mt: 2 }}>
+                    Debug Options: {JSON.stringify(question.options)}
+                </Typography>
 
                 <Box sx={{
                     display: 'flex',
@@ -97,7 +100,7 @@ const Game = () => {
                     flexDirection: 'row',
                     overflow: 'auto'
                 }}>
-                    {/* Left side - 1/3 (antes era 2/3) */}
+                    {/* Left side - 1/3 */}
                     <Box sx={{flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%'}}>
                         {/* Upper part - Question and answers */}
                         <Box sx={{
@@ -135,7 +138,7 @@ const Game = () => {
                         </Box>
                     </Box>
 
-                    {/* Right side - 2/3 (antes era 1/3) */}
+                    {/* Right side - 2/3 */}
                     <Box sx={{
                         flex: 2,
                         display: 'flex',
