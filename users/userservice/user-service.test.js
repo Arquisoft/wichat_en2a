@@ -187,7 +187,7 @@ describe('User Service', () => {
     const nonExistentId = new mongoose.Types.ObjectId();
 
     // Act: Attempt to fetch the user by the non-existent ID
-    const response = await request(app).get(`/getUser ById/${nonExistentId}`);
+    const response = await request(app).get(`/getUserById/${nonExistentId}`);
 
     // Assert: Check the response
     expect(response.status).toBe(404);
@@ -203,7 +203,7 @@ describe('User Service', () => {
 
     // Act: Send a request with valid user IDs
     const response = await request(app)
-        .post('/getAllUser namesWithIds')
+        .post('/getAllUsernamesWithIds')
         .send({ userIds: [user1._id, user2._id] });
 
     // Assert: Check the response
@@ -217,7 +217,7 @@ describe('User Service', () => {
   it('should return 400 for invalid userIds array', async () => {
     // Act: Send a request with an invalid userIds array (not an array)
     const response = await request(app)
-        .post('/getAllUser namesWithIds')
+        .post('/getAllUsernamesWithIds')
         .send({ userIds: 'invalid' }); // Not an array
 
     // Assert: Check the response
@@ -226,7 +226,7 @@ describe('User Service', () => {
 
     // Act: Send a request with an empty userIds array
     const emptyResponse = await request(app)
-        .post('/getAllUser namesWithIds')
+        .post('/getAllUsernamesWithIds')
         .send({ userIds: [] }); // Empty array
 
     // Assert: Check the response
