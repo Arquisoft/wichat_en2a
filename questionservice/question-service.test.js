@@ -245,7 +245,9 @@ describe("Question Generation parametrization", () => {
     const questions = await Question.find();
     expect(questions.length).toBe(30);
 
-    const response2 = await request(app).post("/fetch-flag-data").send({ numberOfQuestions: 0 });
+    const response2 = await request(app)
+      .post("/fetch-flag-data")
+      .send({ numberOfQuestions: 0 });
 
     // Check the response status and body
     expect(response2.statusCode).toBe(200);
