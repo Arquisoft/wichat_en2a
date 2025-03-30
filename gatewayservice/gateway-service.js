@@ -52,17 +52,6 @@ app.post('/adduser', async (req, res) => {
   }
 });
 
-// Endpoint to get username by one userId
-app.post('/getUserById', async (req, res) => {
-  try {
-      // Forward the request to the user service
-      const userResponse = await axios.post(`${userServiceUrl}/getUserById`, req.body);
-      res.json(userResponse.data);
-  } catch (error) {
-      res.status(500).json({ error: 'Internal Server Error', details: error.message });
-  }
-});
-
 // Endpoint to get usernames by multiple userIds
 app.post('/getAllUsernamesWithIds', async (req, res) => {
   try {

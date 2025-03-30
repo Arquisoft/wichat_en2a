@@ -7,7 +7,7 @@ const TEST_PASSWORD = 'test_password_123'; // NOSONAR
 
 let mongoServer;
 let app;
-let testUserId;
+let testUserId1;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -32,7 +32,6 @@ beforeAll(async () => {
   const savedUser1 = await user1.save();
   const savedUser2 = await user2.save();
 
-  testUserId = savedUser1._id.toString(); //used for score endpoint tests
   testUserId1 = savedUser1._id.toString();
   testUserId2 = savedUser2._id.toString();
 });
@@ -53,7 +52,7 @@ describe('Game Service Score Endpoints', () => {
   // Test Score Saving (saveScore)
   it('should save a new score on POST /saveScore', async () => {
     const scoreData = {
-      userId: testUserId,
+      userId: testUserId1,
       score: 100,
       isVictory: true
     };
@@ -63,12 +62,12 @@ describe('Game Service Score Endpoints', () => {
       .send(scoreData);
     
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('userId', testUserId);
+    expect(response.body).toHaveProperty('userId', testUserId1);
     expect(response.body).toHaveProperty('score', 100);
     expect(response.body).toHaveProperty('isVictory', true);
     
     // Check if it was correctly added and saved in the DB
-    const scoreInDb = await Score.findOne({ userId: testUserId });
+    const scoreInDb = await Score.findOne({ userId: testUserId1 });
     expect(scoreInDb).not.toBeNull();
     expect(scoreInDb.score).toBe(100);
     expect(scoreInDb.isVictory).toBe(true);
@@ -78,7 +77,7 @@ describe('Game Service Score Endpoints', () => {
   it('should update an existing score on PUT /updateScore', async () => {
     // First create a score
     const newScore = new Score({
-      userId: testUserId,
+      userId: testUserId1,
       score: 50,
       isVictory: false
     });
@@ -86,7 +85,7 @@ describe('Game Service Score Endpoints', () => {
     
     // Then update it
     const updateData = {
-      userId: testUserId,
+      userId: testUserId1,
       score: 150,
       isVictory: true
     };
@@ -98,7 +97,7 @@ describe('Game Service Score Endpoints', () => {
     expect(response.body).toHaveProperty('isVictory', true);
     
     // Check if the score is updated in the database
-    const updatedScore = await Score.findOne({ userId: testUserId });
+    const updatedScore = await Score.findOne({ userId: testUserId1 });
     expect(updatedScore.score).toBe(150);
     expect(updatedScore.isVictory).toBe(true);
   });
@@ -107,13 +106,13 @@ describe('Game Service Score Endpoints', () => {
   it('should get all scores for a user on GET /scoresByUser/:userId', async () => {
     // Create various scores for the test user
     const scores = [
-      { userId: testUserId, score: 100, isVictory: true },
-      { userId: testUserId, score: 200, isVictory: false }
+      { userId: testUserId1, score: 100, isVictory: true },
+      { userId: testUserId1, score: 200, isVictory: false }
     ];
     
     await Score.insertMany(scores);
     
-    const response = await request(app).get(`/scoresByUser/${testUserId}`);
+    const response = await request(app).get(`/scoresByUser/${testUserId1}`);
     
     // check only 2 values
     expect(response.status).toBe(200);
@@ -122,13 +121,13 @@ describe('Game Service Score Endpoints', () => {
 
     // Validate 1st score
     const firstScore = response.body[0];
-    expect(firstScore.userId).toBe(testUserId);
+    expect(firstScore.userId).toBe(testUserId1);
     expect(firstScore.score).toBe(100);
     expect(firstScore.isVictory).toBe(true);
 
     // Validate 2nd score
     const secondScore = response.body[1];
-    expect(secondScore.userId).toBe(testUserId);
+    expect(secondScore.userId).toBe(testUserId1);
     expect(secondScore.score).toBe(200);
     expect(secondScore.isVictory).toBe(false);
   });

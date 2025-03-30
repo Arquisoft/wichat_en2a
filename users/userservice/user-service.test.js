@@ -194,6 +194,28 @@ describe('User Service', () => {
     expect(response.body).toHaveProperty('error', 'User not found');
   });
 
+  it('should fetch all users from the database', async () => {
+    // Arrange: Create test users
+    await User.deleteMany({});
+    
+    const users = [
+      { username: 'user1', password: await bcrypt.hash('password1', 10) },
+      { username: 'user2', password: await bcrypt.hash('password2', 10) }
+    ];
+    
+    await User.insertMany(users);
+  
+    // Act: Request the list of users
+    const response = await request(app).get('/users');
+  
+    // Assert: Check the response
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveLength(2); // Ensure two users are returned
+    expect(response.body[0]).toHaveProperty('username');
+    expect(response.body[0]).toHaveProperty('_id'); 
+  });
+  
+
   it('should return usernames for valid userIds', async () => {
     // Arrange: Create test users
     const user1 = new User({ username: 'user1', password: await bcrypt.hash('password1', 10) });
