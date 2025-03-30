@@ -180,18 +180,14 @@ app.post('/getAllUsernamesWithIds', async (req, res) => {
         return res.status(400).json({ error: 'Invalid userIds array' });
       }
   
-      // Validate each userId is a valid ObjectId and create safe array
-      const validUserIds = [];
-      for (const id of userIds) {
-        if (mongoose.Types.ObjectId.isValid(id)) {
-          validUserIds.push(mongoose.Types.ObjectId(id));
-        }
-      }
+      // Validate each userId is a valid ObjectId without converting
+      const validUserIds = userIds.filter(id => mongoose.Types.ObjectId.isValid(id));
       
       if (validUserIds.length === 0) {
         return res.status(400).json({ error: 'No valid user IDs provided' });
       }
 
+      // Let mongoose handle the conversion internally
       const users = await User.find({ _id: { $in: validUserIds } }, { _id: 1, username: 1 });
   
       // Convert array to object map { userId: username }
