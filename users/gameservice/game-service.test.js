@@ -162,84 +162,83 @@ describe('Game Service Score Endpoints', () => {
 });
 
 describe('Game Service Leaderboard Endpoint', () => {
-  
-  // Test fetching the leaderboard without any query parameters
+
+  // Define test user IDs for consistency across tests
+  const testUserId1 = 'userId1';
+  const testUserId2 = 'userId2';
+
+  // Helper function to insert scores
+  const insertScores = async (scores) => {
+    await Score.insertMany(scores); // Insert mock scores
+  };
+
+  // Helper function to test leaderboard sorting
+  const testLeaderboardSorting = async (queryParams, expectedSorting) => {
+    const response = await request(app).get('/leaderboard?' + new URLSearchParams(queryParams));
+
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBeTruthy();
+    expect(response.body.length).toBe(2); // Two users in leaderboard
+
+    // Check if the leaderboard is sorted according to the expected property
+    expect(response.body[0][expectedSorting]).toBeGreaterThan(response.body[1][expectedSorting]);
+  };
+
+  // Test fetching the leaderboard sorted by totalScore by default
   it('should return the leaderboard sorted by totalScore by default', async () => {
-    // Crear puntuaciones para dos usuarios
     const scores = [
       { userId: testUserId1, score: 100, isVictory: true },
       { userId: testUserId1, score: 200, isVictory: false },
       { userId: testUserId2, score: 150, isVictory: true },
       { userId: testUserId2, score: 100, isVictory: true }
     ];
-    
-    await Score.insertMany(scores);
-    
+
+    await insertScores(scores);
+
     const response = await request(app).get('/leaderboard');
-    
+
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBeTruthy();
-    expect(response.body.length).toBe(2); 
+    expect(response.body.length).toBe(2);
 
-    // Validar que el usuario con mayor puntuación esté primero
-    expect(response.body[0].totalScore).toBeGreaterThan(response.body[1].totalScore); // El primero tiene mayor totalScore
-    expect(response.body[0].totalScore).toBe(300); // El total del testUserId1 debe ser 100 + 200 = 300
-    expect(response.body[1].totalScore).toBe(250); // El total del testUserId2 debe ser 150 + 100 = 250
+    // Validate totalScore sorting
+    expect(response.body[0].totalScore).toBe(300); // User1 total score
+    expect(response.body[1].totalScore).toBe(250); // User2 total score
   });
 
-  // Test fetching the leaderboard with sorting by gamesPlayed
+  // Test fetching the leaderboard sorted by gamesPlayed
   it('should return the leaderboard sorted by gamesPlayed', async () => {
     const scores = [
       { userId: testUserId1, score: 100, isVictory: true },
-      { userId: testUserId1, score: 200, isVictory: false }, 
-      { userId: testUserId2, score: 150, isVictory: true }, 
-      { userId: testUserId2, score: 100, isVictory: true }, 
-      { userId: testUserId2, score: 50, isVictory: false }  
+      { userId: testUserId1, score: 200, isVictory: false },
+      { userId: testUserId2, score: 150, isVictory: true },
+      { userId: testUserId2, score: 100, isVictory: true },
+      { userId: testUserId2, score: 50, isVictory: false }
     ];
-    
-    await Score.insertMany(scores);
-    
-    const response = await request(app).get('/leaderboard?sortBy=gamesPlayed&sortOrder=desc');
-    
-    expect(response.status).toBe(200);
-    expect(Array.isArray(response.body)).toBeTruthy();
-    expect(response.body.length).toBe(2); 
 
-    
-    expect(response.body[0].gamesPlayed).toBe(3); // El usuario con más juegos jugados
-    expect(response.body[1].gamesPlayed).toBe(2); // El otro usuario con menos juegos jugados
+    await insertScores(scores);
+
+    await testLeaderboardSorting({ sortBy: 'gamesPlayed', sortOrder: 'desc' }, 'gamesPlayed');
   });
 
-
-  // Test fetching the leaderboard with sorting by winRate
+  // Test fetching the leaderboard sorted by winRate
   it('should return the leaderboard sorted by winRate', async () => {
-    // Crear puntuaciones para dos usuarios con diferentes victorias y derrotas
     const scores = [
-      { userId: testUserId1, score: 100, isVictory: true }, 
+      { userId: testUserId1, score: 100, isVictory: true },
       { userId: testUserId1, score: 200, isVictory: false },
-      { userId: testUserId2, score: 150, isVictory: true }, 
-      { userId: testUserId2, score: 100, isVictory: true }  
+      { userId: testUserId2, score: 150, isVictory: true },
+      { userId: testUserId2, score: 100, isVictory: true }
     ];
-    
-    await Score.insertMany(scores);
-    
-    const response = await request(app).get('/leaderboard?sortBy=winRate&sortOrder=desc');
-    
-    expect(response.status).toBe(200);
-    expect(Array.isArray(response.body)).toBeTruthy();
-    expect(response.body.length).toBe(2); 
 
-    // Validar que el usuario con el mayor winRate esté primero
-    // testUserId2 tiene 2 victorias de 2 juegos (winRate = 1)
-    // testUserId1 tiene 1 victoria de 2 juegos (winRate = 0.5)
-    expect(response.body[0].winRate).toBe(100);  // El winRate de testUserId2 debe ser 100%
-    expect(response.body[1].winRate).toBe(50); // El winRate de testUserId1 debe ser 50%
+    await insertScores(scores);
+
+    await testLeaderboardSorting({ sortBy: 'winRate', sortOrder: 'desc' }, 'winRate');
   });
 
   // Test error handling for invalid sort field
   it('should return 400 for invalid sort field', async () => {
     const response = await request(app).get('/leaderboard?sortBy=invalidField');
-    
+
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('error', 'Invalid sort field');
     expect(response.body).toHaveProperty('validFields');
@@ -247,7 +246,7 @@ describe('Game Service Leaderboard Endpoint', () => {
 
   // Test error handling for internal server error
   it('should return 500 for internal server error', async () => {
-    // Simulate an error by disconnecting the database
+    // Simulate a database disconnection error
     await mongoose.connection.close();
 
     const response = await request(app).get('/leaderboard');
@@ -258,6 +257,8 @@ describe('Game Service Leaderboard Endpoint', () => {
     // Reconnect to the database for subsequent tests
     await mongoose.connect(process.env.MONGODB_URI);
   });
+
 });
+
 
 
