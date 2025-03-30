@@ -11,6 +11,7 @@ jest.mock("axios");
 axios.post.mockImplementation((url) => {
   if (url.includes("generateIncorrectOptions")) {
     return Promise.resolve({
+      status: 200,
       data: { incorrectOptions: ["Incorrect1", "Incorrect2", "Incorrect3"] },
     });
   }
@@ -176,24 +177,23 @@ describe("Question Service Error Handling", () => {
     expect(response.body).toEqual({ isCorrect: false });
   });
 
-  it("should return the question with only the correct answer on POST /fetch-flag-data if the LLM throws an error", async () => {
-    axios.post.mockImplementationOnce(() => {
-      if (url.includes("generateIncorrectOptions")) {
-        return new Error("The LLM has thrown an error");
+  it("should should fail and do not generate questions on POST /fetch-flag-data if the LLM has some issue", async () => {
+    axios.post.mockImplementation((url) => {
+      if (url.includes("/generateIncorrectOptions")) {
+        return Promise.resolve({
+          status: 400,
+          data: { error: "LLM error" },
+        });
       }
     });
 
     const response = await request(app).post("/fetch-flag-data");
 
-    // Check the response status and body
-    expect(response.statusCode).toBe(200); //200 is HTTP status code for a successful request
-    expect(response.body).toBeInstanceOf(Array);
-    expect(response.body.length).toBeGreaterThan(0);
+    // Check the response status
+    expect(response.statusCode).toBe(500);
 
-    // data was saved in the database
+    // Verify that no questions were saved in the database
     const questions = await Question.find();
-    expect(questions.length).toBeGreaterThan(0);
-
-
+    expect(questions.length).toBe(0);
   });
 });
