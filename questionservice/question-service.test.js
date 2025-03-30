@@ -23,7 +23,7 @@ function createMocks() {
       // Get the number of questions to generate from the URL or default to 30
       const decodedUrl = decodeURIComponent(url);
 
-      const match = RegExp("LIMIT (\\d+)").exec(decodedUrl);
+      const match = /LIMIT (\d+)/.exec(decodedUrl);
 
       const numberOfQuestions = match ? parseInt(match[1], 10) : 30; // Default to 30 if not found
 
