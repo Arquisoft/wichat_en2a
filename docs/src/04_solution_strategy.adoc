@@ -14,8 +14,10 @@ The following technologies are used in our project:
 * *React*: To build the web application's UI, we will use this technology due to its simplicity and its ability to create reusable components. It has also been chosen as it has a relatively gentle learning curve (as we will be learning while building).
 * *Docker*: To deploy the system, we will use this technology due to its portability and reliability.
 * *Git & GitHub*: For version control and collaboration, we will use Git and GitHub. These tools will enable the team to collaborate efficiently and keep track of changes, issues and documentation.
-* #TBD# Elaborate on CI/CD: We will use GitHub Actions to automate the CI/CD process, but this will be elaborated later when we have more knowledge.
-* *SonarQube*: For static code analysis, we will use SonarQube. This tool will help the team to keep the codebase clean and maintainable.
+* *GitHub Actions*: We will use this tool to automate the CI/CD process. This will help the team to keep the codebase clean and maintainable. We will use it to run tests, build the project and deploy it automatically when changes are made to the main branch. There will be two different workflows:
+** *CI*: This workflow will be triggered when changes are made to the main branch. It will run the tests and build the project. If everything goes well, it will deploy the project to the production environment.
+** *CD*: This workflow will be triggered when we choose to deploy in GitHub. It will run the tests and build the project. If everything goes well, it will deploy the project to the production environment.
+* *SonarQube*: For static code analysis, we will use SonarQube. This tool will help the team to keep the codebase clean and maintainable. The usage of this tool will provide us reports about the code quality and security. It will be integrated into the CI/CD process, so that it will run automatically when changes are made to the main branch. It will also be used to generate reports about the code quality and security.
 * *QWen2.5 (7B parameters)*: To add the LLM functionality to the system, we will use this model. This way we may apply to the Empathy contest if we decided to do so. That is the main reason to use this model because we felt that using others like Gemini or DeepSeek would probably provide better results, but we would not be able to enroll our project in the contest.
 * *Azure*: To deploy the system, we will use Azure due to its scalability and reliability. We will use a VM stored in Azure to deploy the system and make it accessible. We could have used any other cloud provider, but we decided to use Azure because it was the one shown in the course. Moreover, we could have used a local server, but that would demand to have a machine running 24/7 and we would have to take care of some security issues that using a cloud provided are not so relevant.
 
@@ -34,6 +36,8 @@ The specific components are:
 ** *LeaderBoard-Service*: This sub-service will be used to retrieve information about users and games to be displayed ordered (for now by the total score obtained).
 * *Questions-Service*: This component will be responsible for retrieving the questions from Wikidata and storing them in its database. It will be built using NodeJS and will be responsible for handling the requests from the Gateway-Service and sending them to Wikidata.
 * *LLM-Service*: This component will be responsible of any interaction the system performs with the LLM model. It will be built using NodeJS and will be responsible for handling the requests from the Gateway-Service and sending them to the LLM model.
+
+We will try to follow the microservices architecture as much as possible, but it is quite possible that some of the 'microservices' will be using the same database due to information sharing. However, we will try to keep the services as independent as possible.
 
 [#organizational_decisions]
 === Organizational Decisions
