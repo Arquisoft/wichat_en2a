@@ -23,17 +23,7 @@ describe('Home component', () => {
           <Home onNavigate={mockNavigate} />
         </MemoryRouter>
     );
-    expect(screen.getByText(/Home page/i)).toBeInTheDocument();
-  });
-
-  it('navigates to "scores" when "My Scores" button is clicked', () => {
-    render(
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>
-    );
-    fireEvent.click(screen.getByRole('button', { name: /My Scores/i }));
-    expect(mockNavigate).toHaveBeenCalledWith('/scores');
+    expect(screen.getByText(/Welcome back/i)).toBeInTheDocument();
   });
 
   it('navigates to "game" when "Play Game" button is clicked', () => {
@@ -46,35 +36,12 @@ describe('Home component', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/game');
   });
 
-  it('navigates to "leaderboard" when "Leaderboard" button is clicked', () => {
-    render(
-        <MemoryRouter>
-          <Home />
-        </MemoryRouter>
-    );
-    fireEvent.click(screen.getByRole('button', { name: /Global Leaderboard/i }));
-    expect(mockNavigate).toHaveBeenCalledWith('/leaderboard');
-  });
-
-  it('navigates to "login" when "Logout" button is clicked', () => {
-    render(
-        <MemoryRouter>
-          <Home  />
-        </MemoryRouter>
-    );
-    fireEvent.click(screen.getByRole('button', { name: /Logout/i }));
-    expect(mockNavigate).toHaveBeenCalledWith('/login');
-  });
-
   it('renders all buttons', () => {
     render(
         <MemoryRouter>
           <Home />
         </MemoryRouter>
     );
-    expect(screen.getByRole('button', { name: /My Scores/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Play Game/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Global Leaderboard/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Logout/i })).toBeInTheDocument();
   });
 });

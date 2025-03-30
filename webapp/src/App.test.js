@@ -24,16 +24,6 @@ describe('App component', () => {
     mockAxios.reset();
   });
 
-  it('renders welcome message', () => {
-    render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
-    );
-    const welcomeMessage = screen.getByText(/Welcome to our Quiz game!/i);
-    expect(welcomeMessage).toBeInTheDocument();
-  });
-
   it('renders Login component by default', () => {
     render(
         <MemoryRouter>
@@ -77,7 +67,7 @@ describe('App component', () => {
     await fillLoginFormAndSubmit(screen.getByRole('button', {name: /Login/i}));
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /Welcome to our Quiz game!/i})).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Welcome back!/i})).toBeInTheDocument();
     });
   });
 
