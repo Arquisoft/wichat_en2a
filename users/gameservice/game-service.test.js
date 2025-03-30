@@ -22,9 +22,18 @@ beforeAll(async () => {
     // NOSONAR: Test password only, not a security issue
     password: TEST_PASSWORD // NOSONAR
   });
+
+  const user2 = new User({
+    username: 'testuser2',
+    email: 'test2@example.com',
+    password: TEST_PASSWORD
+  });
   
-  const savedUser = await newUser.save();
-  testUserId = savedUser._id.toString();
+  const savedUser1 = await user1.save();
+  const savedUser2 = await user2.save();
+
+  testUserId1 = savedUser1._id.toString();
+  testUserId2 = savedUser2._id.toString();
 });
 
 afterAll(async () => {
@@ -156,10 +165,12 @@ describe('Game Service Leaderboard Endpoint', () => {
   
   // Test fetching the leaderboard without any query parameters
   it('should return the leaderboard sorted by totalScore by default', async () => {
-    // Create sample scores for different users
+    // Crear puntuaciones para dos usuarios
     const scores = [
-      { userId: testUserId, score: 100, isVictory: true },
-      { userId: testUserId, score: 200, isVictory: false },
+      { userId: testUserId1, score: 100, isVictory: true },
+      { userId: testUserId1, score: 200, isVictory: false },
+      { userId: testUserId2, score: 150, isVictory: true },
+      { userId: testUserId2, score: 100, isVictory: true }
     ];
     
     await Score.insertMany(scores);
@@ -168,19 +179,22 @@ describe('Game Service Leaderboard Endpoint', () => {
     
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBeTruthy();
-    expect(response.body.length).toBe(2); // Two unique users
+    expect(response.body.length).toBe(2); 
 
-    // Validate the leaderboard sorting
-    expect(response.body[0].totalScore).toBe(300); // User with higher score should be first
+    // Validar que el usuario con mayor puntuación esté primero
+    expect(response.body[0].totalScore).toBeGreaterThan(response.body[1].totalScore); // El primero tiene mayor totalScore
+    expect(response.body[0].totalScore).toBe(300); // El total del testUserId1 debe ser 100 + 200 = 300
+    expect(response.body[1].totalScore).toBe(250); // El total del testUserId2 debe ser 150 + 100 = 250
   });
 
   // Test fetching the leaderboard with sorting by gamesPlayed
   it('should return the leaderboard sorted by gamesPlayed', async () => {
     const scores = [
-      { userId: testUserId, score: 100, isVictory: true },
-      { userId: testUserId, score: 200, isVictory: false },
-      { userId: new mongoose.Types.ObjectId().toString(), score: 150, isVictory: true },
-      { userId: testUserId, score: 50, isVictory: true } // Additional score for the same user
+      { userId: testUserId1, score: 100, isVictory: true },
+      { userId: testUserId1, score: 200, isVictory: false }, 
+      { userId: testUserId2, score: 150, isVictory: true }, 
+      { userId: testUserId2, score: 100, isVictory: true }, 
+      { userId: testUserId2, score: 50, isVictory: false }  
     ];
     
     await Score.insertMany(scores);
@@ -189,19 +203,22 @@ describe('Game Service Leaderboard Endpoint', () => {
     
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBeTruthy();
-    expect(response.body.length).toBe(2); // Two unique users
+    expect(response.body.length).toBe(2); 
 
-    // Validate the leaderboard sorting
-    expect(response.body[0].gamesPlayed).toBe(3); // User with more games played should be first
-    expect(response.body[1].gamesPlayed).toBe(1);
+    
+    expect(response.body[0].gamesPlayed).toBe(3); // El usuario con más juegos jugados
+    expect(response.body[1].gamesPlayed).toBe(2); // El otro usuario con menos juegos jugados
   });
+
 
   // Test fetching the leaderboard with sorting by winRate
   it('should return the leaderboard sorted by winRate', async () => {
+    // Crear puntuaciones para dos usuarios con diferentes victorias y derrotas
     const scores = [
-      { userId: testUserId, score: 100, isVictory: true },
-      { userId: testUserId, score: 200, isVictory: false },
-      { userId: new mongoose.Types.ObjectId().toString(), score: 150, isVictory: true }
+      { userId: testUserId1, score: 100, isVictory: true }, 
+      { userId: testUserId1, score: 200, isVictory: false },
+      { userId: testUserId2, score: 150, isVictory: true }, 
+      { userId: testUserId2, score: 100, isVictory: true }  
     ];
     
     await Score.insertMany(scores);
@@ -210,10 +227,13 @@ describe('Game Service Leaderboard Endpoint', () => {
     
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBeTruthy();
-    expect(response.body.length).toBe(2); // Two unique users
+    expect(response.body.length).toBe(2); 
 
-    // Validate the leaderboard sorting
-    expect(response.body[0].winRate).toBeGreaterThanOrEqual(0); // Ensure winRate is calculated correctly
+    // Validar que el usuario con el mayor winRate esté primero
+    // testUserId2 tiene 2 victorias de 2 juegos (winRate = 1)
+    // testUserId1 tiene 1 victoria de 2 juegos (winRate = 0.5)
+    expect(response.body[0].winRate).toBe(1);  // El winRate de testUserId2 debe ser 1
+    expect(response.body[1].winRate).toBe(0.5); // El winRate de testUserId1 debe ser 0.5
   });
 
   // Test error handling for invalid sort field
