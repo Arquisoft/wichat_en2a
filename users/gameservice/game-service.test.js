@@ -16,7 +16,7 @@ beforeAll(async () => {
   
   app = require('./game-service');
 
-  const newUser = new User({
+  const user1 = new User({
     username: 'testuser',
     email: 'test@example.com',
     // NOSONAR: Test password only, not a security issue
