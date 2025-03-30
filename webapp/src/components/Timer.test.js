@@ -5,12 +5,12 @@ import Timer from "./Timer";
 jest.useFakeTimers(); // Simula el temporizador
 
 describe("Timer Component", () => {
-    test("initial time shown correctly", () => {
+    it("initial time shown correctly", () => {
         render(<Timer duration={40} onTimeUp={jest.fn()} answerSelected={false} />);
         expect(screen.getByText("40 sec")).toBeInTheDocument();
     });
 
-    test("Timer goes down", () => {
+    it("Timer goes down", () => {
         render(<Timer duration={40} onTimeUp={jest.fn()} answerSelected={false} />);
 
         act(() => {
@@ -20,7 +20,7 @@ describe("Timer Component", () => {
         expect(screen.getByText("39 sec")).toBeInTheDocument();
     });
 
-    test("calls function when time reaches 0", () => {
+    it("calls function when time reaches 0", () => {
         const onTimeUpMock = jest.fn();
         render(<Timer duration={3} onTimeUp={onTimeUpMock} answerSelected={false} />);
 
@@ -31,7 +31,7 @@ describe("Timer Component", () => {
         expect(onTimeUpMock).toHaveBeenCalled(); // Debe haberse llamado
     });
 
-    test("timer stops if an answer has been selected", () => {
+    it("timer stops if an answer has been selected", () => {
         render(<Timer duration={40} onTimeUp={jest.fn()} answerSelected={true} />);
 
         act(() => {
@@ -41,7 +41,7 @@ describe("Timer Component", () => {
         expect(screen.getByText("40 sec")).toBeInTheDocument(); // No cambió
     });
 
-    test("re-starts timer when duration changes (new question)", () => {
+    it("re-starts timer when duration changes (new question)", () => {
         const { rerender } = render(
             <Timer duration={30} onTimeUp={jest.fn()} answerSelected={false} />
         );
