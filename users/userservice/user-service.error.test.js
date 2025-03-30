@@ -2,20 +2,21 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const User = require('./user-model'); 
-let mongoServer;
 let app;
+
+let mongoServer;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
-  process.env.MONGODB_URI = mongoUri;
-  app = require('./user-service'); 
+  await mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
 });
 
 afterAll(async () => {
-  app.close();
+  await mongoose.disconnect();
   await mongoServer.stop();
 });
+
 
 describe('Error Handling for User Endpoints', () => {
 
