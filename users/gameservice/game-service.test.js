@@ -10,31 +10,48 @@ let app;
 let testUserId1;
 let testUserId2;
 
+// Helper functions to reduce duplication
+const createObjectId = (id) => new mongoose.Types.ObjectId(id);
+const makeRequest = (method, endpoint, data = null) => {
+  const req = request(app)[method](endpoint);
+  return data ? req.send(data) : req;
+};
+
+const verifyResponse = (response, status, expectedProperties = {}) => {
+  expect(response.status).toBe(status);
+  Object.entries(expectedProperties).forEach(([key, value]) => {
+    expect(response.body).toHaveProperty(key, value);
+  });
+};
+
+const verifyScoreInDb = async (userId, expectedScore, expectedVictory) => {
+  const scoreInDb = await Score.findOne({ userId });
+  expect(scoreInDb).not.toBeNull();
+  expect(scoreInDb.score).toBe(expectedScore);
+  expect(scoreInDb.isVictory).toBe(expectedVictory);
+};
+
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  process.env.MONGODB_URI = mongoUri;
-
+  process.env.MONGODB_URI = mongoServer.getUri();
   app = require('./game-service');
 
-  const user1 = new User({
-    username: 'testuser',
-    email: 'test@example.com',
-    // NOSONAR: Test password only, not a security issue
-    password: TEST_PASSWORD // NOSONAR
-  });
+  // Create test users
+  const users = await User.insertMany([
+    {
+      username: 'testuser',
+      email: 'test@example.com',
+      password: TEST_PASSWORD // NOSONAR
+    },
+    {
+      username: 'testuser2',
+      email: 'test2@example.com',
+      password: TEST_PASSWORD
+    }
+  ]);
 
-  const user2 = new User({
-    username: 'testuser2',
-    email: 'test2@example.com',
-    password: TEST_PASSWORD
-  });
-
-  const savedUser1 = await user1.save();
-  const savedUser2 = await user2.save();
-
-  testUserId1 = savedUser1._id.toString();
-  testUserId2 = savedUser2._id.toString();
+  testUserId1 = users[0]._id.toString();
+  testUserId2 = users[1]._id.toString();
 });
 
 afterAll(async () => {
@@ -44,216 +61,200 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
-  // Clear all scores before testing
-  await Score.deleteMany({});
+  await Score.deleteMany({}); // Clear all scores before testing
 });
 
 describe('Game Service Score Endpoints', () => {
   
-  // Test Score Saving (saveScore)
   it('should save a new score on POST /saveScore', async () => {
     const scoreData = {
-      userId: new mongoose.Types.ObjectId(testUserId1), // Convert to ObjectId here
+      userId: createObjectId(testUserId1),
       score: 100,
       isVictory: true
     };
     
-    const response = await request(app)
-      .post('/saveScore')
-      .send(scoreData);
+    const response = await makeRequest('post', '/saveScore', scoreData);
     
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('userId', testUserId1);
-    expect(response.body).toHaveProperty('score', 100);
-    expect(response.body).toHaveProperty('isVictory', true);
+    verifyResponse(response, 200, {
+      userId: testUserId1,
+      score: 100,
+      isVictory: true
+    });
     
-    // Check if it was correctly added and saved in the DB
-    const scoreInDb = await Score.findOne({ userId: testUserId1 });
-    expect(scoreInDb).not.toBeNull();
-    expect(scoreInDb.score).toBe(100);
-    expect(scoreInDb.isVictory).toBe(true);
+    await verifyScoreInDb(testUserId1, 100, true);
   });
   
-  // Test updating a score (this will not be highly needed but it seemed like a good idea to have it)
   it('should update an existing score on PUT /updateScore', async () => {
-    // First create a score
-    const newScore = new Score({
-      userId: new mongoose.Types.ObjectId(testUserId1), // Convert to ObjectId here
+    // Create initial score
+    await new Score({
+      userId: createObjectId(testUserId1),
       score: 50,
       isVictory: false
-    });
-    await newScore.save();
+    }).save();
     
-    // Then update it
-    const updateData = {
-      userId: new mongoose.Types.ObjectId(testUserId1), // Convert to ObjectId here
+    // Update it
+    const response = await makeRequest('put', '/updateScore', {
+      userId: createObjectId(testUserId1),
       score: 150,
       isVictory: true
-    };
+    });
     
-    const response = await request(app).put('/updateScore').send(updateData);
+    verifyResponse(response, 200, {
+      score: 150,
+      isVictory: true
+    });
     
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('score', 150);
-    expect(response.body).toHaveProperty('isVictory', true);
-    
-    // Check if the score is updated in the database
-    const updatedScore = await Score.findOne({ userId: testUserId1 });
-    expect(updatedScore.score).toBe(150);
-    expect(updatedScore.isVictory).toBe(true);
+    await verifyScoreInDb(testUserId1, 150, true);
   });
   
-  // Test getting scores by user
   it('should get all scores for a user on GET /scoresByUser/:userId', async () => {
-    // Create various scores for the test user
+    // Create test scores
     const scores = [
-      { userId: new mongoose.Types.ObjectId(testUserId1), score: 100, isVictory: true },
-      { userId: new mongoose.Types.ObjectId(testUserId1), score: 200, isVictory: false }
+      { userId: createObjectId(testUserId1), score: 100, isVictory: true },
+      { userId: createObjectId(testUserId1), score: 200, isVictory: false }
     ];
     
     await Score.insertMany(scores);
     
-    const response = await request(app).get(`/scoresByUser/${testUserId1}`);
+    const response = await makeRequest('get', `/scoresByUser/${testUserId1}`);
     
-    // check only 2 values
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBeTruthy();
     expect(response.body.length).toBe(2);
 
-    // Validate 1st score
-    const firstScore = response.body[0];
-    expect(firstScore.userId).toBe(testUserId1);
-    expect(firstScore.score).toBe(100);
-    expect(firstScore.isVictory).toBe(true);
-
-    // Validate 2nd score
-    const secondScore = response.body[1];
-    expect(secondScore.userId).toBe(testUserId1);
-    expect(secondScore.score).toBe(200);
-    expect(secondScore.isVictory).toBe(false);
+    // Validate scores
+    const expectedScores = [
+      { userId: testUserId1, score: 100, isVictory: true },
+      { userId: testUserId1, score: 200, isVictory: false }
+    ];
+    
+    expectedScores.forEach((expected, index) => {
+      const actual = response.body[index];
+      expect(actual.userId).toBe(expected.userId);
+      expect(actual.score).toBe(expected.score);
+      expect(actual.isVictory).toBe(expected.isVictory);
+    });
   });
   
-  // Test error handling for invalid user ID
   it('should return 400 for invalid userId format', async () => {
-    const scoreData = {
+    const response = await makeRequest('post', '/saveScore', {
       userId: 'invalid-id',
       score: 100,
       isVictory: true
-    };
+    });
     
-    const response = await request(app)
-      .post('/saveScore')
-      .send(scoreData);
-    
-    expect(response.status).toBe(400);
+    verifyResponse(response, 400);
     expect(response.body).toHaveProperty('error');
   });
   
-  // Test error handling for non-existent user scores
   it('should return 404 if no scores found for user', async () => {
-
     const nonExistentUserId = new mongoose.Types.ObjectId().toString();
+    const response = await makeRequest('get', `/scoresByUser/${nonExistentUserId}`);
     
-    const response = await request(app)
-      .get(`/scoresByUser/${nonExistentUserId}`);
-    
-    expect(response.status).toBe(404);
+    verifyResponse(response, 404);
     expect(response.body).toHaveProperty('error');
   });
 });
 
 describe('Game Service Leaderboard Endpoint', () => {
-
-  // Define test user IDs for consistency across tests
-  const testUserId1 = 'userId1';
-  const testUserId2 = 'userId2';
-
-  // Helper function to insert scores
-  const insertScores = async (scores) => {
-    await Score.insertMany(scores); // Insert mock scores
+  // Helper function to insert test scores
+  const setupLeaderboardScores = async (testScores) => {
+    const formattedScores = testScores.map(score => ({
+      ...score,
+      userId: createObjectId(score.userId)
+    }));
+    await Score.insertMany(formattedScores);
   };
 
-  // Helper function to test leaderboard sorting
-  const testLeaderboardSorting = async (queryParams, expectedSorting) => {
-    const response = await request(app).get('/leaderboard?' + new URLSearchParams(queryParams));
-
-    expect(response.status).toBe(200);
-    expect(Array.isArray(response.body)).toBeTruthy();
-    expect(response.body.length).toBe(2); // Two users in leaderboard
-
-    // Check if the leaderboard is sorted according to the expected property
-    expect(response.body[0][expectedSorting]).toBeGreaterThan(response.body[1][expectedSorting]);
-  };
-
-  // Test fetching the leaderboard sorted by totalScore by default
   it('should return the leaderboard sorted by totalScore by default', async () => {
     const scores = [
-      { userId: new mongoose.Types.ObjectId(testUserId1), score: 100, isVictory: true },
-      { userId: new mongoose.Types.ObjectId(testUserId1), score: 200, isVictory: false },
-      { userId: new mongoose.Types.ObjectId(testUserId2), score: 150, isVictory: true },
-      { userId: new mongoose.Types.ObjectId(testUserId2), score: 100, isVictory: true }
+      { userId: testUserId1, score: 100, isVictory: true },
+      { userId: testUserId1, score: 200, isVictory: false },
+      { userId: testUserId2, score: 150, isVictory: true },
+      { userId: testUserId2, score: 100, isVictory: true }
     ];
 
-    await insertScores(scores);
-
-    const response = await request(app).get('/leaderboard');
-
+    await setupLeaderboardScores(scores);
+    const response = await makeRequest('get', '/leaderboard');
+    
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBeTruthy();
     expect(response.body.length).toBe(2);
-
+    
     // Validate totalScore sorting
-    expect(response.body[0].totalScore).toBe(300); // User1 total score
-    expect(response.body[1].totalScore).toBe(250); // User2 total score
+    const [first, second] = response.body;
+    expect(first.totalScore).toBe(300); // User1 total score
+    expect(second.totalScore).toBe(250); // User2 total score
+    expect(first.totalScore).toBeGreaterThan(second.totalScore);
   });
 
-  // Test fetching the leaderboard sorted by gamesPlayed
-  it('should return the leaderboard sorted by gamesPlayed', async () => {
-    const scores = [
-      { userId: new mongoose.Types.ObjectId(testUserId1), score: 100, isVictory: true },
-      { userId: new mongoose.Types.ObjectId(testUserId1), score: 200, isVictory: false },
-      { userId: new mongoose.Types.ObjectId(testUserId2), score: 150, isVictory: true },
-      { userId: new mongoose.Types.ObjectId(testUserId2), score: 100, isVictory: true },
-      { userId: new mongoose.Types.ObjectId(testUserId2), score: 50, isVictory: false }
+  it('should return the leaderboard sorted by specified criteria', async () => {
+    // Test different sort criteria with a single test setup
+    const testCases = [
+      { 
+        sortBy: 'gamesPlayed', 
+        scores: [
+          { userId: testUserId1, score: 100, isVictory: true },
+          { userId: testUserId1, score: 200, isVictory: false },
+          { userId: testUserId2, score: 150, isVictory: true },
+          { userId: testUserId2, score: 100, isVictory: true },
+          { userId: testUserId2, score: 50, isVictory: false }
+        ],
+        expectations: {
+          firstValue: 3, // User2 played 3 games
+          secondValue: 2  // User1 played 2 games
+        }
+      },
+      {
+        sortBy: 'winRate',
+        scores: [
+          { userId: testUserId1, score: 100, isVictory: true },
+          { userId: testUserId1, score: 200, isVictory: false },
+          { userId: testUserId2, score: 150, isVictory: true },
+          { userId: testUserId2, score: 100, isVictory: true }
+        ],
+        expectations: {
+          firstValue: 100, // User2 has 100% win rate
+          secondValue: 50  // User1 has 50% win rate
+        }
+      }
     ];
 
-    await insertScores(scores);
-
-    await testLeaderboardSorting({ sortBy: 'gamesPlayed', sortOrder: 'desc' }, 'gamesPlayed');
+    for (const testCase of testCases) {
+      await Score.deleteMany({}); // Clear previous test data
+      await setupLeaderboardScores(testCase.scores);
+      
+      const response = await makeRequest('get', `/leaderboard?sortBy=${testCase.sortBy}&sortOrder=desc`);
+      
+      expect(response.status).toBe(200);
+      expect(response.body.length).toBe(2);
+      
+      // Verify sorting
+      const [first, second] = response.body;
+      expect(first[testCase.sortBy]).toBe(testCase.expectations.firstValue);
+      expect(second[testCase.sortBy]).toBe(testCase.expectations.secondValue);
+      expect(first[testCase.sortBy]).toBeGreaterThan(second[testCase.sortBy]);
+    }
   });
 
-  // Test fetching the leaderboard sorted by winRate
-  it('should return the leaderboard sorted by winRate', async () => {
-    const scores = [
-      { userId: new mongoose.Types.ObjectId(testUserId1), score: 100, isVictory: true },
-      { userId: new mongoose.Types.ObjectId(testUserId1), score: 200, isVictory: false },
-      { userId: new mongoose.Types.ObjectId(testUserId2), score: 150, isVictory: true },
-      { userId: new mongoose.Types.ObjectId(testUserId2), score: 100, isVictory: true }
-    ];
-
-    await insertScores(scores);
-
-    await testLeaderboardSorting({ sortBy: 'winRate', sortOrder: 'desc' }, 'winRate');
-  });
-
-  // Test error handling for invalid sort field
   it('should return 400 for invalid sort field', async () => {
-    const response = await request(app).get('/leaderboard?sortBy=invalidField');
-
-    expect(response.status).toBe(400);
-    expect(response.body).toHaveProperty('error', 'Invalid sort field');
+    const response = await makeRequest('get', '/leaderboard?sortBy=invalidField');
+    
+    verifyResponse(response, 400, {
+      error: 'Invalid sort field'
+    });
     expect(response.body).toHaveProperty('validFields');
   });
 
-  // Test error handling for internal server error
   it('should return 500 for internal server error', async () => {
     // Simulate a database disconnection error
     await mongoose.connection.close();
-
-    const response = await request(app).get('/leaderboard');
-
-    expect(response.status).toBe(500);
-    expect(response.body).toHaveProperty('error', 'Internal Server Error');
+    
+    const response = await makeRequest('get', '/leaderboard');
+    
+    verifyResponse(response, 500, {
+      error: 'Internal Server Error'
+    });
 
     // Reconnect to the database for subsequent tests
     await mongoose.connect(process.env.MONGODB_URI);
