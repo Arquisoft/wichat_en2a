@@ -128,17 +128,17 @@ async function saveQuestionsToDB(questions) {
 
 // Fetch a question from the database
 async function getQuestion() {
-  try {
-    const question = await Question.findOneAndUpdate(
-      { alreadyShown: false },
-      { alreadyShown: true },
-      { new: true }
-    );
-    return question;
-  } catch (error) {
-    console.error("Error fetching question:", error);
-    return null;
-  }
+
+    try {
+        return await Question.findOneAndUpdate(
+            {alreadyShown: false},
+            {alreadyShown: true},
+            {new: true}
+        );
+    } catch (error) {
+        console.error('Error fetching question:', error);
+        return null;
+    }
 }
 
 // Check if the selected answer is correct
