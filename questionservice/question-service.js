@@ -12,7 +12,7 @@ app.use(express.json());
 // Define the connection URL
 const mongoURI =
   process.env.MONGODB_URI || "mongodb://localhost:27017/mongo-db-wichat_en2a";
-const llmServiceUrl = process.env.LLM_SERVICE_URL || "http://localhost:8003";
+const gatewatServiceUrl = process.env.GATEWAY_SERVICE_URL || "http://localhost:8000";
 
 // Connect to MongoDB
 mongoose
@@ -48,9 +48,7 @@ async function fetchFlagData() {
       response.data.results.bindings.map(async (entry) => {
         const correctAnswer = entry.countryLabel.value;
         const imageUrl = entry.flag.value;
-        // Call the LLM service to generate incorrect answers, if you are running the application with npm start, then
-        // use this link: 'http://localhost:8003/generateIncorrectOptions'
-        console.log("Link to llm is ", llmServiceUrl);
+
         let incorrectOptions = await generateDistractors(correctAnswer);
         let attempts = 0;
         while (incorrectOptions.length != 3 && attempts < 2) {
@@ -89,7 +87,7 @@ async function fetchFlagData() {
 async function generateDistractors(correctAnswer) {
   try {
     const llmResponse = await axios.post(
-      llmServiceUrl + "/generateIncorrectOptions",
+      gatewatServiceUrl + "/generateIncorrectOptions",
       {
         model: "empathy",
         correctAnswer: correctAnswer,

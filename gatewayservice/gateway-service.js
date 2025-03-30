@@ -100,6 +100,15 @@ app.post('/saveScore', async (req, res) => {
   }
 });
 
+app.post('/generateIncorrectOptions', async (req, res) => {
+  try {
+    const incorrectOptionsResponse = await axios.post(`${llmServiceUrl}/generateIncorrectOptions`, req.body);
+    res.json(incorrectOptionsResponse.data);
+  } catch (error) {
+      res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
 // Read the OpenAPI YAML file synchronously
 openapiPath='./openapi.yaml'
 if (fs.existsSync(openapiPath)) {
