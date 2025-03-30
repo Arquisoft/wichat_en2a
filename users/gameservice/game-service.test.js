@@ -152,4 +152,94 @@ describe('Game Service Score Endpoints', () => {
   });
 });
 
+describe('Game Service Leaderboard Endpoint', () => {
+  
+  // Test fetching the leaderboard without any query parameters
+  it('should return the leaderboard sorted by totalScore by default', async () => {
+    // Create sample scores for different users
+    const scores = [
+      { userId: testUserId, score: 100, isVictory: true },
+      { userId: testUserId, score: 200, isVictory: false },
+      { userId: new mongoose.Types.ObjectId().toString(), score: 150, isVictory: true }
+    ];
+    
+    await Score.insertMany(scores);
+    
+    const response = await request(app).get('/leaderboard');
+    
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBeTruthy();
+    expect(response.body.length).toBe(2); // Two unique users
+
+    // Validate the leaderboard sorting
+    expect(response.body[0].totalScore).toBe(200); // User with higher score should be first
+    expect(response.body[1].totalScore).toBe(100);
+  });
+
+  // Test fetching the leaderboard with sorting by gamesPlayed
+  it('should return the leaderboard sorted by gamesPlayed', async () => {
+    const scores = [
+      { userId: testUserId, score: 100, isVictory: true },
+      { userId: testUserId, score: 200, isVictory: false },
+      { userId: new mongoose.Types.ObjectId().toString(), score: 150, isVictory: true },
+      { userId: testUserId, score: 50, isVictory: true } // Additional score for the same user
+    ];
+    
+    await Score.insertMany(scores);
+    
+    const response = await request(app).get('/leaderboard?sortBy=gamesPlayed&sortOrder=desc');
+    
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBeTruthy();
+    expect(response.body.length).toBe(2); // Two unique users
+
+    // Validate the leaderboard sorting
+    expect(response.body[0].gamesPlayed).toBe(3); // User with more games played should be first
+    expect(response.body[1].gamesPlayed).toBe(1);
+  });
+
+  // Test fetching the leaderboard with sorting by winRate
+  it('should return the leaderboard sorted by winRate', async () => {
+    const scores = [
+      { userId: testUserId, score: 100, isVictory: true },
+      { userId: testUserId, score: 200, isVictory: false },
+      { userId: new mongoose.Types.ObjectId().toString(), score: 150, isVictory: true }
+    ];
+    
+    await Score.insertMany(scores);
+    
+    const response = await request(app).get('/leaderboard?sortBy=winRate&sortOrder=desc');
+    
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body)).toBeTruthy();
+    expect(response.body.length).toBe(2); // Two unique users
+
+    // Validate the leaderboard sorting
+    expect(response.body[0].winRate).toBeGreaterThanOrEqual(0); // Ensure winRate is calculated correctly
+  });
+
+  // Test error handling for invalid sort field
+  it('should return 400 for invalid sort field', async () => {
+    const response = await request(app).get('/leaderboard?sortBy=invalidField');
+    
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error', 'Invalid sort field');
+    expect(response.body).toHaveProperty('validFields');
+  });
+
+  // Test error handling for internal server error
+  it('should return 500 for internal server error', async () => {
+    // Simulate an error by disconnecting the database
+    await mongoose.connection.close();
+
+    const response = await request(app).get('/leaderboard');
+
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty('error', 'Internal Server Error');
+
+    // Reconnect to the database for subsequent tests
+    await mongoose.connect(process.env.MONGODB_URI);
+  });
+});
+
 

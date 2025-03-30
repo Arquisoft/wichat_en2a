@@ -40,6 +40,97 @@ describe('Gateway Service', () => {
     expect(response.body.userId).toBe('mockedUserId');
   });
 
+  // Test for /getUserById
+  it('should forward getUserById request to user service', async () => {
+    const mockUser = { username: 'testuser' };
+    axios.post.mockResolvedValueOnce({ data: mockUser });
+
+    const response = await request(app)
+      .post('/getUserById')
+      .send({ userId: '123' });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual(mockUser);
+    expect(axios.post).toHaveBeenCalledWith(
+      expect.stringContaining('/getUserById'),
+      { userId: '123' }
+    );
+  });
+
+  // Test for /getAllUsernamesWithIds
+  it('should forward getAllUsernamesWithIds request to user service', async () => {
+    const mockUsernames = { '123': 'user1', '456': 'user2' };
+    axios.post.mockResolvedValueOnce({ data: mockUsernames });
+
+    const response = await request(app)
+      .post('/getAllUsernamesWithIds')
+      .send({ userIds: ['123', '456'] });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual(mockUsernames);
+    expect(axios.post).toHaveBeenCalledWith(
+      expect.stringContaining('/getAllUsernamesWithIds'),
+      { userIds: ['123', '456'] }
+    );
+  });
+
+  // Test for /users
+  it('should forward users GET request to user service', async () => {
+    const mockUsers = [{ id: '1', username: 'user1' }, { id: '2', username: 'user2' }];
+    axios.get.mockResolvedValueOnce({ data: mockUsers });
+
+    const response = await request(app).get('/users');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual(mockUsers);
+    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/users'));
+  });
+
+  // Test for /leaderboard
+  it('should fetch leaderboard and merge with usernames', async () => {
+    const mockLeaderboard = [
+      { userId: '123', score: 100 },
+      { userId: '456', score: 200 }
+    ];
+    const mockUsernames = { '123': 'user1', '456': 'user2' };
+
+    // Mock leaderboard call
+    axios.get.mockResolvedValueOnce({ data: mockLeaderboard });
+    // Mock usernames call
+    axios.post.mockResolvedValueOnce({ data: mockUsernames });
+
+    const response = await request(app).get('/leaderboard');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual([
+      { userId: '123', score: 100, username: 'user1' },
+      { userId: '456', score: 200, username: 'user2' }
+    ]);
+    // Verify leaderboard call
+    expect(axios.get).toHaveBeenCalledWith(
+      expect.stringContaining('/leaderboard'),
+      { params: {} }
+    );
+    // Verify usernames call
+    expect(axios.post).toHaveBeenCalledWith(
+      expect.stringContaining('/getAllUsernamesWithIds'),
+      { userIds: ['123', '456'] }
+    );
+  });
+
+  // Test for leaderboard with query parameters
+  it('should forward query parameters to game service for leaderboard', async () => {
+    axios.get.mockResolvedValueOnce({ data: [] });
+    axios.post.mockResolvedValueOnce({ data: {} });
+
+    await request(app).get('/leaderboard?sortBy=score&order=desc');
+
+    expect(axios.get).toHaveBeenCalledWith(
+      expect.stringContaining('/leaderboard'),
+      { params: { sortBy: 'score', order: 'desc' } }
+    );
+  });
+
   // Test /askllm endpoint
   it('should forward askllm request to the llm service', async () => {
     const response = await request(app)

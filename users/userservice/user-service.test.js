@@ -164,4 +164,73 @@ describe('User Service', () => {
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty('error', 'User not found');
   });
+
+  it('should return user details for a valid userId', async () => {
+    // Arrange: Create a test user
+    const testUser  = new User({
+        username: 'validUser ',
+        password: await bcrypt.hash('validPassword', 10)
+    });
+    const savedUser  = await testUser .save();
+
+    // Act: Fetch the user by ID
+    const response = await request(app).get(`/getUserById/${savedUser ._id}`);
+
+    // Assert: Check the response
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('_id', savedUser ._id.toString());
+    expect(response.body).toHaveProperty('username', 'validUser ');
+  });
+
+  it('should return 404 if user not found', async () => {
+    // Arrange: Create a non-existent user ID
+    const nonExistentId = new mongoose.Types.ObjectId();
+
+    // Act: Attempt to fetch the user by the non-existent ID
+    const response = await request(app).get(`/getUser ById/${nonExistentId}`);
+
+    // Assert: Check the response
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty('error', 'User  not found');
+  });
+
+  it('should return usernames for valid userIds', async () => {
+    // Arrange: Create test users
+    const user1 = new User({ username: 'user1', password: await bcrypt.hash('password1', 10) });
+    const user2 = new User({ username: 'user2', password: await bcrypt.hash('password2', 10) });
+    await user1.save();
+    await user2.save();
+
+    // Act: Send a request with valid user IDs
+    const response = await request(app)
+        .post('/getAllUser namesWithIds')
+        .send({ userIds: [user1._id, user2._id] });
+
+    // Assert: Check the response
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+        [user1._id]: 'user1',
+        [user2._id]: 'user2'
+    });
+  });
+
+  it('should return 400 for invalid userIds array', async () => {
+    // Act: Send a request with an invalid userIds array (not an array)
+    const response = await request(app)
+        .post('/getAllUser namesWithIds')
+        .send({ userIds: 'invalid' }); // Not an array
+
+    // Assert: Check the response
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error', 'Invalid userIds array');
+
+    // Act: Send a request with an empty userIds array
+    const emptyResponse = await request(app)
+        .post('/getAllUser namesWithIds')
+        .send({ userIds: [] }); // Empty array
+
+    // Assert: Check the response
+    expect(emptyResponse.status).toBe(400);
+    expect(emptyResponse.body).toHaveProperty('error', 'Invalid userIds array');
+  });
 });

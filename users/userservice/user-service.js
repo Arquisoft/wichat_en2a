@@ -25,30 +25,57 @@ function validateRequiredFields(req, requiredFields) {
 }
 
 //add user endpint
-app.post('/adduser', async (req, res) => {
+async function addUser(req, res) {
+    // Validate required fields
+    validateRequiredFields(req, ['username', 'password']);
+    
     try {
-        // Check if required fields are present in the request body
-        validateRequiredFields(req, ['username', 'password']);
+        // Sanitize the username to remove any malicious characters, was recommended in sonar
+        const username = sanitize(req.body.username); 
+        const password = req.body.password;
 
-        // Check if username already exists
-        const existingUser = await User.findOne({ username: req.body.username });
+        // Ensure the username is not already taken
+        const existingUser = await User.findOne({ where: { username: username } });
+
         if (existingUser) {
             return res.status(409).json({ error: 'Username already exists' });
         }
 
-        // Encrypt the password before saving it
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-        const newUser = new User({
-            username: req.body.username,
-            password: hashedPassword,
-        });
-        await newUser.save();
-        res.status(201).json(newUser); //201 means created, not just 200 OK, clearer this way
-    } catch (error) {
-        res.status(400).json({ error: error.message });
-    }
-});
+        // Hash the password before saving it to the database
+        const hashedPassword = await bcrypt.hash(password, 10); // 10 is the salt rounds
 
+        // Create the new user in the database
+        const newUser = await User.create({
+            username: username,
+            password: hashedPassword
+        });
+
+        return res.status(201).json({
+            message: 'User created successfully',
+            user: {
+                username: newUser.username
+            }
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+// Helper function to validate required fields 
+function validateRequiredFields(req, requiredFields) {
+    requiredFields.forEach((field) => {
+        if (!req.body[field]) {
+            throw new Error(`Missing required field: ${field}`);
+        }
+    });
+}
+
+// Remove dangerous characters from the username to avoid security issues
+function sanitize(input) {
+    return input.replace(/[^a-zA-Z0-9_]/g, ''); // Allow only alphanumeric and underscores
+}
 
 // delete user endpoint
 app.delete('/users/:userId', async (req, res) => {
@@ -151,28 +178,40 @@ app.get('/getUserById/:userId', async (req, res) => {
 });
 
 // Endpoint to get usernames by multiple userIds
-// In user service
-app.post('/getAllUsernamesWithIds', async (req, res) => {
+// sonar recommended to:  to ensure each userId in the userIds array is a valid MongoDB ObjectId. 
+// If any of the userIds are invalid, we return an error response with the invalid IDs.
+post('/getAllUsernamesWithIds', async (req, res) => {
     try {
-      const { userIds } = req.body;
-      
-      // Ensure userIds is an array
-      if (!Array.isArray(userIds) || userIds.length === 0) {
-        return res.status(400).json({ error: 'Invalid userIds array' });
-      }
-  
-      const users = await User.find({ _id: { $in: userIds } }, { _id: 1, username: 1 });
-  
-      // Convert array to object map { userId: username }
-      const userMap = users.reduce((acc, user) => {
-        acc[user._id] = user.username;
-        return acc;
-      }, {});
-  
-      res.json(userMap);
+        const { userIds } = req.body;
+
+        // Ensure userIds is an array and contains only valid ObjectIds
+        if (!Array.isArray(userIds) || userIds.length === 0) {
+            return res.status(400).json({ error: 'Invalid userIds array' });
+        }
+
+        // Validate that all userIds are valid ObjectIds
+        const invalidIds = userIds.filter(id => !mongoose.Types.ObjectId.isValid(id));
+        if (invalidIds.length > 0) {
+            return res.status(400).json({ error: `Invalid user IDs: ${invalidIds.join(', ')}` });
+        }
+
+        // Proceed with querying the database only if the userIds are valid
+        const users = await User.find(
+            { _id: { $in: userIds } }, // Find users by their _id
+            { _id: 1, username: 1 } // Only retrieve _id and username
+        );
+
+        // Convert array of users to an object map { userId: username }
+        const userMap = users.reduce((acc, user) => {
+            acc[user._id] = user.username;
+            return acc;
+        }, {});
+
+        // Send the user map back as the response
+        res.json(userMap);
     } catch (error) {
-      console.error('Error fetching usernames:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
   
