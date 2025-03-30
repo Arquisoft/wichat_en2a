@@ -96,6 +96,9 @@ app.post("/ask", async (req, res) => {
     Answer to the question the user is trying to solve: "${correctAnswer}" (DO NOT say it by ANY MEANS).
     What the user tells you: "${userMessage}"
 
+    Take into account the following when answering: the user has an image they can see with information relevant to the question.
+    For example, if the question is "What country is this flag from?" the image is the flag.
+
     Below are your strict RULES that you MUST follow:
     1. NEVER WRITE "${correctAnswer}" in your message.
     2. NEVER ASK QUESTIONS TO THE USER.

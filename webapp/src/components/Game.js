@@ -53,7 +53,7 @@ const Game = () => {
             const response = await axios.post(`${apiEndpoint}/askllm`, {
                 question: "Which country is this flag from?", //hardcoded for now until we get more question types
                 userMessage: inputOld,
-                model: "empathy",
+                model: "gemini",
                 correctAnswer: question.correctAnswer
             });
             setMessages([...newMessages, { text: response.data.answer, sender: 'bot' }]);
