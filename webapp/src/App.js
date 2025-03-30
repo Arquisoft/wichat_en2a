@@ -9,6 +9,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Leaderboard from './components/Leaderboard';
 import axios from 'axios';
+import GameOver from "./components/GameOver";
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -71,6 +72,7 @@ function App() {
                 <Route path="/home" element={<Home/>}/>
                 <Route path="/game" element={<Game/>}/>
                 <Route path="/leaderboard" element={<Leaderboard/>}/>
+                <Route path="/game-over" element={<GameOver/>} />
             </Routes>
         </Container>
     );

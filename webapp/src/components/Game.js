@@ -21,6 +21,9 @@ const Game = () => {
     const [timeLeft, setTimeLeft] = useState(40);
     const [timerKey, setTimerKey] = useState(0);
 
+    const MAX_QUESTIONS = 10;
+    const [questionCount, setQuestionCount] = useState(0);
+
     const [hint, setHint] = useState(null);
 
     const COLORS = {
@@ -34,6 +37,11 @@ const Game = () => {
     const navigate = useNavigate();
     // Fetch question from the API
     const fetchQuestion = async () => {
+        if (questionCount >= MAX_QUESTIONS) {
+            navigate('/game-over');  // Redirige cuando llega a 10 preguntas
+            return;
+        }
+
         try {
             setHint(null);
             console.log("Fetching question...");
@@ -47,6 +55,7 @@ const Game = () => {
             }
             setQuestion(response.data);
             setTimerKey((prevKey) => prevKey + 1); //to reload timer
+            setQuestionCount((prevCount) => prevCount + 1);
         } catch (error) {
             console.error('Error fetching question:', error);
             setError('Failed to load question');
@@ -91,18 +100,6 @@ const Game = () => {
             setError('Failed to check answer');
         }
     };
-
-    // // Timer
-    // useEffect(() => { // detecta cambios de estado
-    //     if (timeLeft > 0 && !answerSelected) {
-    //         const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-    //         return () => clearTimeout(timer);
-    //     } else if (timeLeft === 0) {
-    //         setAnswerSelected(true);
-    //         setChosenAnswer(null);
-    //         setCorrectAnswer(question.correctAnswer);
-    //     }
-    // }, [timeLeft, answerSelected]); // se ejecuta cuando una de estas cambia, si [] -> al crearse solo
 
     // Función que se ejecuta cuando el tiempo se agota
     const handleTimeUp = () => {
