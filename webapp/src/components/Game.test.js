@@ -1,9 +1,10 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {render, screen, fireEvent, waitFor, act} from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Game from './Game';
 import { MemoryRouter } from 'react-router-dom';
+import Timer from "./Timer";
 
 const mockAxios = new MockAdapter(axios);
 const apiEndpoint = 'http://localhost:8000';
@@ -14,8 +15,11 @@ const mockQuestion = {
     options: ['Spain', 'France', 'Germany', 'Italy']
 };
 
+jest.useFakeTimers();
+
 describe('Game Component', () => {
     const mockOnNavigate = jest.fn();
+    const MAX_QUESTIONS = 10; // Define the max number of questions
 
     beforeEach(() => {
         mockAxios.reset();
@@ -153,4 +157,24 @@ describe('Game Component', () => {
             expect(correctAnswerButton).toHaveStyle('background-color: #4CAF50');
         });
     });
+
+    test('initializes the database when no questions are found', async () => {
+        mockAxios.onGet(`${apiEndpoint}/question`).reply(200, []);
+        renderGameComponent();
+
+        await waitFor(() => {
+            expect(mockAxios.history.post.length).toBe(1); // It should have called the POST request once
+            expect(mockAxios.history.post[0].url).toBe(`${apiEndpoint}/fetch-flag-data`);
+        });
+
+        // Simulate the successful fetch of the question after database initialization
+        setupMockApiResponse('question', mockQuestion);
+        renderGameComponent();
+
+        // After initializing the database, the question should be fetched and displayed
+        await waitFor(() => {
+            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+        });
+    });
+
 });
