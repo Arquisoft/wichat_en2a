@@ -8,12 +8,13 @@ const TEST_PASSWORD = 'test_password_123'; // NOSONAR
 let mongoServer;
 let app;
 let testUserId1;
+let testUserId2;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
   process.env.MONGODB_URI = mongoUri;
-  
+
   app = require('./game-service');
 
   const user1 = new User({
@@ -28,7 +29,7 @@ beforeAll(async () => {
     email: 'test2@example.com',
     password: TEST_PASSWORD
   });
-  
+
   const savedUser1 = await user1.save();
   const savedUser2 = await user2.save();
 
@@ -52,7 +53,7 @@ describe('Game Service Score Endpoints', () => {
   // Test Score Saving (saveScore)
   it('should save a new score on POST /saveScore', async () => {
     const scoreData = {
-      userId: testUserId1,
+      userId: new mongoose.Types.ObjectId(testUserId1), // Convert to ObjectId here
       score: 100,
       isVictory: true
     };
@@ -77,7 +78,7 @@ describe('Game Service Score Endpoints', () => {
   it('should update an existing score on PUT /updateScore', async () => {
     // First create a score
     const newScore = new Score({
-      userId: testUserId1,
+      userId: new mongoose.Types.ObjectId(testUserId1), // Convert to ObjectId here
       score: 50,
       isVictory: false
     });
@@ -85,7 +86,7 @@ describe('Game Service Score Endpoints', () => {
     
     // Then update it
     const updateData = {
-      userId: testUserId1,
+      userId: new mongoose.Types.ObjectId(testUserId1), // Convert to ObjectId here
       score: 150,
       isVictory: true
     };
@@ -106,8 +107,8 @@ describe('Game Service Score Endpoints', () => {
   it('should get all scores for a user on GET /scoresByUser/:userId', async () => {
     // Create various scores for the test user
     const scores = [
-      { userId: testUserId1, score: 100, isVictory: true },
-      { userId: testUserId1, score: 200, isVictory: false }
+      { userId: new mongoose.Types.ObjectId(testUserId1), score: 100, isVictory: true },
+      { userId: new mongoose.Types.ObjectId(testUserId1), score: 200, isVictory: false }
     ];
     
     await Score.insertMany(scores);
@@ -187,10 +188,10 @@ describe('Game Service Leaderboard Endpoint', () => {
   // Test fetching the leaderboard sorted by totalScore by default
   it('should return the leaderboard sorted by totalScore by default', async () => {
     const scores = [
-      { userId: testUserId1, score: 100, isVictory: true },
-      { userId: testUserId1, score: 200, isVictory: false },
-      { userId: testUserId2, score: 150, isVictory: true },
-      { userId: testUserId2, score: 100, isVictory: true }
+      { userId: new mongoose.Types.ObjectId(testUserId1), score: 100, isVictory: true },
+      { userId: new mongoose.Types.ObjectId(testUserId1), score: 200, isVictory: false },
+      { userId: new mongoose.Types.ObjectId(testUserId2), score: 150, isVictory: true },
+      { userId: new mongoose.Types.ObjectId(testUserId2), score: 100, isVictory: true }
     ];
 
     await insertScores(scores);
@@ -209,11 +210,11 @@ describe('Game Service Leaderboard Endpoint', () => {
   // Test fetching the leaderboard sorted by gamesPlayed
   it('should return the leaderboard sorted by gamesPlayed', async () => {
     const scores = [
-      { userId: testUserId1, score: 100, isVictory: true },
-      { userId: testUserId1, score: 200, isVictory: false },
-      { userId: testUserId2, score: 150, isVictory: true },
-      { userId: testUserId2, score: 100, isVictory: true },
-      { userId: testUserId2, score: 50, isVictory: false }
+      { userId: new mongoose.Types.ObjectId(testUserId1), score: 100, isVictory: true },
+      { userId: new mongoose.Types.ObjectId(testUserId1), score: 200, isVictory: false },
+      { userId: new mongoose.Types.ObjectId(testUserId2), score: 150, isVictory: true },
+      { userId: new mongoose.Types.ObjectId(testUserId2), score: 100, isVictory: true },
+      { userId: new mongoose.Types.ObjectId(testUserId2), score: 50, isVictory: false }
     ];
 
     await insertScores(scores);
@@ -224,10 +225,10 @@ describe('Game Service Leaderboard Endpoint', () => {
   // Test fetching the leaderboard sorted by winRate
   it('should return the leaderboard sorted by winRate', async () => {
     const scores = [
-      { userId: testUserId1, score: 100, isVictory: true },
-      { userId: testUserId1, score: 200, isVictory: false },
-      { userId: testUserId2, score: 150, isVictory: true },
-      { userId: testUserId2, score: 100, isVictory: true }
+      { userId: new mongoose.Types.ObjectId(testUserId1), score: 100, isVictory: true },
+      { userId: new mongoose.Types.ObjectId(testUserId1), score: 200, isVictory: false },
+      { userId: new mongoose.Types.ObjectId(testUserId2), score: 150, isVictory: true },
+      { userId: new mongoose.Types.ObjectId(testUserId2), score: 100, isVictory: true }
     ];
 
     await insertScores(scores);
@@ -257,8 +258,4 @@ describe('Game Service Leaderboard Endpoint', () => {
     // Reconnect to the database for subsequent tests
     await mongoose.connect(process.env.MONGODB_URI);
   });
-
 });
-
-
-
