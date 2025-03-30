@@ -18,7 +18,6 @@ const Game = () => {
     const [isCorrect, setIsCorrect] = useState(null);
     const [chosenAnswer, setChosenAnswer] = useState(null);
 
-    const [timeLeft, setTimeLeft] = useState(40);
     const [timerKey, setTimerKey] = useState(0);
 
     const MAX_QUESTIONS = 10;
@@ -27,7 +26,7 @@ const Game = () => {
     const [hint, setHint] = useState(null);
 
     const COLORS = {
-        primary: '#1976d2',
+        primary: '#6A5ACD',
         success: '#4CAF50',
         error: '#F44336',
         hover: '#1565c0',
@@ -80,8 +79,6 @@ const Game = () => {
     };
 
     const checkAnswer = async (answer) => {
-        // if (!question || !question._id) return; // no se ha detectado ninguna pregunta
-
         try {
             setChosenAnswer(answer);
             const response = await axios.post(`${apiEndpoint}/check-answer`, {
@@ -173,7 +170,7 @@ const Game = () => {
                         }}>
                             <Typography variant="h6" sx={{mb: '1rem'}}>Which country is this flag from?</Typography>
                             {question.options.map((option, index) => {
-                                let bgColor = COLORS.primary; // Azul por defecto
+                                let bgColor = COLORS.primary;
 
                                 // Solo cambiamos el color después de haber seleccionado una respuesta
                                 if (answerSelected) {
@@ -262,7 +259,7 @@ const Game = () => {
                     </Button>
                     <Button
                         variant="contained"
-                        color="primary"
+                        color = 'primary'
                         disabled={!answerSelected} // Solo habilitado si se ha seleccionado una respuesta
                         onClick={() => {
                             setChosenAnswer(null);  // Reseteamos la respuesta elegida
