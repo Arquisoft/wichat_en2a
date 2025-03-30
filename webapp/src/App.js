@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Routes, Route, Link, useNavigate} from 'react-router-dom';
+import {Routes, Route, useNavigate} from 'react-router-dom';
 import AddUser from './components/AddUser';
 import Login from './components/Login';
 import Home from './components/Home';
@@ -15,7 +15,6 @@ const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000
 function App() {
     const navigate = useNavigate(); // Hook for routes
     const [error, setError] = useState(null); // state of error messages
-    const [initializing, setInitializing] = useState(true); //state for tracking initialization
 
     //Load question from wikidata just when deploying the application
     useEffect(() => {
@@ -27,8 +26,6 @@ function App() {
             } catch (error) {
                 setError(error.response?.data?.error || 'Error initializing database');
                 console.error('Error during initialization:', error);
-            } finally {
-                setInitializing(false); // Finaliza la inicialización
             }
         };
         navigate('/login');
@@ -36,25 +33,9 @@ function App() {
         initializeQuestions(); // Llama al inicializador
     }, []);
 
-    //Load message when initializing
-    /*if (initializing) {
-        return (
-            <Container component="main" maxWidth="xs">
-                <CssBaseline />
-                <Typography component="h1" variant="h5" align="center" sx={{ marginTop: 2 }}>
-                    Initializing the game... Please wait
-                </Typography>
-            </Container>
-        );
-    }*/
-
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline/>
-            <Typography component="h1" variant="h5" align="center" sx={{marginTop: 2}}>
-                Welcome to our Quiz game!
-            </Typography>
-
             {/* Muestra mensaje de error si existe */}
             {error && (
                 <Typography color="error" sx={{textAlign: 'center', mt: 2}}>
