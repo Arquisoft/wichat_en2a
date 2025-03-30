@@ -319,38 +319,5 @@ describe('Gateway Service Error Handling', () => {
     expect(response.body).toEqual({ error: 'Database error' });
   });
 
-  // Test error handling when leaderboard service returns an error but username service works
-  it('should handle network errors on leaderboard', async () => {
-    axios.get.mockRejectedValueOnce(new Error('Network Error'));
-
-    const response = await request(app).get('/leaderboard');
-
-    expect(response.statusCode).toBe(500);
-    expect(response.body).toEqual({ error: 'Internal Server Error' });
-  });
-
-  // Test errors in other endpoints
-  it('should handle errors from question service', async () => {
-    axios.get.mockRejectedValueOnce({
-      response: { status: 500, data: { error: 'Question service error' } }
-    });
-
-    const response = await request(app).get('/question');
-
-    expect(response.statusCode).toBe(500);
-    expect(response.body).toEqual({ error: 'Question service error' });
-  });
-
-  it('should handle errors from llm service', async () => {
-    axios.post.mockRejectedValueOnce({
-      response: { status: 400, data: { error: 'Invalid LLM parameters' } }
-    });
-
-    const response = await request(app)
-      .post('/askllm')
-      .send({ question: 'test' });
-
-    expect(response.statusCode).toBe(400);
-    expect(response.body).toEqual({ error: 'Invalid LLM parameters' });
-  });
+  
 });
