@@ -32,6 +32,7 @@ beforeAll(async () => {
   const savedUser1 = await user1.save();
   const savedUser2 = await user2.save();
 
+  testUserId = savedUser1._id.toString(); //used for score endpoint tests
   testUserId1 = savedUser1._id.toString();
   testUserId2 = savedUser2._id.toString();
 });
