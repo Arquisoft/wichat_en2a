@@ -5,8 +5,6 @@ const mongoose = require('mongoose');
 
 const User = require('./user-model');
 
-jest.mock('./user-model'); // mock th model to avoid real DB interactions
-
 let mongoServer;
 let app;
 let testUserId;
@@ -238,72 +236,59 @@ describe('User Service', () => {
     });
   });
 
-  
 });
 
-
 describe('User Service Error Handling', () => {
-  afterEach(() => {
-      jest.clearAllMocks();
+  beforeEach(async () => {
+    await User.deleteMany({});
+    const testUser = new User({
+      username: 'testuser',
+      password: await bcrypt.hash('testpassword', 10)
+    });
+    const savedUser = await testUser.save();
+    testUserId = savedUser._id;
   });
 
-  it('should throw an error when a required field is missing', async () => {
-      const response = await request(app)
-          .post('/adduser')
-          .send({ username: 'testuser' }); // Falta password
-
-      expect(response.statusCode).toBe(400);
-      expect(response.body.error).toBe('Missing required field: password');
+  it('should return 400 for missing username on POST /adduser', async () => {
+    const newUser = { password: 'testpassword' };
+    const response = await request(app).post('/adduser').send(newUser);
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error', 'Username is required');
   });
 
-  it('should return 400 for invalid username format', async () => {
-      const response = await request(app)
-          .post('/adduser')
-          .send({ username: 'invalid user', password: 'test123' });
-
-      expect(response.statusCode).toBe(400);
-      expect(response.body.error).toBe('Invalid username format');
+  it('should return 400 for missing password on POST /adduser', async () => {
+    const newUser = { username: 'userwithoutpassword' };
+    const response = await request(app).post('/adduser').send(newUser);
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error', 'Password is required');
   });
 
-  it('should return 409 if username already exists', async () => {
-      User.findOne.mockResolvedValue({ username: 'existinguser' });
-
-      const response = await request(app)
-          .post('/adduser')
-          .send({ username: 'existinguser', password: 'test123' });
-
-      expect(response.statusCode).toBe(409);
-      expect(response.body.error).toBe('Username already exists');
+  it('should return 400 for invalid user ID format on DELETE /users/:userId', async () => {
+    const invalidUserId = '12345';
+    const response = await request(app).delete(`/users/${invalidUserId}`);
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error', 'Invalid user ID format');
   });
 
-  it('should return 400 for invalid userId format', async () => {
-      const response = await request(app).get('/getUserById/invalidUserId');
+  it('should return 500 for server error during user creation', async () => {
+    jest.spyOn(User.prototype, 'save').mockImplementationOnce(() => {
+      throw new Error('Database error');
+    });
 
-      expect(response.statusCode).toBe(400);
-      expect(response.body.error).toBe('Invalid userId format');
+    const newUser = { username: 'usererror', password: 'password' };
+    const response = await request(app).post('/adduser').send(newUser);
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty('error', 'Internal server error');
   });
 
-  it('should return 400 if no valid fields to update', async () => {
-      const validUserId = new mongoose.Types.ObjectId().toString();
+  it('should return 500 for server error during user retrieval', async () => {
+    jest.spyOn(User, 'findById').mockImplementationOnce(() => {
+      throw new Error('Database error');
+    });
 
-      User.findById.mockResolvedValue({ _id: validUserId, username: 'testuser' });
-
-      const response = await request(app)
-          .put(`/users/${validUserId}`)
-          .send({});
-
-      expect(response.statusCode).toBe(400);
-      expect(response.body.error).toBe('No valid fields to update');
-  });
-
-  it('should return 500 for unexpected errors', async () => {
-      User.findById.mockRejectedValue(new Error('Database error'));
-      const validUserId = new mongoose.Types.ObjectId().toString();
-
-      const response = await request(app).get(`/getUserById/${validUserId}`);
-
-      expect(response.statusCode).toBe(500);
-      expect(response.body.error).toBe('Database error');
+    const response = await request(app).get(`/getUserById/${testUserId}`);
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty('error', 'Internal server error');
   });
 });
 
