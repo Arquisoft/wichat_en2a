@@ -67,4 +67,14 @@ describe('Navbar component', () => {
     fireEvent.click(screen.getByRole('button', { name: /Log Out/i }));
     expect(mockNavigate).toHaveBeenCalledWith('/login');
   });
+
+    it('navigates to "Game" when the Game button is clicked', () => {
+        render(
+            <MemoryRouter>
+                <Navbar onNavigate={mockNavigate} />
+            </MemoryRouter>
+        );
+        fireEvent.click(screen.getByRole('button', { name: /Game/i }));
+        expect(mockNavigate).toHaveBeenCalledWith('/game');
+    });
 });
