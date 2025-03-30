@@ -14,12 +14,12 @@ const GameOver = () => {
                 width: '100vw',
                 backgroundColor: '#6A5ACD', // Purple background
                 display: 'flex',
-                flexDirection: 'column',  // Organiza todo en columna
-                alignItems: 'center',     // Centra los elementos
-                justifyContent: 'center', // Centra verticalmente
-                gap: 2,                   // Espacio entre elementos
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 2,
                 padding: '0 5%',
-                textAlign: 'center'        // Asegura alineación centrada
+                textAlign: 'center'
             }}>
                 <Typography variant="h3" sx={{ color: 'white' }}>
                     Game Over!
