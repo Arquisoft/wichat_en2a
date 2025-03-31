@@ -8,6 +8,7 @@ const app = express();
 const port = 8003;
 let conversation = [];
 let currentQuestion = "";
+let currentCorrectAnswer = "";
 
 // Middleware to parse JSON in request body
 app.use(express.json());
@@ -92,8 +93,9 @@ app.post("/ask", async (req, res) => {
     const {question, userMessage, model, correctAnswer} = req.body;
     //if current question is not defined or has changed, reset
     //we reset the conversation whenever the question changes
-    if (currentQuestion==="" || currentQuestion!==question){
+    if (currentQuestion==="" || currentQuestion!==question || currentCorrectAnswer==="" || currentCorrectAnswer!==correctAnswer){
       currentQuestion=question;
+      currentCorrectAnswer=correctAnswer;
       conversation=[];
     }
 
