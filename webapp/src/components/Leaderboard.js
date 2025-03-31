@@ -25,7 +25,7 @@ const Leaderboard = () => {
                 // check if 8005 or 8000. Its 8000! takes gateway one in order to get
                 const response = await fetch("http://localhost:8000/leaderboard");
                 if (!response.ok) {
-                    throw new Error(`Error: ${response.status}`);
+                    console.error(`Error: ${response.status}`);
                 }
                 const data = await response.json();
                 setPlayers(data);
@@ -83,7 +83,7 @@ const Leaderboard = () => {
                         </TableHead>
                         <TableBody>
                             {players.length > 0 ? (
-                                players.map((player, index) => (
+                                players.map((player) => (
                                     <TableRow
                                         key={player._id}
                                         sx={{'&:nth-of-type(odd)': {bgcolor: 'action.hover'}}}

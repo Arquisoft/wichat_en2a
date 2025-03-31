@@ -8,30 +8,38 @@ let app;
 
 jest.mock("axios");
 
-axios.post.mockImplementation((url) => {
-  if (url.includes("generateIncorrectOptions")) {
-    return Promise.resolve({
-      data: { incorrectOptions: ["Incorrect1", "Incorrect2", "Incorrect3"] },
-    });
-  }
-});
+function createMocks() {
+  axios.post.mockImplementation((url) => {
+    if (url.includes("generateIncorrectOptions")) {
+      return Promise.resolve({
+        status: 200,
+        data: { incorrectOptions: ["Incorrect1", "Incorrect2", "Incorrect3"] },
+      });
+    }
+  });
 
-axios.get.mockImplementation((url) => {
-  if (url.includes("wikidata")) {
-    return Promise.resolve({
-      data: {
-        results: {
-          bindings: [
-            {
-              countryLabel: { value: "CorrectAnswer" },
-              flag: { value: "https://example.com/flag.png" },
-            },
-          ],
+  axios.get.mockImplementation((url) => {
+    if (url.includes("wikidata")) {
+      // Get the number of questions to generate from the URL or default to 30
+      const decodedUrl = decodeURIComponent(url);
+
+      const match = /LIMIT (\d+)/.exec(decodedUrl);
+
+      const numberOfQuestions = match ? parseInt(match[1], 10) : 30; // Default to 30 if not found
+
+      return Promise.resolve({
+        data: {
+          results: {
+            bindings: Array.from({ length: numberOfQuestions }, (_, i) => ({
+              countryLabel: { value: `Country${i}` },
+              flag: { value: `https://example.com/flag${i}.png` },
+            })),
+          },
         },
-      },
-    });
-  }
-});
+      });
+    }
+  });
+}
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -48,6 +56,11 @@ afterAll(async () => {
 beforeEach(async () => {
   console.log("Clearing the database before each test");
   await Question.deleteMany({}); // Clear the database before each test
+  createMocks();
+});
+
+afterEach(() => {
+  jest.clearAllMocks(); // Clear all mocks after each test
 });
 
 async function addMockQuestionToDB() {
@@ -73,6 +86,7 @@ describe("Question Service", () => {
     expect(response.statusCode).toBe(200); //200 is HTTP status code for a successful request
     expect(response.body).toBeInstanceOf(Array);
     expect(response.body.length).toBeGreaterThan(0);
+    expect(response.body.length).toBe(30); // By default, we fetch 30 questions
 
     // data was saved in the database
     const questions = await Question.find();
@@ -176,24 +190,105 @@ describe("Question Service Error Handling", () => {
     expect(response.body).toEqual({ isCorrect: false });
   });
 
-  it("should return the question with only the correct answer on POST /fetch-flag-data if the LLM throws an error", async () => {
-    axios.post.mockImplementationOnce(() => {
-      if (url.includes("generateIncorrectOptions")) {
-        return new Error("The LLM has thrown an error");
+  it("should should fail and do not generate questions on POST /fetch-flag-data if the LLM has some issue", async () => {
+    axios.post.mockImplementation((url) => {
+      if (url.includes("/generateIncorrectOptions")) {
+        return Promise.resolve({
+          status: 400,
+          data: { error: "LLM error" },
+        });
       }
     });
 
     const response = await request(app).post("/fetch-flag-data");
 
-    // Check the response status and body
-    expect(response.statusCode).toBe(200); //200 is HTTP status code for a successful request
-    expect(response.body).toBeInstanceOf(Array);
-    expect(response.body.length).toBeGreaterThan(0);
+    // Check the response status
+    expect(response.statusCode).toBe(500);
 
-    // data was saved in the database
+    // Verify that no questions were saved in the database
     const questions = await Question.find();
-    expect(questions.length).toBeGreaterThan(0);
+    expect(questions.length).toBe(0);
+  });
+});
 
+describe("Question Generation parametrization", () => {
+  it("should generate a specified number of questions", async () => {
+    const numberOfQuestions = 5; // Specify the number of questions to generate
 
+    // Make a POST request to /fetch-flag-data with the specified number of questions
+    const response = await request(app)
+      .post("/fetch-flag-data")
+      .send({ numberOfQuestions });
+
+    // Check the response status and body
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeInstanceOf(Array);
+    expect(response.body.length).toBe(numberOfQuestions); // Check if the number of questions is correct
+
+    // Verify that the questions were saved in the database
+    const questions = await Question.find();
+    expect(questions.length).toBe(numberOfQuestions);
+  });
+
+  it("should default to 30 questions if an invalid number (any negative number or 0) is provided", async () => {
+    // Make a POST request to /fetch-flag-data without specifying the number of questions
+    const response = await request(app).post("/fetch-flag-data").send({
+      numberOfQuestions: -1, // Invalid number of questions
+    });
+
+    // Check the response status and body
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeInstanceOf(Array);
+    expect(response.body.length).toBe(30); // Default to 30 questions
+
+    // Verify that the questions were saved in the database
+    const questions = await Question.find();
+    expect(questions.length).toBe(30);
+
+    const response2 = await request(app)
+      .post("/fetch-flag-data")
+      .send({ numberOfQuestions: 0 });
+
+    // Check the response status and body
+    expect(response2.statusCode).toBe(200);
+    expect(response2.body).toBeInstanceOf(Array);
+    expect(response2.body.length).toBe(30); // Default to 30 questions
+
+    // Verify that the questions were saved in the database
+    const questions2 = await Question.find();
+    expect(questions2.length).toBe(60); // 30 from the first request and 30 from the second request
+  });
+
+  it("should generate 30 questions if the number of questions is not a number", async () => {
+    // Make a POST request to /fetch-flag-data with an invalid number of questions
+    const response = await request(app).post("/fetch-flag-data").send({
+      numberOfQuestions: "invalid", // Invalid number of questions
+    });
+
+    // Check the response status and body
+    // Check the response status and body
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeInstanceOf(Array);
+    expect(response.body.length).toBe(30); // Default to 30 questions
+
+    // Verify that no questions were saved in the database
+    const questions = await Question.find();
+    expect(questions.length).toBe(30);
+  });
+
+  it("should generate 30 questions if a type other than 'Integer' is provided", async () => {
+    // Make a POST request to /fetch-flag-data with an invalid type for number of questions
+    const response = await request(app).post("/fetch-flag-data").send({
+      numberOfQuestions: 3.455, // Invalid type
+    });
+
+    // Check the response status and body
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeInstanceOf(Array);
+    expect(response.body.length).toBe(30); // Default to 30 questions
+
+    // Verify that no questions were saved in the database
+    const questions = await Question.find();
+    expect(questions.length).toBe(30);
   });
 });
