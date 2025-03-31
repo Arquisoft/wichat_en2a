@@ -52,7 +52,7 @@ describe('Auth Service', () => {
   it('Should return 401 for invalid credentials', async () => {
     const invalidUser = {
       username: 'testuser',
-      password: 'wrongpassword'
+      password: 'wrongpassword' //NOSONAR
     };
     
     const response = await request(app).post('/login').send(invalidUser);
