@@ -8,6 +8,7 @@ const swaggerUi = require('swagger-ui-express');
 const fs = require("fs");
 const YAML = require('yaml');
 
+
 const app = express();
 const port = 8000;
 
@@ -16,6 +17,8 @@ const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
 const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
 const gameServiceUrl = process.env.GAME_SERVICE_URL || 'http://localhost:8005';
+
+
 
 app.use(cors());
 app.use(express.json());
@@ -57,8 +60,8 @@ app.post('/getAllUsernamesWithIds', async (req, res) => {
     res.json(usernamesResponse.data);
   } catch (error) {
     console.error('Error fetching usernames:', error);
-    res.status(error.response?.status || 500).json({
-      error: error.response?.data?.error || 'Internal Server Error'
+    res.status(error.response?.status || 500).json({ 
+      error: error.response?.data?.error || 'Internal Server Error' 
     });
   }
 });
@@ -71,7 +74,7 @@ app.get('/users', async (req, res) => {
       res.json(userResponse.data);
   } catch (error) {
       res.status(error.response.status).json({ error: error.response.data.error });
-
+      
   }
 });
 
@@ -125,15 +128,6 @@ app.post('/saveScore', async (req, res) => {
   }
 });
 
-app.post('/generateIncorrectOptions', async (req, res) => {
-  try {
-    const incorrectOptionsResponse = await axios.post(`${llmServiceUrl}/generateIncorrectOptions`, req.body);
-    res.json(incorrectOptionsResponse.data);
-  } catch (error) {
-      res.status(error.response.status).json({ error: error.response.data.error });
-  }
-});
-
 // 8000!!!!!!!!!
 app.get('/leaderboard', async (req, res) => {
   try {
@@ -143,7 +137,7 @@ app.get('/leaderboard', async (req, res) => {
     });
 
     const leaderboardData = leaderboardResponse.data;
-
+    
     // Extract userIds from the leaderboard response
     const userIds = leaderboardData.map(entry => entry.userId);
 
@@ -163,14 +157,14 @@ app.get('/leaderboard', async (req, res) => {
     res.json(leaderboardWithUsernames);
   } catch (error) {
     console.error('Leaderboard Fetch Error:', error);
-    res.status(error.response?.status || 500).json({
-      error: error.response?.data?.error || 'Internal Server Error'
+    res.status(error.response?.status || 500).json({ 
+      error: error.response?.data?.error || 'Internal Server Error' 
     });
   }
 });
 
 // Read the OpenAPI YAML file synchronously
-const openapiPath='./openapi.yaml'
+openapiPath='./openapi.yaml'
 if (fs.existsSync(openapiPath)) {
   const file = fs.readFileSync(openapiPath, 'utf8');
 

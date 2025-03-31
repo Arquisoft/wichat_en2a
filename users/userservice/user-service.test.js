@@ -11,7 +11,8 @@ let testUserId;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
-  process.env.MONGODB_URI = mongoServer.getUri();
+  const mongoUri = mongoServer.getUri();
+  process.env.MONGODB_URI = mongoUri;
   app = require('./user-service'); 
 });
 
