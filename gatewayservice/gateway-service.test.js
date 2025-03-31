@@ -453,7 +453,7 @@ describe('Gateway Service Error Handling', () => {
   });
 
   it('should forward saveActiveUserScore with correct userId and their score', async () => {
-    const fakeToken = 'asdasda2391287qada';
+    const fakeToken = 'Bearer asdasda2391287qada';
     const score = 750;
     const expectedUserId = 'mockID';
     const expectedIsVictory = true;
@@ -493,7 +493,7 @@ describe('Gateway Service Error Handling', () => {
   });
 
   it('should forward /scores request with token', async () => {
-    const fakeToken = 'Bearer faketoken';
+    const fakeToken = 'Bearer asasadad';
     const mockScores = [{ score: 800 }, { score: 500 }];
   
     axios.get.mockReset();
@@ -516,7 +516,7 @@ describe('Gateway Service Error Handling', () => {
   });
 
   it('should forward /scoresByUser/:userId to game service', async () => {
-    const userId = 'sadasklasjdlkajs';
+    const userId = 'Bearer sadasklasjdlkajs';
     const mockResponse = [{ gameId: 'x1', score: 700 }];
   
     axios.get.mockReset();
@@ -543,7 +543,7 @@ describe('Gateway Service Error Handling', () => {
   
     const response = await request(app)
       .get('/scores')
-      .set('Authorization', 'asasdasda');
+      .set('Authorization', ' Bearer asasdasda');
   
     if (response.status === 401) {
       console.warn('This test requires a valid token');
@@ -556,7 +556,7 @@ describe('Gateway Service Error Handling', () => {
   it('should return 400 when score is not a number in /saveActiveUserScore', async () => {
     const response = await request(app)
       .post('/saveActiveUserScore')
-      .set('Authorization', 'Basadasdasd23123')
+      .set('Authorization', 'Bearer Basadasdasd23123')
       .send({ score: 'not-a-number-therefore-FAIL' });
   
     if (response.status === 401) {
@@ -575,7 +575,7 @@ describe('Gateway Service Error Handling', () => {
   
     const response = await request(app)
       .post('/saveActiveUserScore')
-      .set('Authorization', 'asdasdads')
+      .set('Authorization', 'Bearer asdasdads')
       .send({ score: 800 });
   
     if (response.status === 401) {
