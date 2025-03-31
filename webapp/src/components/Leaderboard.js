@@ -22,7 +22,8 @@ const Leaderboard = () => {
         async function fetchLeaderboard() {
             try {
                 setLoading(true);
-                const response = await fetch("http://localhost:8003/leaderboard");
+                // check if 8005 or 8000. Its 8000! takes gateway one in order to get
+                const response = await fetch("http://localhost:8000/leaderboard");
                 if (!response.ok) {
                     throw new Error(`Error: ${response.status}`);
                 }
