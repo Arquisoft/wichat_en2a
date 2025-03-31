@@ -33,6 +33,7 @@ const Login = () => {
                     Login
                 </Typography>
                 <TextField
+                    name="username"
                     margin="normal"
                     fullWidth
                     label="Username"
@@ -40,6 +41,7 @@ const Login = () => {
                     onChange={(e) => setUsername(e.target.value)}
                 />
                 <TextField
+                    name="password"
                     margin="normal"
                     fullWidth
                     label="Password"
