@@ -29,7 +29,7 @@ describe("GameOver Screen", () => {
     test.each([
         ["Back to Home", "/home"],
         ["See leaderboard", "/leaderboard"],
-        ["See my scores", "/scoresByUser/"],
+        ["See my scores", "/scores"],
     ])('Navigates correctly when clicking "%s" button',
         async (buttonText, expectedPath) => {
             renderGameOverScreen();
