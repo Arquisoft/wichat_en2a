@@ -47,7 +47,9 @@ describe('Home component', () => {
 
     it('handles fetch network error and displays "Guest"', async () => {
         localStorage.setItem('token', 'fakeToken');
-        fetch.mockRejectedValueOnce(new Error('Network error'));
+
+        // Ensure fetch rejects with a network error
+        global.fetch = jest.fn(() => Promise.reject(new Error('Network error')));
 
         render(
             <MemoryRouter>
@@ -57,6 +59,7 @@ describe('Home component', () => {
 
         await waitFor(() => expect(screen.getByText(/Welcome back, Guest!/i)).toBeInTheDocument());
     });
+
 
     it('handles missing token and displays "Guest"', async () => {
         render(
