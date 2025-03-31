@@ -16,12 +16,11 @@ mongoose.connect(mongoUri);
 // endpoitn to save game score
 app.post('/saveScore', async (req, res) => {
     try {
-        const { userId, score, isVictory } = req.body;
+        const { userId, score } = req.body;
 
         const newScore = new Score({
             userId,
-            score,
-            isVictory,
+            score
         });
 
         await newScore.save();

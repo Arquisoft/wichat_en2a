@@ -24,6 +24,7 @@ const Game = () => {
     const [questionCount, setQuestionCount] = useState(0);
 
     const [hint, setHint] = useState(null);
+    const [score, setScore] = useState(0);
 
     const COLORS = {
         primary: '#6A5ACD',
@@ -37,6 +38,7 @@ const Game = () => {
     // Fetch question from the API
     const fetchQuestion = async () => {
         if (questionCount >= MAX_QUESTIONS) {
+            await axios.post(`${apiEndpoint}/saveScore`, { score });
             navigate('/game-over');  // Redirige cuando llega a 10 preguntas
             return;
         }
@@ -88,10 +90,13 @@ const Game = () => {
 
             setIsCorrect(response.data.isCorrect);
 
-            if (!response.data.isCorrect) {
+            if (response.data.isCorrect) {
+                setScore(prevScore => prevScore + 10);
+                // Aumentar puntuación si es correcta
+            } else {
                 setCorrectAnswer(question.correctAnswer);
-                // Aunque el usuario haya fallado, guardo la correcta
             }
+
         } catch (error) {
             console.error('Error checking answer:', error);
             setError('Failed to check answer');
@@ -142,6 +147,11 @@ const Game = () => {
                        sx={{textAlign: 'center', mt: '0.5rem', minHeight: '85vh', width: '100%', px: '1rem'}}>
                 <Typography component="h1" variant="h4" sx={{mb: '1rem'}}>
                     Quiz Game!
+                </Typography>
+
+                {/* Score Label */}
+                <Typography variant="h6" sx={{ my: 2 }}>
+                    Score: {score}
                 </Typography>
 
                 {/* Timer */}

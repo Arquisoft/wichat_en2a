@@ -29,6 +29,7 @@ app.post('/login',  [
   check('password').isLength({ min: 3 }).trim().escape()
 ],async (req, res) => {
   try {
+    req.session.user=null;
     // Check if required fields are present in the request body
   
   validateRequiredFields(req, ['username', 'password']);
@@ -49,6 +50,8 @@ app.post('/login',  [
       const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
       // Respond with the token and user information
       res.json({ token: token, username: username, createdAt: user.createdAt });
+
+      req.session.user = user._id;
     } else {
       res.status(401).json({ error: 'Invalid credentials' });
     }
