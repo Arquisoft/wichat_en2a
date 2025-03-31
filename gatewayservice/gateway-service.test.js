@@ -70,6 +70,22 @@ describe('Gateway Service', () => {
     expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/users'));
   });
 
+  it('should return an error response on failure', async () => {
+    // Simula la respuesta de error de axios
+    axios.get.mockRejectedValue({
+      response: {
+        status: 500,
+        data: { error: 'Internal Server Error' }
+      }
+    });
+
+    const response = await request(app).get('/users');
+    
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal Server Error' });
+  });
+
+
   // Test /saveScore endpoint
   it('should forward saveScore request to game service', async () => {
     const mockRequestBody = { userId: 'testUserId', score: 150, isVictory: true };
@@ -136,6 +152,21 @@ describe('Gateway Service', () => {
     );
   });
 
+  it('should return error response when game service fails', async () => {
+    // Simula un error en la respuesta de la solicitud al game service
+    axios.get.mockRejectedValue({
+      response: {
+        status: 500,
+        data: { error: 'Game Service Error' },
+      },
+    });
+
+    const response = await request(app).get('/leaderboard');
+    
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Game Service Error' });
+  });
+
   // Test /askllm endpoint
   it('should forward askllm request to the llm service', async () => {
     const response = await request(app)
@@ -145,6 +176,49 @@ describe('Gateway Service', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.answer).toBe('llmanswer');
   });
+
+  it('should return error response when user service fails', async () => {
+    // Simula una respuesta exitosa del game service
+    const leaderboardResponseData = [
+      { userId: '123', score: 1000 },
+      { userId: '456', score: 900 },
+    ];
+    axios.get.mockResolvedValue({
+      data: leaderboardResponseData,
+    });
+
+    // Simula un error en la respuesta de la solicitud al user service
+    axios.post.mockRejectedValue({
+      response: {
+        status: 500,
+        data: { error: 'User Service Error' },
+      },
+    });
+
+    const response = await request(app).get('/leaderboard');
+    
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'User Service Error' });
+  });
+  
+
+  //test for the question
+  it('should return an error response when question service fails', async () => {
+    // Simula una respuesta de error de axios
+    axios.get.mockRejectedValue({
+      response: {
+        status: 500,
+        data: { error: 'Internal Server Error' },
+      },
+    });
+
+    const response = await request(app).get('/question');
+    
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal Server Error' });
+  });
+
+  
 
   it('should forward question to the question service', async () =>{
     const mockResponse = { data: { question: 'https://example.com/flag.png'} };
@@ -186,6 +260,8 @@ describe('Gateway Service', () => {
           correctAnswer: 'United States'
       }
   ];
+
+  
 
   // Mock response for the /fetch-flag-data endpoint
   axios.get.mockImplementation((url) => {
@@ -307,6 +383,76 @@ describe('Gateway Service Error Handling', () => {
     expect(response.statusCode).toBe(500);
     expect(response.body).toEqual({ error: 'Internal Server Error' });
   });
+
+  //test for error llm
+  it('should return an error response when LLM service fails', async () => {
+    // Simula una respuesta de error de axios
+    const requestData = { question: 'What is AI?' };
+    
+    axios.post.mockRejectedValue({
+      response: {
+        status: 500,
+        data: { error: 'Internal Server Error' },
+      },
+    });
+
+    const response = await request(app).post('/askllm').send(requestData);
+    
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal Server Error' });
+  });
+
+  //test error for /check-answer
+  it('should return an error response when question service fails', async () => {
+    // Simula una respuesta de error de axios
+    const requestData = { answer: 'Paris' };
+    
+    axios.post.mockRejectedValue({
+      response: {
+        status: 500,
+        data: { error: 'Internal Server Error' },
+      },
+    });
+
+    const response = await request(app).post('/check-answer').send(requestData);
+    
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal Server Error' });
+  });
+
+  it('should return an error response when question service fails', async () => {
+    // Simula una respuesta de error de axios
+    axios.post.mockRejectedValue({
+      response: {
+        status: 500,
+        data: { error: 'Internal Server Error' },
+      },
+    });
+
+    const response = await request(app).post('/fetch-flag-data');
+    
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal Server Error' });
+  });
+
+  it('should return an error response when game service fails', async () => {
+    // Simula una respuesta de error de axios
+    const requestData = { userId: '12345', score: 1000, isVictory: true };
+    
+    axios.post.mockRejectedValue({
+      response: {
+        status: 500,
+        data: { error: 'Internal Server Error' },
+      },
+    });
+
+    const response = await request(app).post('/saveScore').send(requestData);
+    
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal Server Error' });
+  });
+
+  
 
   
 
