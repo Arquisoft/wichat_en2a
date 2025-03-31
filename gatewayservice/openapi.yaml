@@ -11,6 +11,8 @@ tags:
     description: Health check operations
   - name: Authentication
     description: Authentication operations
+  - name: User
+    description: User operations
   - name: LLM
     description: Interactions with the LLM service
   - name: Questions
@@ -23,7 +25,7 @@ paths:
       tags:
         - Health
       responses:
-        '200':
+        "200":
           description: Service is healthy.
           content:
             application/json:
@@ -33,7 +35,7 @@ paths:
                   status:
                     type: string
                     description: Health status.
-                    example: OK 
+                    example: OK
   /adduser:
     post:
       summary: Add a new user to the database.
@@ -56,7 +58,7 @@ paths:
                   description: User password.
                   example: pass
       responses:
-        '200':
+        "200":
           description: User added successfully.
           content:
             application/json:
@@ -77,11 +79,11 @@ paths:
                   createdAt:
                     type: string
                     description: Creation date.
-                    example: '2024-03-17T20:47:23.935Z'
+                    example: "2024-03-17T20:47:23.935Z"
                   ___v:
                     type: integer
-                    example: '0'                                        
-        '400':
+                    example: "0"
+        "400":
           description: Failed to add user.
           content:
             application/json:
@@ -114,7 +116,7 @@ paths:
                   description: User password.
                   example: pass
       responses:
-        '200':
+        "200":
           description: Login successful. Returns user token, username, and creation date.
           content:
             application/json:
@@ -132,8 +134,8 @@ paths:
                   createdAt:
                     type: string
                     description: Creation date.
-                    example: '2024-03-17T20:47:23.935Z'
-        '401':
+                    example: "2024-03-17T20:47:23.935Z"
+        "401":
           description: Invalid credentials.
           content:
             application/json:
@@ -144,7 +146,7 @@ paths:
                     type: string
                     description: Shows the error info..
                     example: Invalid credentials
-        '500':
+        "500":
           description: Internal server error.
           content:
             application/json:
@@ -163,7 +165,7 @@ paths:
         - LLM
       requestBody:
         required: true
-        content: 
+        content:
           application/json:
             schema:
               type: object
@@ -180,7 +182,7 @@ paths:
                         - gemini
                   description: The model to use for the LLM.
       responses:
-        '200':
+        "200":
           description: LLM response.
           content:
             application/json:
@@ -191,7 +193,7 @@ paths:
                     type: string
                     description: The answer from the LLM.
                     example: To pass the Software Architecture course, you need to complete all assignments and pass the final exam.
-        '400':
+        "400":
           description: Bad request.
           content:
             application/json:
@@ -202,7 +204,7 @@ paths:
                     type: string
                     description: Error information.
                     example: Invalid model specified.
-        '500':
+        "500":
           description: Internal server error.
           content:
             application/json:
@@ -220,7 +222,7 @@ paths:
       tags:
         - Questions
       responses:
-        '200':
+        "200":
           description: The system returns a question.
           content:
             application/json:
@@ -262,7 +264,7 @@ paths:
                     format: date-time
                     description: Timestamp when the question was created.
                     example: "2025-03-18T18:37:03.978Z"
-        '404':
+        "404":
           description: No questions available.
           content:
             application/json:
@@ -273,7 +275,7 @@ paths:
                     type: string
                     description: Error information.
                     example: No questions available.
-        '500':
+        "500":
           description: Internal server error.
           content:
             application/json:
@@ -291,7 +293,7 @@ paths:
       tags:
         - Questions
       responses:
-        '200':
+        "200":
           description: Questions fetched and stored successfully.
           content:
             application/json:
@@ -323,7 +325,7 @@ paths:
                       type: string
                       description: The correct answer to the question.
                       example: "Japan"
-        '500':
+        "500":
           description: Internal server error.
           content:
             application/json:
@@ -333,4 +335,66 @@ paths:
                   error:
                     type: string
                     description: Error information.
+                    example: Internal Server Error
+  /getAllUsernamesWithIds:
+    post:
+      summary: Get all usernames with their IDs.
+      tags:
+        - User
+      operationId: getAllUsernamesWithIds
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              description: List of user IDs.
+              items:
+                type: string
+              example:
+                - "userId1"
+                - "userId2"
+                - "userId3"
+      responses:
+        "200":
+          description: Succesfully retrieved the list of usernames with IDs.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                          description: User ID.
+                          example: "userId1"
+                        username:
+                          type: string
+                          description: Username.
+                          example: "username"
+        "400":
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Bad request.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Something went wrong on the server-side.
                     example: Internal Server Error
