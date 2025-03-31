@@ -6,6 +6,8 @@ dotenv.config();
 
 const app = express();
 const port = 8003;
+let conversation = [];
+let currentQuestion = "";
 
 // Middleware to parse JSON in request body
 app.use(express.json());
@@ -88,6 +90,12 @@ app.post("/ask", async (req, res) => {
     validateRequiredFields(req, ["question", "userMessage", "model", "correctAnswer"]);
 
     const {question, userMessage, model, correctAnswer} = req.body;
+    //if current question is not defined or has changed, reset
+    //we reset the conversation whenever the question changes
+    if (currentQuestion==="" || currentQuestion!==question){
+      currentQuestion=question;
+      conversation=[];
+    }
 
     //What will be send to the LLM
     const prompt = `
@@ -106,6 +114,10 @@ app.post("/ask", async (req, res) => {
     4. If the user asks for a hint or some help, provide them with a useful hint but DO NOT WRITE "${correctAnswer}".
     5. If the user asks something related to the question, answer ONLY IF answering does not give them the answer directly.
     6. NEVER EVER WRITE "${correctAnswer}" ANYWHERE IN YOUR RESPONSE.
+
+    Your conversation with the user up until now was like this:
+    ${getConversation()}
+    Take it into account when answering what the user has just asked.
     `;  
 
     let answer;
@@ -125,12 +137,20 @@ app.post("/ask", async (req, res) => {
       throw new Error("The LLM did not return a valid response.");
     }
 
+    conversation.push({question: userMessage, answer: answer}); //Save the latest response
+
     //Return the message
     res.json({ answer });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
+
+function getConversation() {
+  return conversation
+    .map((conv, index) => `Interaction ${index + 1}:\nUser: ${conv.question}\nAssistant: ${conv.answer}`)
+    .join("\n\n");
+}
 
 app.post("/generateIncorrectOptions", async (req, res) => {
   try {
