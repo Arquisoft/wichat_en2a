@@ -68,10 +68,11 @@ describe('Game Component', () => {
         });
     });
 
-    test('fetches and displays a hint when "?" button is clicked', async () => {
-        const mockHint = { answer: 'This country has bullfighting as a tradition.' };
+    test('displays the user input and the LLM output in chat after sending a prompt', async () => {
+        const mockInput = "Which traditions does this country have?";
+        const mockOutput = { answer: 'This country has bullfighting as a tradition.' };
         setupMockApiResponse('question', mockQuestion);
-        mockAxios.onPost(`${apiEndpoint}/askllm`).reply(200, mockHint);
+        mockAxios.onPost(`${apiEndpoint}/askllm`).reply(200, mockOutput);
 
         renderGameComponent();
 
@@ -79,10 +80,18 @@ describe('Game Component', () => {
             expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
         });
 
-        fireEvent.click(screen.getByRole('button', { name: '?' }));
+        fireEvent.change(screen.getByPlaceholderText(/Type a message.../i), {
+            target: { value: mockInput }
+        });
+
+        fireEvent.click(screen.getByRole('button', { name: /Send/i }));
 
         await waitFor(() => {
-            expect(screen.getByText(mockHint.answer)).toBeInTheDocument();
+            expect(screen.getByText(mockInput)).toBeInTheDocument();
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText(mockOutput.answer)).toBeInTheDocument();
         });
     });
 
