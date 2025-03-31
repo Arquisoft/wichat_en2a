@@ -9,7 +9,7 @@ let app;
 // Test user
 const user = {
   username: 'testuser',
-  password: 'testpassword',
+  password: 'testpassword', //NOSONAR
 };
 
 async function addUser(user) {
@@ -74,7 +74,7 @@ describe('Auth Service', () => {
     // Username too short
     const shortUsername = {
       username: 'te',
-      password: 'testpassword'
+      password: 'testpassword' //NOSONAR
     };
     
     const response = await request(app).post('/login').send(shortUsername);
@@ -85,7 +85,7 @@ describe('Auth Service', () => {
   it('Should handle non-existent user', async () => {
     const nonExistentUser = {
       username: 'nonexistent',
-      password: 'testpassword'
+      password: 'testpassword' //NOSONAR
     };
     
     const response = await request(app).post('/login').send(nonExistentUser);
