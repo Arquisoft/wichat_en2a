@@ -145,17 +145,33 @@ app.post('/saveScore', async (req, res) => {
   }
 });
 
-// Endpoint to add a  score to the loggeduser  (for endgame)
-app.get('/saveActiveUserScore', verifyToken, async (req, res) => {
+//gateway one 
+// Endpoint to save the active user's score (on endgame)
+// En el gateway, modifica para usar /saveScore
+// Gateway endpoint to save active user's score
+app.post('/saveActiveUserScore', verifyToken, async (req, res) => {
   try {
-      const response = await axios.get(`${gameServiceUrl}/saveActiveUserScore`, {
-          headers: { Authorization: req.header('Authorization') }
-      });
+      const { score } = req.body;
+
+      if (score === undefined || isNaN(score)) {
+          return res.status(400).json({ error: "Invalid or missing score" });
+      }
+
+      const userId = req.userId; // Extracted from token
+      const isVictory = score >= 700; // Determine victory condition
+
+      // Forward request to /saveScore in game service
+      const response = await axios.post(`${gameServiceUrl}/saveScore`,
+          { userId, score, isVictory }
+      );
+
       res.json(response.data);
   } catch (error) {
-      res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal Server Error' });
+      console.error("Error in Gateway saving score:", error.response?.data || error.message);
+      res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
   }
 });
+
 
 // En tu archivo de gateway
 app.get('/scoresByUser/:userId', async (req, res) => {

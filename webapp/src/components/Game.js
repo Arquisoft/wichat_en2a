@@ -22,6 +22,8 @@ const Game = () => {
 
     const MAX_QUESTIONS = 10;
     const [questionCount, setQuestionCount] = useState(0);
+    // Add score tracking
+    const [score, setScore] = useState(0);
 
     const [hint, setHint] = useState(null);
 
@@ -34,10 +36,28 @@ const Game = () => {
     };
 
     const navigate = useNavigate();
+    
+    // Function to handle end of game and save score
+    const endGame = async () => {
+        try {
+            setLoading(true);
+            await saveScore();
+            navigate('/game-over');
+        } catch (error) {
+            console.error("Failed to save score:", error);
+            setError("Failed to save your score, but game is complete.");
+            // Still navigate to game-over even if score saving fails
+            setTimeout(() => navigate('/game-over'), 2000);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
     // Fetch question from the API
     const fetchQuestion = async () => {
         if (questionCount >= MAX_QUESTIONS) {
-            navigate('/game-over');  // Redirige cuando llega a 10 preguntas
+            // End game and save score
+            endGame();
             return;
         }
 
@@ -64,6 +84,29 @@ const Game = () => {
         }
     };
 
+    // New function to save the score
+    const saveScore = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                throw new Error('No authentication token found');
+            }
+    
+            const response = await axios.post(`${apiEndpoint}/saveActiveUserScore`, 
+                { score },  // Send as JSON body
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+    
+            console.log('Score saved successfully:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error saving score:', error);
+            setError('Failed to save your score');
+            throw error;
+        }
+    };
+
+
     const retrieveHint = async () => {
         try {
             const response = await axios.post(`${apiEndpoint}/askllm`, {
@@ -87,6 +130,11 @@ const Game = () => {
             });
 
             setIsCorrect(response.data.isCorrect);
+
+            // Update score if answer is correct
+            if (response.data.isCorrect) {
+                setScore(prevScore => prevScore + 100);
+            }
 
             if (!response.data.isCorrect) {
                 setCorrectAnswer(question.correctAnswer);
@@ -142,6 +190,14 @@ const Game = () => {
                        sx={{textAlign: 'center', mt: '0.5rem', minHeight: '85vh', width: '100%', px: '1rem'}}>
                 <Typography component="h1" variant="h4" sx={{mb: '1rem'}}>
                     Quiz Game!
+                </Typography>
+                
+                {/* Score Display */}
+                <Typography variant="h6" sx={{ mb: '0.5rem' }}>
+                    Score: {score} / {MAX_QUESTIONS * 100}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: '1rem' }}>
+                    Question {questionCount} of {MAX_QUESTIONS}
                 </Typography>
 
                 {/* Timer */}

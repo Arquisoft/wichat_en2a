@@ -51,21 +51,26 @@ app.post('/saveScore', async (req, res) => {
 });
 
 // Endpoint to save game score for logged-in user
+//  Game Service
 app.post('/saveActiveUserScore', verifyToken, async (req, res) => {
     try {
-        const { score, isVictory } = req.body;
-        const userId = req.userId; // Get user ID from JWT
+        const userId = req.user.userId; // Extract userId from the token
+        const { score } = req.body; // Get score from the request body
 
-        const newScore = new Score({
-            userId,
-            score,
-            isVictory,
-        });
+        if (score === undefined || isNaN(score)) {
+            return res.status(400).json({ error: "Invalid or missing score" });
+        }
 
+        const isVictory = score >= 700; // 70% of 1000
+
+        // Create and save score
+        const newScore = new Score({ userId, score, isVictory });
         await newScore.save();
-        res.json(newScore);
+
+        res.json({ success: true, score: newScore });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error("Error saving score:", error);
+        res.status(500).json({ error: "Failed to save score" });
     }
 });
 
