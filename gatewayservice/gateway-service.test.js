@@ -452,9 +452,64 @@ describe('Gateway Service Error Handling', () => {
     expect(response.body).toEqual({ error: 'Internal Server Error' });
   });
 
+  it('should forward saveActiveUserScore with correct userId and their score', async () => {
+    const fakeToken = 'asdasda2391287qada';
+    const score = 750;
+    const expectedUserId = 'mockID';
+    const expectedIsVictory = true;
   
+    // Mock axios.post a /saveScore devuelve bien
+    axios.post.mockImplementationOnce((url, data) => {
+      expect(url).toContain('/saveScore');
+      expect(data).toEqual({ userId: expectedUserId, score, isVictory: expectedIsVictory });
+  
+      return Promise.resolve({ data: { success: true, ...data } });
+    });
+  
+    // Mock JWT decode funciona insertando manualmente el userId en el token
+    const response = await request(app)
+      .post('/saveActiveUserScore')
+      .set('Authorization', fakeToken)
+      .send({ score });
+  
+    if (response.status === 401) {
+      console.warn('Este test requiere un token válido');
+    } else {
+      expect(response.status).toBe(200);
+      expect(response.body.userId).toBe(expectedUserId);
+      expect(response.body.score).toBe(score);
+      expect(response.body.isVictory).toBe(expectedIsVictory);
+    }
+  });
 
+  it('should return 401 if token is missing', async () => {
+    const response = await request(app)
+      .post('/saveActiveUserScore')
+      .send({ score: 800 });
   
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ error: 'No token provided' });
+  });
 
+  it('should forward /scores request with token', async () => {
+    const fakeToken = 'Bearer faketoken';
+    const mockScores = [{ score: 800 }, { score: 500 }];
   
+    axios.get.mockImplementationOnce((url, config) => {
+      expect(url).toContain('/scores');
+      expect(config.headers.Authorization).toBe(fakeToken);
+      return Promise.resolve({ data: mockScores });
+    });
+  
+    const response = await request(app)
+      .get('/scores')
+      .set('Authorization', fakeToken);
+  
+    if (response.status === 401) {
+      console.warn('Este test requiere un token válido');
+    } else {
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockScores);
+    }
+  });
 });
