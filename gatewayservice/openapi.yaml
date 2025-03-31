@@ -398,3 +398,47 @@ paths:
                     type: string
                     description: Something went wrong on the server-side.
                     example: Internal Server Error
+  /users:
+    get:
+      summary: Get all users from the database.
+      operationId: getAllUsers
+      tags:
+        - User
+      responses:
+        "200":
+          description: Successfully retrieved the list of users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: User ID.
+                      example: "userId1"
+                    username:
+                      type: string
+                      description: Username.
+                      example: "username"
+                    profilePicture:
+                      type: string
+                      description: URL of the user's profile picture.
+                      example: "http://example.com/profile.jpg"
+                    createdAt:
+                      type: string
+                      format: date-time
+                      description: Creation date.
+                      example: "2024-03-17T20:47:23.935Z"
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
