@@ -50,6 +50,25 @@ app.post('/saveScore', async (req, res) => {
     }
 });
 
+// Endpoint to save game score for logged-in user
+app.post('/saveActiveUserScore', verifyToken, async (req, res) => {
+    try {
+        const { score, isVictory } = req.body;
+        const userId = req.userId; // Get user ID from JWT
+
+        const newScore = new Score({
+            userId,
+            score,
+            isVictory,
+        });
+
+        await newScore.save();
+        res.json(newScore);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
 // endpoint to update a score
 app.put('/updateScore', async (req, res) => {
     try {

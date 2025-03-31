@@ -145,6 +145,18 @@ app.post('/saveScore', async (req, res) => {
   }
 });
 
+// Endpoint to add a  score to the loggeduser  (for endgame)
+app.get('/saveActiveUserScore', verifyToken, async (req, res) => {
+  try {
+      const response = await axios.get(`${gameServiceUrl}/saveActiveUserScore`, {
+          headers: { Authorization: req.header('Authorization') }
+      });
+      res.json(response.data);
+  } catch (error) {
+      res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal Server Error' });
+  }
+});
+
 // Endpoint to get loggeduser scores
 app.get('/scores', verifyToken, async (req, res) => {
   try {
