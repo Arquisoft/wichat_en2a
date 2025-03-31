@@ -12,7 +12,7 @@ describe("/ask endpoint with Gemini", () => {
   it("should return a clue for the given question using gemini model", async () => {
     const response = await request(server)
       .post("/ask")
-      .send({ question: "What is the capital of France?", model: "gemini" });
+      .send({ question: "What is the capital of France?", userMessage: "Where is it roughly located?", model: "gemini", correctAnswer: "Paris" });
 
     expect(response.status).toBe(200);
     expect(response.body.answer).toBe("llmAnswer");

@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const Score = require('./score-model')
+const jwt = require('jsonwebtoken');
+const Score = require('./score-model');
+
 const app = express();
 
 app.disable('x-powered-by');
@@ -12,6 +14,23 @@ app.use(express.json());
 // Connect to MongoDB
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/gamedb';
 mongoose.connect(mongoUri);
+
+// Middleware to verify JWT token
+const verifyToken = (req, res, next) => {
+    const bearerHeader = req.headers['authorization'];
+    if (!bearerHeader) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+  
+    const token = bearerHeader.split(' ')[1];
+    try {
+      const decoded = jwt.verify(token, 'your-secret-key');
+      req.userId = decoded.userId;
+      next();
+    } catch (error) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+  };
 
 // endpoitn to save game score
 app.post('/saveScore', async (req, res) => {
@@ -28,6 +47,30 @@ app.post('/saveScore', async (req, res) => {
         res.json(newScore);
     } catch (error) {
         res.status(400).json({ error: error.message });
+    }
+});
+
+// Endpoint to save game score for logged-in user
+//  Game Service
+app.post('/saveActiveUserScore', verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.userId; // Extract userId from the token
+        const { score } = req.body; // Get score from the request body
+
+        if (score === undefined || isNaN(score)) {
+            return res.status(400).json({ error: "Invalid or missing score" });
+        }
+
+        const isVictory = score >= 700; // 70% of 1000
+
+        // Create and save score
+        const newScore = new Score({ userId, score, isVictory });
+        await newScore.save();
+
+        res.json({ success: true, score: newScore });
+    } catch (error) {
+        console.error("Error saving score:", error);
+        res.status(500).json({ error: "Failed to save score" });
     }
 });
 
@@ -70,6 +113,19 @@ app.get('/scoresByUser/:userId', async (req, res) => {
         res.json(scores);
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// Endpoint using authentification to get current user's scores
+app.get('/scores', verifyToken, async (req, res) => {
+    try {
+      const scores = await Score.find({ userId: req.userId });
+      if (scores.length === 0) {
+        return res.status(404).json({ error: 'No scores found for this user' });
+      }
+      res.json(scores);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 

@@ -42,7 +42,7 @@ const GameOver = () => {
                     </Button>
                     <Button variant="contained"
                             sx={{ backgroundColor: '#FFD700', color: 'black' }}
-                            onClick={() => navigate('/scoresByUser/')}>
+                            onClick={() => navigate('/scores')}>
                         See my scores
                     </Button>
                 </Box>

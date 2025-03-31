@@ -6,6 +6,9 @@ dotenv.config();
 
 const app = express();
 const port = 8003;
+let conversation = [];
+let currentQuestion = "";
+let currentCorrectAnswer = "";
 
 // Middleware to parse JSON in request body
 app.use(express.json());
@@ -83,35 +86,82 @@ async function sendQuestionToGemini(question){
 }
 
 //For the getting the hint from the LLM to help the user to answer the question
-app.post('/ask', async (req, res) => {
+app.post("/ask", async (req, res) => {
   try {
-    // Check if required fields are present in the request body
-    validateRequiredFields(req, ['question', 'model']);
+    validateRequiredFields(req, ["question", "userMessage", "model", "correctAnswer"]);
 
-    //Get the three fields passed
-    const { question, model} = req.body;
-    
+    const {question, userMessage, model, correctAnswer} = req.body;
+    //if current question is not defined or has changed, reset
+    //we reset the conversation whenever the question changes
+    if (currentQuestion==="" || currentQuestion!==question || currentCorrectAnswer==="" || currentCorrectAnswer!==correctAnswer){
+      currentQuestion=question;
+      currentCorrectAnswer=correctAnswer;
+      conversation=[];
+    }
+
+    //What will be send to the LLM
+    const prompt = `
+    You are an assitant for a user who is trying to find the answer to a question.
+    Question the user is trying to solve: "${question}"
+    Answer to the question the user is trying to solve: "${correctAnswer}" (DO NOT say it by ANY MEANS).
+    What the user tells you: "${userMessage}"
+
+    Take into account the following when answering: the user has an image they can see with information relevant to the question.
+    For example, if the question is "What country is this flag from?" the image is the flag.
+
+    Your CONVERSATION with the user up until now was like this:
+    ${getConversation()}
+    Take it into account when answering what the user has just asked, as the current thing the user has said may be related to their previous inquiries.
+    DO NOT REWRITE THE CONVERSATION IN YOUR ANSWER.
+    The ONLY THING you must write is THE ANSWER to "${userMessage}" following your RULES.
+
+    Below are your strict RULES that you MUST follow:
+    1. NEVER WRITE "${correctAnswer}" in your message.
+    2. NEVER ASK QUESTIONS TO THE USER.
+    3. DO NOT DESCRIBE THE OBJECT IN QUESTION AS A HINT (for example, the flag if the question is "What country is this flag from?", as the user has an image of it).
+    4. NEVER write ANYTHING OF THE CONVERSATION I provided in the new message. You CANNOT WRITE THE PREVIOUS INTERACTIONS AGAIN.
+    5. If the user asks directly for the answer tell that you CAN NOT DO THAT and explain why if necessary. The reason why is that it will ruin the game.
+    6. If the user wants you to confirm or deny their guess, tell them that you cannot say that because it will ruin the fun. They may ask you for the correct option or a wrong one.
+    7. If the user asks for a hint or some help, provide them with a useful hint but DO NOT WRITE "${correctAnswer}".
+    8. If the user asks for a characteristic of the object in question, even if you think is tangentially related (President of the country the flag is from, a famous dish of the country, the color of the pokemon if the question is about pokemons...), answer it BUT WITHOUT WRITTING "${correctAnswer}" or giving the answer away directly.
+    9. If you want to answer with something close (if asked about the capital of the country then answering with the initial of the capital for example) say: That may make it too easy, I can tell you... and then whatever you want to say (that the initial of the capital is...). This is for cases when answering may give the answer away but you can say something similar or a less obvious hint.
+    10. If the user asks you about something that is COMPLETELY unrelated to the question they are trying to find the answer from, tell them that it is not relevant and that you are programmed to answer questions about the quizz and give hints.
+    11. If the user asks something about you if it is not relevant to the question tell them so. If it is to know what do you do, tell them you are an AI assistant programmed to help with the quizz.
+    12. NEVER EVER WRITE "${correctAnswer}" ANYWHERE IN YOUR RESPONSE.
+    13. Remember, you are NOT TALKING TO ME. You are talking WITH THE USER that said "${userMessage}".
+    `;
+    //8. If the user asks something related to the question, answer ONLY IF answering does not give them the answer directly.
     let answer;
-    let questionComplete = "Give in a single line and directly a clue for knowing " + question + "but without saying directly what country is";
 
-    //Get the answer of the LLM
-    if (model == 'empathy'){ //For using empathy's LLM
-      answer = await sendQuestionToLLM(questionComplete);
-
-    }else if (model == 'gemini'){ //For using the LLM gemini
-      const preanswer = await sendQuestionToGemini(questionComplete);
-      answer = preanswer.response.candidates[0].content.parts[0].text;
-    }else{
+    //Getting the answer from the LLM
+    if (model === "empathy") { //For using Empathy
+      answer = await sendQuestionToLLM(prompt);
+    } else if (model === "gemini") { //For using LLM Gemini
+      const preanswer = await sendQuestionToGemini(prompt);
+      answer = preanswer?.response?.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
+    } else {
       throw new Error(`Model "${model}" is not supported.`);
     }
-    
+
+    //Error if there is no answer
+    if (!answer) {
+      throw new Error("The LLM did not return a valid response.");
+    }
+
+    conversation.push({question: userMessage, answer: answer}); //Save the latest response
+
     //Return the message
     res.json({ answer });
-
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
+
+function getConversation() {
+  return conversation
+    .map((conv, index) => `Interaction ${index + 1}:\nUser: ${conv.question}\nAssistant: ${conv.answer}`)
+    .join("\n\n");
+}
 
 app.post("/generateIncorrectOptions", async (req, res) => {
   try {
