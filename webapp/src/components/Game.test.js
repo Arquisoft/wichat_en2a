@@ -68,7 +68,7 @@ describe('Game Component', () => {
         });
     });
 
-    test('fetches and displays a hint when "?" button is clicked', async () => {
+    test('displays the user input and the LLM output in chat after sending a prompt', async () => {
         const mockInput = "Which traditions does this country have?";
         const mockOutput = { answer: 'This country has bullfighting as a tradition.' };
         setupMockApiResponse('question', mockQuestion);
