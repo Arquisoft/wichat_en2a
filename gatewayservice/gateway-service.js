@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const promBundle = require('express-prom-bundle');
 
 //libraries required for OpenAPI-Swagger
@@ -26,6 +27,22 @@ app.use(express.json());
 //Prometheus configuration
 const metricsMiddleware = promBundle({includeMethod: true});
 app.use(metricsMiddleware);
+
+// Middleware to verify token
+function verifyToken(req, res, next) {
+  const token = req.header('Authorization');
+  if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+  }
+  
+  try {
+      const decoded = jwt.verify(token.replace('Bearer ', ''), 'your-secret-key');
+      req.userId = decoded.userId;
+      next();
+  } catch (error) {
+      return res.status(401).json({ error: 'Invalid token' });
+  }
+}
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -125,6 +142,59 @@ app.post('/saveScore', async (req, res) => {
     res.json(checkAnswerResponse.data);
   } catch (error) {
       res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+//gateway one 
+// Endpoint to save the active user's score (on endgame)
+// En el gateway, modifica para usar /saveScore
+// Gateway endpoint to save active user's score
+app.post('/saveActiveUserScore', verifyToken, async (req, res) => {
+  try {
+      const { score } = req.body;
+
+      if (score === undefined || isNaN(score)) {
+          return res.status(400).json({ error: "Invalid or missing score" });
+      }
+
+      const userId = req.userId; // Extracted from token
+      const isVictory = score >= 700; // Determine victory condition
+
+      // Forward request to /saveScore in game service
+      const response = await axios.post(`${gameServiceUrl}/saveScore`,
+          { userId, score, isVictory }
+      );
+
+      res.json(response.data);
+  } catch (error) {
+      console.error("Error in Gateway saving score:", error.response?.data || error.message);
+      res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+
+// En tu archivo de gateway
+app.get('/scoresByUser/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const response = await axios.get(`${gameServiceUrl}/scoresByUser/${userId}`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({ 
+      error: error.response?.data?.error || 'Internal Server Error' 
+    });
+  }
+});
+
+// Endpoint to get loggeduser scores
+app.get('/scores', verifyToken, async (req, res) => {
+  try {
+      const response = await axios.get(`${gameServiceUrl}/scores`, {
+          headers: { Authorization: req.header('Authorization') }
+      });
+      res.json(response.data);
+  } catch (error) {
+      res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal Server Error' });
   }
 });
 

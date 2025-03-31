@@ -22,9 +22,13 @@ const Game = () => {
 
     const MAX_QUESTIONS = 10;
     const [questionCount, setQuestionCount] = useState(0);
+  
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [loadingMessage, setLoadingMessage] = useState(false);
+    const [score, setScore] = useState(0);
+
+    const [hint, setHint] = useState(null);
 
     const COLORS = {
         primary: '#6A5ACD',
@@ -38,8 +42,7 @@ const Game = () => {
     // Fetch question from the API
     const fetchQuestion = async () => {
         if (questionCount >= MAX_QUESTIONS) {
-            navigate('/game-over');  // Redirige cuando llega a 10 preguntas
-            return;
+            return endGame();
         }
 
         try {
@@ -62,6 +65,25 @@ const Game = () => {
             setLoading(false);
             setAnswerSelected(false);
         }
+    };
+
+    const saveScore = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) throw new Error('No authentication token found');
+            await axios.post(`${apiEndpoint}/saveActiveUserScore`, { score }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+        } catch (error) {
+            setError('Failed to save your score');
+        }
+    };
+
+    const endGame = async () => {
+        setLoading(true);
+        await saveScore();
+        navigate('/game-over');
+        setLoading(false);
     };
 
     const retrieveHint = async () => {
@@ -96,6 +118,8 @@ const Game = () => {
             });
 
             setIsCorrect(response.data.isCorrect);
+
+            if (response.data.isCorrect) setScore(prevScore => prevScore + 100);
 
             if (!response.data.isCorrect) {
                 setCorrectAnswer(question.correctAnswer);
@@ -152,6 +176,7 @@ const Game = () => {
                 <Typography component="h1" variant="h4" sx={{mb: '1rem'}}>
                     Quiz Game!
                 </Typography>
+                <Typography variant="h6">Score: {score} / {MAX_QUESTIONS * 100}</Typography>
 
                 {/* Timer */}
                 <Timer key={timerKey} duration={40} onTimeUp={handleTimeUp} answerSelected={answerSelected} />

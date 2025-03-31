@@ -4,6 +4,7 @@ import AddUser from './components/AddUser';
 import Login from './components/Login';
 import Home from './components/Home';
 import Game from './components/Game';
+import Scores from './components/Scores';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -53,6 +54,7 @@ function App() {
                 <Route path="/home" element={<Home/>}/>
                 <Route path="/game" element={<Game/>}/>
                 <Route path="/leaderboard" element={<Leaderboard/>}/>
+                <Route path="/scores" element={<Scores/>}/>
                 <Route path="/game-over" element={<GameOver/>} />
             </Routes>
         </Container>
