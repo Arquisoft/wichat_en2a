@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose'); 
 
+const Score = require('./score-model');
+
 const User = require('./user-model');
 
 let mongoServer;
@@ -237,6 +239,87 @@ describe('User Service', () => {
   });
 
 });
+
+describe('Score Model Test', () => {
+  it('should create a valid Score object', async () => {
+    const scoreData = {
+      userId: new mongoose.Types.ObjectId(),  // Generar un ObjectId válido
+      score: 100,
+      isVictory: true
+    };
+
+    const score = new Score(scoreData);
+    const savedScore = await score.save();
+
+    // Verificar que el objeto guardado tiene las propiedades correctas
+    expect(savedScore._id).toBeDefined();
+    expect(savedScore.userId.toString()).toEqual(scoreData.userId.toString());
+    expect(savedScore.score).toBe(scoreData.score);
+    expect(savedScore.isVictory).toBe(scoreData.isVictory);
+  });
+
+  it('should throw an error if required fields are missing', async () => {
+    const invalidScoreData = {
+      score: 100,  // Falta el campo userId
+      isVictory: true
+    };
+
+    const score = new Score(invalidScoreData);
+    
+    try {
+      await score.save();
+    } catch (err) {
+      expect(err.errors.userId).toBeDefined();  // Comprobar que el error es por la falta de userId
+    }
+  });
+});
+
+describe('User Model', () => {
+  it('should create a valid user', async () => {
+    const userData = {
+      username: 'testuser',
+      //Es solo para servicio de tests
+      password: 'password123', //NOSONAR
+    };
+
+    const user = new User(userData);
+    await user.save();
+
+    expect(user._id).toBeDefined();
+    expect(user.username).toBe(userData.username);
+    expect(user.password).toBe(userData.password);
+    expect(user.profilePicture).toBeNull();
+    expect(user.createdAt).toBeDefined();
+  });
+
+  it('should set the default value of profilePicture to null', async () => {
+    const userData = {
+      username: 'testuser',
+      //Es solo para servicio de tests
+      password: 'password123', //NOSONAR
+    };
+
+    const user = new User(userData);
+    await user.save();
+
+    expect(user.profilePicture).toBeNull();
+  });
+
+  it('should create a user with a default createdAt date', async () => {
+    const userData = {
+      username: 'testuser',
+      //Es solo para servicio de tests
+      password: 'password123', //NOSONAR
+    };
+
+    const user = new User(userData);
+    await user.save();
+
+    expect(user.createdAt).toBeDefined();
+    expect(user.createdAt instanceof Date).toBe(true);
+  });
+});
+
 
 
 
