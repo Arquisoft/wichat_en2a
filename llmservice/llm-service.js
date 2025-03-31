@@ -107,19 +107,26 @@ app.post("/ask", async (req, res) => {
     Take into account the following when answering: the user has an image they can see with information relevant to the question.
     For example, if the question is "What country is this flag from?" the image is the flag.
 
+    Your CONVERSATION with the user up until now was like this:
+    ${getConversation()}
+    Take it into account when answering what the user has just asked, as the current thing the user has said may be related to their previous inquiries.
+    DO NOT REWRITE THE CONVERSATION IN YOUR ANSWER.
+    The ONLY THING you must write is THE ANSWER to "${userMessage}" following your RULES.
+
     Below are your strict RULES that you MUST follow:
     1. NEVER WRITE "${correctAnswer}" in your message.
     2. NEVER ASK QUESTIONS TO THE USER.
-    3. If the user asks directly for the answer tell: "My apologies, I cannot give you the answer directly".
-    4. If the user asks for a hint or some help, provide them with a useful hint but DO NOT WRITE "${correctAnswer}".
-    5. If the user asks something related to the question, answer ONLY IF answering does not give them the answer directly.
-    6. NEVER EVER WRITE "${correctAnswer}" ANYWHERE IN YOUR RESPONSE.
-
-    Your conversation with the user up until now was like this:
-    ${getConversation()}
-    Take it into account when answering what the user has just asked.
-    `;  
-
+    3. DO NOT DESCRIBE THE OBJECT IN QUESTION AS A HINT (for example, the flag if the question is "What country is this flag from?", as the user has an image of it).
+    4. NEVER write ANYTHING OF THE CONVERSATION I provided in the new message. You CANNOT WRITE THE PREVIOUS INTERACTIONS AGAIN.
+    5. If the user asks directly for the answer tell that you CAN NOT DO THAT and explain why if necessary. The reason why is that it will ruin the game.
+    6. If the user wants you to confirm or deny their guess, tell them that you cannot say that because it will ruin the fun. They may ask you for the correct option or a wrong one.
+    7. If the user asks for a hint or some help, provide them with a useful hint but DO NOT WRITE "${correctAnswer}".
+    8. If the user asks for a characteristic of the object in question, even if you think is tangentially related (President of the country the flag is from, a famous dish of the country, the color of the pokemon if the question is about pokemons...), answer it BUT WITHOUT WRITTING "${correctAnswer}" or giving the answer directly.
+    9. If the user asks you about something that is COMPLETELY unrelated to the question they are trying to find the answer from, tell them that it is not relevant and that you are programmed to answer questions about the quizz and give hints.
+    10. NEVER EVER WRITE "${correctAnswer}" ANYWHERE IN YOUR RESPONSE.
+    11. Remember, you are NOT TALKING TO ME. You are talking WITH THE USER that said "${userMessage}".
+    `;
+    //8. If the user asks something related to the question, answer ONLY IF answering does not give them the answer directly.
     let answer;
 
     //Getting the answer from the LLM
