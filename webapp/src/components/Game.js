@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import {Container, Typography, Button, Box, CircularProgress} from '@mui/material';
+import {Container, Typography, Button, Box, CircularProgress, TextField, Paper} from '@mui/material';
 import Navbar from './Navbar';
 import './game-styles.css';
 import {useNavigate} from 'react-router-dom';
@@ -22,6 +22,10 @@ const Game = () => {
 
     const MAX_QUESTIONS = 10;
     const [questionCount, setQuestionCount] = useState(0);
+  
+    const [messages, setMessages] = useState([]);
+    const [input, setInput] = useState('');
+    const [loadingMessage, setLoadingMessage] = useState(false);
     const [score, setScore] = useState(0);
 
     const [hint, setHint] = useState(null);
@@ -42,7 +46,6 @@ const Game = () => {
         }
 
         try {
-            setHint(null);
             console.log("Fetching question...");
             let response = await axios.get(`${apiEndpoint}/question`);
             //if for some reason a problem occurred and the questions collection is empty, fetch
@@ -84,16 +87,25 @@ const Game = () => {
     };
 
     const retrieveHint = async () => {
+        if (!input.trim()) return;
+        const newMessages = [...messages, { text: input, sender: 'user' }];
+        setMessages(newMessages);
+        const inputOld = input;
+        setInput('');
+        setLoadingMessage(true);
+
         try {
             const response = await axios.post(`${apiEndpoint}/askllm`, {
-                question: question.correctAnswer,
-                model: "empathy"
+                question: "Which country is this flag from?", //hardcoded for now until we get more question types
+                userMessage: inputOld,
+                model: "gemini",
+                correctAnswer: question.correctAnswer
             });
-            console.log('Hint received:', response.data.answer);
-            setHint(response.data.answer);
+            setMessages([...newMessages, { text: response.data.answer, sender: 'bot' }]);
         } catch (error) {
-            setError(error.response?.data?.error || 'Fetching hint failed');
-            console.error('Error fetching hint:', error);
+            setMessages([...newMessages, { text: 'An error occurred, please try again.', sender: 'bot' }]);
+        } finally {
+            setLoadingMessage(false);
         }
     };
 
@@ -244,11 +256,46 @@ const Game = () => {
                             p: '1.5rem',
                             border: '1px solid gray',
                             borderRadius: '0.5rem',
-                            width: '100%'
+                            width: '100%',
+                            overflow: 'hidden'
                         }}>
-                            <Typography variant="h6" sx={{flex: 4}}>{hint || "Information hint here"}</Typography>
-                            <Button variant="contained" sx={{alignSelf: 'center', py: '1.5rem', fontSize: '1.5rem'}}
-                                    onClick={retrieveHint}>?</Button>
+                            <Paper sx={{ maxHeight: '30vh', overflowY: 'auto', p: '1rem', border: '1px solid gray' }}>
+                                {messages.map((msg, index) => (
+                                    <Box key={index} sx={{ 
+                                        textAlign: msg.sender === 'user' ? 'right' : 'left', 
+                                        mb: '0.5rem'
+                                    }}>
+                                        <Typography 
+                                            variant="body1" 
+                                            sx={{ 
+                                                display: 'inline-block',
+                                                p: '0.5rem',
+                                                borderRadius: '0.5rem',
+                                                bgcolor: msg.sender === 'user' ? 'primary.light' : 'secondary.light'
+                                            }}>
+                                            {msg.text}
+                                        </Typography>
+                                    </Box>
+                                ))}
+                            </Paper>
+
+                            <Box sx={{ display: 'flex', mt: '1rem' }}>
+                                <TextField 
+                                    fullWidth 
+                                    variant="outlined" 
+                                    placeholder="Type a message..."
+                                    value={input} 
+                                    onChange={(e) => setInput(e.target.value)}
+                                />
+                                <Button 
+                                    variant="contained" 
+                                    sx={{ ml: '1rem' }}
+                                    onClick={retrieveHint} 
+                                    disabled={loadingMessage}
+                                >
+                                    Send
+                                </Button>
+                            </Box>
                         </Box>
                     </Box>
 
@@ -263,7 +310,8 @@ const Game = () => {
                         width: '100%',
                         height: 'auto',
                         minHeight: '40vh',
-                        maxHeight: '60vh'
+                        maxHeight: '60vh',
+                        overflow: 'hidden'
                     }}>
                         {question?.imageUrl ? (
                             <img src={question.imageUrl} alt="Question related"
@@ -288,6 +336,8 @@ const Game = () => {
                             setCorrectAnswer(null); // Reseteamos la respuesta correcta
                             setIsCorrect(null);     // Reseteamos el estado de corrección
                             setAnswerSelected(false);
+                            setMessages([]);
+                            setInput("");
                             setTimeout(() => fetchQuestion(), 100); // Cargamos nueva pregunta
                         }}
                         sx={{ ml: '1rem' }}
