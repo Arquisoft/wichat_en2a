@@ -1,10 +1,10 @@
 import React from 'react';
-import {render, screen, fireEvent, waitFor, act} from '@testing-library/react';
+import {render, screen, fireEvent, waitFor} from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Game from './Game';
+import GameOver from './GameOver';
 import { MemoryRouter } from 'react-router-dom';
-import Timer from "./Timer";
 
 const mockAxios = new MockAdapter(axios);
 const apiEndpoint = 'http://localhost:8000';
@@ -191,4 +191,70 @@ describe('Game Component', () => {
         });
     });
 
+    test('increments score correctly when correct answer is selected', async () => {
+        setupMockApiResponse('question', mockQuestion);
+        mockAxios.onPost(`${apiEndpoint}/check-answer`).reply(200, { isCorrect: true });
+
+        renderGameComponent();
+
+        await waitFor(() => {
+            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+        });
+
+        const scoreElement = screen.getByText(/Score: 0/i);
+        expect(scoreElement).toBeInTheDocument();
+
+        const answerButton = screen.getByRole('button', { name: 'Spain' });
+        fireEvent.click(answerButton);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Score: 100/i)).toBeInTheDocument();
+        });
+    });
+
+    test('does not increment score when incorrect answer is selected', async () => {
+        setupMockApiResponse('question', mockQuestion);
+        mockAxios.onPost(`${apiEndpoint}/check-answer`).reply(200, { isCorrect: false });
+
+        renderGameComponent();
+
+        await waitFor(() => {
+            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+        });
+
+        const scoreElement = screen.getByText(/Score: 0/i);
+        expect(scoreElement).toBeInTheDocument();
+
+        const answerButton = screen.getByRole('button', { name: 'France' });
+        fireEvent.click(answerButton);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Score: 0/i)).toBeInTheDocument();
+        });
+    });
+
+    test('save scores when finish all questions', async () => {
+        setupMockApiResponse('question', mockQuestion);
+        mockAxios.onPost(`${apiEndpoint}/check-answer`).reply(200, { isCorrect: false });
+
+        renderGameComponent();
+
+        for (let i = 0; i <= MAX_QUESTIONS; i++){
+            await waitFor(() => {
+                expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            });
+            const answerButton = screen.getByRole('button', { name: 'Spain' });
+            fireEvent.click(answerButton);
+        }
+
+        render(
+            <MemoryRouter>
+                <GameOver onNavigate={mockOnNavigate} />
+            </MemoryRouter>
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText(/Game Over!/i)).toBeInTheDocument();
+        });
+    });
 });
