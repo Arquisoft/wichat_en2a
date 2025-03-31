@@ -54,7 +54,7 @@ app.post('/saveScore', async (req, res) => {
 //  Game Service
 app.post('/saveActiveUserScore', verifyToken, async (req, res) => {
     try {
-        const userId = req.user.userId; // Extract userId from the token
+        const userId = req.userId; // Extract userId from the token
         const { score } = req.body; // Get score from the request body
 
         if (score === undefined || isNaN(score)) {
