@@ -21,10 +21,9 @@ const scoreSchema = new Schema({
     }
 });
 
-// indexing 
-scoreSchema.index({ userId: 1 }); //Ascending order for user ids
+// Indexing
+scoreSchema.index({ userId: 1 }); // Ascending order for user ids
 scoreSchema.index({ score: -1 }); // Descending for high scores
 
 const Score = mongoose.model('Score', scoreSchema);
-
 module.exports = Score;
