@@ -13,6 +13,8 @@ tags:
     description: Authentication operations
   - name: User
     description: User operations
+  - name: Game
+    description: Game operations
   - name: LLM
     description: Interactions with the LLM service
   - name: Questions
@@ -502,7 +504,7 @@ paths:
       summary: Save the user's score.
       operationId: saveScore
       tags:
-        - Questions
+        - Game
       requestBody:
         required: true
         content:
@@ -558,3 +560,90 @@ paths:
                     type: string
                     description: Error information.
                     example: Invalid user ID or score.
+  /leaderboard:
+    get:
+      summary: Get the leaderboard data.
+      operationId: getLeaderboard
+      tags:
+        - Game
+      parameters:
+        - name: sortBy
+          in: query
+          description: Sort the leaderboard by score or date.
+          required: false
+          schema:
+            type: string
+            enum:
+              - totalScore
+              - winRate
+              - gamesPlayed
+            default: totalScore
+        - name: sortOrder
+          description: Sort order for the leaderboard.
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+      responses:
+        "200":
+          description: Successfully retrieved the leaderboard data.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    userId:
+                      type: string
+                      description: The unique user ID.
+                      example: "userId1"
+                    totalScore:
+                      type: integer
+                      description: The total score of the user.
+                      example: 100
+                    winRate:
+                      type: number
+                      format: float
+                      description: The win rate of the user (0 to 1).
+                      example: 0.75
+                    gamesPlayed:
+                      type: integer
+                      description: The number of games played by the user.
+                      example: 20
+                    username:
+                      type: string
+                      description: The username of the user, enriched from the user service.
+                      example: "player123"
+        "400":
+          description: Bad Request - Invalid query parameters.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating the invalid parameters.
+                  validFields:
+                    type: array
+                    items:
+                      type: string
+                    description: List of valid sorting fields for the leaderboard.
+        "500":
+          description: Internal Server Error - An error occurred while fetching data from the game or user service.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message describing the issue.
+                  details:
+                    type: string
+                    description: Additional details.
