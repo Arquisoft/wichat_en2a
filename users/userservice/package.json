@@ -19,12 +19,12 @@
   "homepage": "https://github.com/arquisoft/wichat_en2a#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
-    "express": "^4.21.2",
-    "mongoose": "^8.9.3"
+    "express": "^4.21.2"
   },
   "devDependencies": {
     "jest": "^29.7.0",
     "mongodb-memory-server": "^10.1.3",
+    "mongoose": "^8.13.1",
     "supertest": "^7.0.0"
   }
 }

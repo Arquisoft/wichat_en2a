@@ -5,6 +5,7 @@ let userservice;
 let authservice;
 let llmservice;
 let gatewayservice;
+let gameservice;
 
 async function startServer() {
     console.log('Starting MongoDB memory server...');
@@ -15,6 +16,7 @@ async function startServer() {
     authservice = await require("../../users/authservice/auth-service");
     llmservice = await require("../../llmservice/llm-service");
     gatewayservice = await require("../../gatewayservice/gateway-service");
+    gameservice = await require ("../../users/gameservice/game-service");
 }
 
 startServer();
