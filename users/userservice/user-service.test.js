@@ -278,7 +278,8 @@ describe('User Model', () => {
   it('should create a valid user', async () => {
     const userData = {
       username: 'testuser',
-      password: 'password123',
+      //Es solo para servicio de tests
+      password: 'password123', //NOSONAR
     };
 
     const user = new User(userData);
@@ -294,7 +295,8 @@ describe('User Model', () => {
   it('should set the default value of profilePicture to null', async () => {
     const userData = {
       username: 'testuser',
-      password: 'password123',
+      //Es solo para servicio de tests
+      password: 'password123', //NOSONAR
     };
 
     const user = new User(userData);
@@ -306,7 +308,8 @@ describe('User Model', () => {
   it('should create a user with a default createdAt date', async () => {
     const userData = {
       username: 'testuser',
-      password: 'password123',
+      //Es solo para servicio de tests
+      password: 'password123', //NOSONAR
     };
 
     const user = new User(userData);
