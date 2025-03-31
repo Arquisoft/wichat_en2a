@@ -157,6 +157,19 @@ app.get('/saveActiveUserScore', verifyToken, async (req, res) => {
   }
 });
 
+// En tu archivo de gateway
+app.get('/scoresByUser/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const response = await axios.get(`${gameServiceUrl}/scoresByUser/${userId}`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({ 
+      error: error.response?.data?.error || 'Internal Server Error' 
+    });
+  }
+});
+
 // Endpoint to get loggeduser scores
 app.get('/scores', verifyToken, async (req, res) => {
   try {

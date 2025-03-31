@@ -27,7 +27,7 @@ const Scores = () => {
                     throw new Error('No token found. Please log in.');
                 }
 
-                const response = await fetch("http://localhost:8005/scores", {
+                const response = await fetch("http://localhost:8000/scores", {
                     headers: {
                         Authorization: `Bearer ${token}`  // Include in header
                         // in postman or curl
