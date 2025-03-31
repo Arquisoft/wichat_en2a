@@ -4,6 +4,7 @@ import {Container, Typography, Button, Box, CircularProgress, TextField, Paper} 
 import Navbar from './Navbar';
 import './game-styles.css';
 import {useNavigate} from 'react-router-dom';
+import Timer from './Timer';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -12,13 +13,35 @@ const Game = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [answerSelected, setAnswerSelected] = useState(false);
+
+    const [correctAnswer, setCorrectAnswer] = useState(null);
+    const [isCorrect, setIsCorrect] = useState(null);
+    const [chosenAnswer, setChosenAnswer] = useState(null);
+
+    const [timerKey, setTimerKey] = useState(0);
+
+    const MAX_QUESTIONS = 10;
+    const [questionCount, setQuestionCount] = useState(0);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [loadingMessage, setLoadingMessage] = useState(false);
 
+    const COLORS = {
+        primary: '#6A5ACD',
+        success: '#4CAF50',
+        error: '#F44336',
+        hover: '#1565c0',
+        textOnColor: 'white'
+    };
+
     const navigate = useNavigate();
     // Fetch question from the API
     const fetchQuestion = async () => {
+        if (questionCount >= MAX_QUESTIONS) {
+            navigate('/game-over');  // Redirige cuando llega a 10 preguntas
+            return;
+        }
+
         try {
             setMessages([]);
             setInput("");
@@ -32,6 +55,8 @@ const Game = () => {
                 response = await axios.get(`${apiEndpoint}/question`);
             }
             setQuestion(response.data);
+            setTimerKey((prevKey) => prevKey + 1); //to reload timer
+            setQuestionCount((prevCount) => prevCount + 1);
         } catch (error) {
             console.error('Error fetching question:', error);
             setError('Failed to load question');
@@ -61,6 +86,36 @@ const Game = () => {
             setMessages([...newMessages, { text: 'An error occurred, please try again.', sender: 'bot' }]);
         } finally {
             setLoadingMessage(false);
+        }
+    };
+
+    const checkAnswer = async (answer) => {
+        try {
+            setChosenAnswer(answer);
+            const response = await axios.post(`${apiEndpoint}/check-answer`, {
+                questionId: question._id,
+                selectedAnswer: answer,
+            });
+
+            setIsCorrect(response.data.isCorrect);
+
+            if (!response.data.isCorrect) {
+                setCorrectAnswer(question.correctAnswer);
+                // Aunque el usuario haya fallado, guardo la correcta
+            }
+        } catch (error) {
+            console.error('Error checking answer:', error);
+            setError('Failed to check answer');
+        }
+    };
+
+    // Función que se ejecuta cuando el tiempo se agota
+    const handleTimeUp = () => {
+        if (!answerSelected) {
+            setChosenAnswer(question.correctAnswer); // Marca la respuesta correcta
+            setIsCorrect(false); // No fue seleccionada por el usuario, así que es incorrecta
+            setCorrectAnswer(question.correctAnswer); // Muestra la respuesta correcta en verde
+            setAnswerSelected(true); // Evita más respuestas
         }
     };
 
@@ -100,6 +155,9 @@ const Game = () => {
                     Quiz Game!
                 </Typography>
 
+                {/* Timer */}
+                <Timer key={timerKey} duration={40} onTimeUp={handleTimeUp} answerSelected={answerSelected} />
+
                 <Box sx={{
                     display: 'flex',
                     width: '100%',
@@ -122,12 +180,48 @@ const Game = () => {
                             width: '100%'
                         }}>
                             <Typography variant="h6" sx={{mb: '1rem'}}>Which country is this flag from?</Typography>
-                            {question.options.map((option, index) => (
-                                <Button key={index} variant="contained" fullWidth sx={{mb: '0.5rem', py: '1rem'}}
-                                        onClick={() => setAnswerSelected(true)}>
-                                    {option}
-                                </Button>
-                            ))}
+                            {question.options.map((option, index) => {
+                                let bgColor = COLORS.primary;
+
+                                // Solo cambiamos el color después de haber seleccionado una respuesta
+                                if (answerSelected) {
+                                    if (option === chosenAnswer) {
+                                        bgColor = isCorrect ? COLORS.success : COLORS.error;
+                                    } else if (option === correctAnswer) {
+                                        bgColor = COLORS.success;
+                                    }
+                                }
+
+                                return (
+                                    <Button
+                                        key={index}
+                                        variant="contained"
+                                        fullWidth
+                                        sx={{
+                                            mb: '0.5rem',
+                                            py: '1rem',
+                                            backgroundColor: bgColor,
+                                            "&:hover": {
+                                                backgroundColor: answerSelected ? undefined : COLORS.hover,
+                                            },
+                                            "&.Mui-disabled": {
+                                                backgroundColor: bgColor,
+                                                color: "white", // Asegura que el texto siga siendo visible si es necesario
+                                                opacity: 1, // Elimina la opacidad que Material-UI pone en los botones deshabilitados
+                                            }
+                                        }}
+                                        disabled={!!answerSelected}
+                                        onClick={() => {
+                                            if (!answerSelected) {
+                                                setAnswerSelected(true);
+                                                checkAnswer(option);
+                                            }
+                                        }}
+                                    >
+                                        {option}
+                                    </Button>
+                                );
+                            })}
                         </Box>
 
                         {/* Lower part - Hint box */}
@@ -210,10 +304,22 @@ const Game = () => {
                     <Button variant="contained" color="error" onClick={() => navigate('/home')}>
                         Back
                     </Button>
-                    <Button variant="contained" color="primary" disabled={!answerSelected} onClick={fetchQuestion}
-                            sx={{ml: '1rem'}}>
+                    <Button
+                        variant="contained"
+                        color = 'primary'
+                        disabled={!answerSelected} // Solo habilitado si se ha seleccionado una respuesta
+                        onClick={() => {
+                            setChosenAnswer(null);  // Reseteamos la respuesta elegida
+                            setCorrectAnswer(null); // Reseteamos la respuesta correcta
+                            setIsCorrect(null);     // Reseteamos el estado de corrección
+                            setAnswerSelected(false);
+                            setTimeout(() => fetchQuestion(), 100); // Cargamos nueva pregunta
+                        }}
+                        sx={{ ml: '1rem' }}
+                    >
                         Next Question
                     </Button>
+
                 </Box>
             </Container>
         </>

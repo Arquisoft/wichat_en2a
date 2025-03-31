@@ -40,6 +40,102 @@ describe('Gateway Service', () => {
     expect(response.body.userId).toBe('mockedUserId');
   });
 
+  
+  // Test for /getAllUsernamesWithIds
+  it('should forward getAllUsernamesWithIds request to user service', async () => {
+    const mockUsernames = { '123': 'user1', '456': 'user2' };
+    axios.post.mockResolvedValueOnce({ data: mockUsernames });
+
+    const response = await request(app)
+      .post('/getAllUsernamesWithIds')
+      .send({ userIds: ['123', '456'] });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual(mockUsernames);
+    expect(axios.post).toHaveBeenCalledWith(
+      expect.stringContaining('/getAllUsernamesWithIds'),
+      { userIds: ['123', '456'] }
+    );
+  });
+
+  // Test for /users
+  it('should forward users GET request to user service', async () => {
+    const mockUsers = [{ id: '1', username: 'user1' }, { id: '2', username: 'user2' }];
+    axios.get.mockResolvedValueOnce({ data: mockUsers });
+
+    const response = await request(app).get('/users');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual(mockUsers);
+    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/users'));
+  });
+
+  // Test /saveScore endpoint
+  it('should forward saveScore request to game service', async () => {
+    const mockRequestBody = { userId: 'testUserId', score: 150, isVictory: true };
+    const mockResponse = { data: { userId: 'testUserId', score: 150, isVictory: true } };
+
+    axios.post.mockResolvedValueOnce(mockResponse);
+
+    const response = await request(app)
+      .post('/saveScore')
+      .send(mockRequestBody)
+      .set('Content-Type', 'application/json');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse.data);
+    expect(axios.post).toHaveBeenCalledWith(
+      expect.stringContaining('/saveScore'),
+      mockRequestBody
+    );
+  });
+
+
+  // Test for /leaderboard
+  it('should fetch leaderboard and merge with usernames', async () => {
+    const mockLeaderboard = [
+      { userId: '123', score: 100 },
+      { userId: '456', score: 200 }
+    ];
+    const mockUsernames = { '123': 'user1', '456': 'user2' };
+
+    // Mock leaderboard call
+    axios.get.mockResolvedValueOnce({ data: mockLeaderboard });
+    // Mock usernames call
+    axios.post.mockResolvedValueOnce({ data: mockUsernames });
+
+    const response = await request(app).get('/leaderboard');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual([
+      { userId: '123', score: 100, username: 'user1' },
+      { userId: '456', score: 200, username: 'user2' }
+    ]);
+    // Verify leaderboard call
+    expect(axios.get).toHaveBeenCalledWith(
+      expect.stringContaining('/leaderboard'),
+      { params: {} }
+    );
+    // Verify usernames call
+    expect(axios.post).toHaveBeenCalledWith(
+      expect.stringContaining('/getAllUsernamesWithIds'),
+      { userIds: ['123', '456'] }
+    );
+  });
+
+  // Test for leaderboard with query parameters
+  it('should forward query parameters to game service for leaderboard', async () => {
+    axios.get.mockResolvedValueOnce({ data: [] });
+    axios.post.mockResolvedValueOnce({ data: {} });
+
+    await request(app).get('/leaderboard?sortBy=score&order=desc');
+
+    expect(axios.get).toHaveBeenCalledWith(
+      expect.stringContaining('/leaderboard'),
+      { params: { sortBy: 'score', order: 'desc' } }
+    );
+  });
+
   // Test /askllm endpoint
   it('should forward askllm request to the llm service', async () => {
     const response = await request(app)
@@ -146,4 +242,73 @@ describe('Gateway Service', () => {
   expect(response.body).toEqual(mockResponse);
   }); 
 
+});
+
+// Add these tests to your existing test file
+describe('Gateway Service Error Handling', () => {
+  // Test health endpoint
+  it('should respond to health check', async () => {
+    const response = await request(app).get('/health');
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({ status: 'OK' });
+  });
+
+  // Test error handling for login endpoint
+  it('should handle errors from auth service on login', async () => {
+    axios.post.mockRejectedValueOnce({
+      response: { status: 401, data: { error: 'Invalid credentials' } }
+    });
+
+    const response = await request(app)
+      .post('/login')
+      .send({ username: 'testuser', password: 'wrong' }); // NOSONAR: Hardcoded password is for test purposes only.
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toEqual({ error: 'Invalid credentials' });
+  });
+
+  // Test error handling for adduser endpoint
+  it('should handle errors from user service on adduser', async () => {
+    axios.post.mockRejectedValueOnce({
+      response: { status: 409, data: { error: 'Username already exists' } }
+    });
+
+    const response = await request(app)
+      .post('/adduser')
+      .send({ username: 'existinguser', password: 'password' }); // NOSONAR: Hardcoded password is for test purposes only.
+
+
+    expect(response.statusCode).toBe(409);
+    expect(response.body).toEqual({ error: 'Username already exists' });
+  });
+
+  // Test error handling for getAllUsernamesWithIds endpoint
+  it('should handle errors from user service on getAllUsernamesWithIds', async () => {
+    axios.post.mockRejectedValueOnce({
+      response: { status: 400, data: { error: 'Invalid user IDs' } }
+    });
+
+    const response = await request(app)
+      .post('/getAllUsernamesWithIds')
+      .send({ userIds: ['invalid'] });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toEqual({ error: 'Invalid user IDs' });
+  });
+
+  // Test error handling when response is missing
+  it('should handle network errors on getAllUsernamesWithIds', async () => {
+    axios.post.mockRejectedValueOnce(new Error('Network Error'));
+
+    const response = await request(app)
+      .post('/getAllUsernamesWithIds')
+      .send({ userIds: ['123'] });
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal Server Error' });
+  });
+
+  
+
+  
 });

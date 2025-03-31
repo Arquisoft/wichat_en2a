@@ -189,6 +189,7 @@ describe('Leaderboard component', () => {
     );
     
     // Verify the correct URL, maybe 3000, pendant of change if fail
-    expect(global.fetch).toHaveBeenCalledWith("http://localhost:8003/leaderboard");
+    // UPDATE: ofc use gateway 8000 and /leaderboard
+    expect(global.fetch).toHaveBeenCalledWith("http://localhost:8000/leaderboard");
   });
 });
