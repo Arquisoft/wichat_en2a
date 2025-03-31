@@ -102,28 +102,51 @@ const Game = () => {
                 <Typography variant="h6">Score: {score} / {MAX_QUESTIONS * 100}</Typography>
                 <Typography>Question {questionCount} of {MAX_QUESTIONS}</Typography>
                 <Timer key={timerKey} duration={40} onTimeUp={() => setAnswerSelected(true)} answerSelected={answerSelected} />
-                <Box>
-                    <Typography variant="h6">Which country is this flag from?</Typography>
-                    {question?.imageUrl ? (
-                        <img src={question.imageUrl} alt="Flag" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
-                    ) : (
-                        <Typography variant="h6">No image available</Typography>
-                    )}
-                    {question.options.map((option, index) => (
-                        <Button
-                            key={index}
-                            variant="contained"
-                            fullWidth
-                            sx={{ backgroundColor: answerSelected && option === correctAnswer ? COLORS.success : COLORS.primary }}
-                            disabled={answerSelected}
-                            onClick={() => { setAnswerSelected(true); checkAnswer(option); }}
-                        >
-                            {option}
-                        </Button>
-                    ))}
+                
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4, mt: 3 }}>
+                    {/* Columna de opciones */}
+                    <Box sx={{ flex: 1 }}>
+                        <Typography variant="h6">Which country is this flag from?</Typography>
+                        {question.options.map((option, index) => (
+                            <Button
+                                key={index}
+                                variant="contained"
+                                fullWidth
+                                sx={{ 
+                                    mb: 1, 
+                                    backgroundColor: answerSelected && option === correctAnswer ? COLORS.success : COLORS.primary 
+                                }}
+                                disabled={answerSelected}
+                                onClick={() => { setAnswerSelected(true); checkAnswer(option); }}
+                            >
+                                {option}
+                            </Button>
+                        ))}
+                    </Box>
+
+                    {/* Columna de imagen */}
+                    <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        {question?.imageUrl ? (
+                            <img 
+                                src={question.imageUrl} 
+                                alt="Flag" 
+                                style={{ 
+                                    maxWidth: '90%',  
+                                    maxHeight: '300px', 
+                                    width: 'auto', 
+                                    height: 'auto', 
+                                    objectFit: 'contain', 
+                                    borderRadius: '10px' 
+                                }} 
+                            />
+                        ) : (
+                            <Typography variant="h6">No image available</Typography>
+                        )}
+                    </Box>
                 </Box>
-                <Button variant="contained" onClick={retrieveHint}>Hint</Button>
-                <Button variant="contained" onClick={fetchQuestion} disabled={!answerSelected}>Next Question</Button>
+                
+                <Button variant="contained" onClick={retrieveHint} sx={{ mt: 2 }}>Hint</Button>
+                <Button variant="contained" onClick={fetchQuestion} disabled={!answerSelected} sx={{ mt: 2, ml: 2 }}>Next Question</Button>
             </Container>
         </>
     );
