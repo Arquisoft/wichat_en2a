@@ -95,6 +95,37 @@ describe('Game Component', () => {
         });
     });
 
+    test('ensures the send button is inactive only while the LLM is providing a question', async () => {
+        const mockInput = "Which traditions does this country have?";
+        const mockOutput = { answer: 'This country has bullfighting as a tradition.' };
+        setupMockApiResponse('question', mockQuestion);
+        mockAxios.onPost(`${apiEndpoint}/askllm`).reply(200, mockOutput);
+
+        renderGameComponent();
+
+        await waitFor(() => {
+            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+        });
+
+        fireEvent.change(screen.getByPlaceholderText(/Type a message.../i), {
+            target: { value: mockInput }
+        });
+
+        fireEvent.click(screen.getByRole('button', { name: /Send/i }));
+
+        expect(screen.getByRole('button', { name: /Send/i })).toBeDisabled();
+
+        await waitFor(() => {
+            expect(screen.getByText(mockInput)).toBeInTheDocument();
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText(mockOutput.answer)).toBeInTheDocument();
+        });
+
+        expect(screen.getByRole('button', { name: /Send/i })).not.toBeDisabled();
+    });
+
     test('allows selecting an answer and enables "Next Question" button', async () => {
         setupMockApiResponse('question', mockQuestion);
         renderGameComponent();

@@ -43,8 +43,6 @@ const Game = () => {
         }
 
         try {
-            setMessages([]);
-            setInput("");
             console.log("Fetching question...");
             let response = await axios.get(`${apiEndpoint}/question`);
             //if for some reason a problem occurred and the questions collection is empty, fetch
@@ -313,6 +311,8 @@ const Game = () => {
                             setCorrectAnswer(null); // Reseteamos la respuesta correcta
                             setIsCorrect(null);     // Reseteamos el estado de corrección
                             setAnswerSelected(false);
+                            setMessages([]);
+                            setInput("");
                             setTimeout(() => fetchQuestion(), 100); // Cargamos nueva pregunta
                         }}
                         sx={{ ml: '1rem' }}
