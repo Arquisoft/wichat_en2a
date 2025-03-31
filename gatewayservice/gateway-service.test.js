@@ -474,7 +474,7 @@ describe('Gateway Service Error Handling', () => {
       .send({ score });
   
     if (response.status === 401) {
-      console.warn('Este test requiere un token válido');
+      console.warn('This test requires a valid token');
     } else {
       expect(response.status).toBe(200);
       expect(response.body.userId).toBe(expectedUserId);
@@ -508,7 +508,7 @@ describe('Gateway Service Error Handling', () => {
       .set('Authorization', fakeToken);
   
     if (response.status === 401) {
-      console.warn('Este test requiere un token válido');
+      console.warn('This test requires a valid token');
     } else {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockScores);
@@ -546,11 +546,68 @@ describe('Gateway Service Error Handling', () => {
       .set('Authorization', 'asasdasda');
   
     if (response.status === 401) {
-      console.warn('Este test requiere token válido');
+      console.warn('This test requires a valid token');
     } else {
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: 'Game failure' });
     }
-  });  
+  });
+
+  it('should return 400 when score is not a number in /saveActiveUserScore', async () => {
+    const response = await request(app)
+      .post('/saveActiveUserScore')
+      .set('Authorization', 'Basadasdasd23123')
+      .send({ score: 'not-a-number-therefore-FAIL' });
+  
+    if (response.status === 401) {
+      console.warn('This test requires a valid token');
+    } else {
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: 'Invalid or missing score' });
+    }
+  });
+
+  it('should return 500 when game service fails at /saveActiveUserScore', async () => {
+    axios.get.mockReset();
+    axios.post.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'Game Save Failed' } }
+    });
+  
+    const response = await request(app)
+      .post('/saveActiveUserScore')
+      .set('Authorization', 'asdasdads')
+      .send({ score: 800 });
+  
+    if (response.status === 401) {
+      console.warn('This test requires a valid token');
+    } else {
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: 'Game Save Failed' });
+    }
+  });
+
+  it('should return 500 when game service fails at /scoresByUser/:userId', async () => {
+    axios.get.mockReset();
+    axios.get.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'Game Service Error' } }
+    });
+  
+    const response = await request(app).get('/scoresByUser/testuser');
+  
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Game Service Error' });
+  });
+  
+  it('should return 500 when question service fails at /question', async () => {
+    axios.get.mockReset();
+    axios.get.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'Question Service Error' } }
+    });
+  
+    const response = await request(app).get('/question');
+  
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Question Service Error' });
+  });
   
 });
