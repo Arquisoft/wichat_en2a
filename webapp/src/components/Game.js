@@ -22,7 +22,6 @@ const Game = () => {
 
     const MAX_QUESTIONS = 10;
     const [questionCount, setQuestionCount] = useState(0);
-    const [hint, setHint] = useState(null);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [loadingMessage, setLoadingMessage] = useState(false);
