@@ -274,6 +274,49 @@ describe('Score Model Test', () => {
   });
 });
 
+describe('User Model', () => {
+  it('should create a valid user', async () => {
+    const userData = {
+      username: 'testuser',
+      password: 'password123',
+    };
+
+    const user = new User(userData);
+    await user.save();
+
+    expect(user._id).toBeDefined();
+    expect(user.username).toBe(userData.username);
+    expect(user.password).toBe(userData.password);
+    expect(user.profilePicture).toBeNull();
+    expect(user.createdAt).toBeDefined();
+  });
+
+  it('should set the default value of profilePicture to null', async () => {
+    const userData = {
+      username: 'testuser',
+      password: 'password123',
+    };
+
+    const user = new User(userData);
+    await user.save();
+
+    expect(user.profilePicture).toBeNull();
+  });
+
+  it('should create a user with a default createdAt date', async () => {
+    const userData = {
+      username: 'testuser',
+      password: 'password123',
+    };
+
+    const user = new User(userData);
+    await user.save();
+
+    expect(user.createdAt).toBeDefined();
+    expect(user.createdAt instanceof Date).toBe(true);
+  });
+});
+
 
 
 
