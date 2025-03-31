@@ -2,6 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('./user-model')
 
 const app = express();
@@ -23,6 +24,23 @@ function validateRequiredFields(req, requiredFields) {
       }
     }
 }
+
+// Middleware to verify JWT token
+const verifyToken = (req, res, next) => {
+    const bearerHeader = req.headers['authorization'];
+    if (!bearerHeader) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+  
+    const token = bearerHeader.split(' ')[1];
+    try {
+      const decoded = jwt.verify(token, 'your-secret-key');
+      req.userId = decoded.userId;
+      next();
+    } catch (error) {
+      return res.status(401).json({ error: 'Invalid token' });
+    }
+  };
 
 //add user endpoint
 app.post('/adduser', async (req, res) => {
@@ -203,6 +221,21 @@ app.post('/getAllUsernamesWithIds', async (req, res) => {
     }
 });
   
+app.get('/me', verifyToken, async (req, res) => {
+    try {
+      const user = await User.findById(req.userId).select('username _id');
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      res.json({
+        _id: user._id.toString(),
+        username: user.username
+      });
+    } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
 // Endpoint to get a list of users
 app.get('/users', async (req, res) => {
     try {
