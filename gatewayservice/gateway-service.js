@@ -19,8 +19,6 @@ const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
 const gameServiceUrl = process.env.GAME_SERVICE_URL || 'http://localhost:8005';
 
-const allowedHosts = ["http://game-service:8000", "http://localhost:8000"];
-
 app.use(cors());
 app.use(express.json());
 
@@ -186,20 +184,15 @@ app.get('/scoresByUser/:userId', async (req, res) => {
   }
 });
 
+// Endpoint to get loggeduser scores
 app.get('/scores', verifyToken, async (req, res) => {
   try {
-      if (!allowedHosts.includes(gameServiceUrl)) {
-          return res.status(400).json({ error: "Invalid service URL" });
-      }
-
       const response = await axios.get(`${gameServiceUrl}/scores`, {
           headers: { Authorization: req.header('Authorization') }
       });
-
       res.json(response.data);
   } catch (error) {
-      console.error("Error fetching scores:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal Server Error' });
   }
 });
 
