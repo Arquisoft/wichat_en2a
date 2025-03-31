@@ -11,8 +11,7 @@ let testUserId;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  process.env.MONGODB_URI = mongoUri;
+  process.env.MONGODB_URI = mongoServer.getUri();
   app = require('./user-service'); 
 });
 
@@ -38,26 +37,27 @@ describe('User Service', () => {
   });
 
   it('should add a new user on POST /adduser', async () => {
-    const newUser = {
-      username: 'testuser',
-      password: 'testpassword',
+    const uniqueUsername = `newuserTest_${Date.now()}`; // Generate a unique username, addidng Date
+    const newUser  = {
+        username: uniqueUsername,
+        password: 'testpassword',
     };
 
-    const response = await request(app).post('/adduser').send(newUser);
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty('username', 'testuser');
+    const response = await request(app).post('/adduser').send(newUser );
+    expect(response.status).toBe(201);
+    expect(response.body).toHaveProperty('username', uniqueUsername); // Search username in response
 
-    // Check if the user is inserted into the database
-    const userInDb = await User.findOne({ username: 'testuser' });
+    // Check if user was correctly inserted
+    const userInDb = await User.findOne({ username: uniqueUsername });
 
-    // Assert that the user exists in the database
+    // Confirm if user is in DB
     expect(userInDb).not.toBeNull();
-    expect(userInDb.username).toBe('testuser');
+    expect(userInDb.username).toBe(uniqueUsername);
 
-    // Assert that the password is encrypted
+    // Check if password is encrypted correctly
     const isPasswordValid = await bcrypt.compare('testpassword', userInDb.password);
     expect(isPasswordValid).toBe(true);
-  });
+});
 
   it('should delete a user on DELETE /users/:userId', async () => {
     // Verify the test user exists before deletion
@@ -163,4 +163,79 @@ describe('User Service', () => {
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty('error', 'User not found');
   });
+
+  it('should return user details for a valid userId', async () => {
+    // Arrange: Create a test user
+    const testUser  = new User({
+        username: 'validUser ',
+        password: await bcrypt.hash('validPassword', 10)
+    });
+    const savedUser  = await testUser .save();
+
+    // Act: Fetch the user by ID
+    const response = await request(app).get(`/getUserById/${savedUser ._id}`);
+
+    // Assert: Check the response
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('_id', savedUser ._id.toString());
+    expect(response.body).toHaveProperty('username', 'validUser ');
+  });
+
+  it('should return 404 if user not found', async () => {
+    // Arrange: Create a non-existent user ID
+    const nonExistentId = new mongoose.Types.ObjectId();
+
+    // Act: Attempt to fetch the user by the non-existent ID
+    const response = await request(app).get(`/getUserById/${nonExistentId}`);
+
+    // Assert: Check the response
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty('error', 'User not found');
+  });
+
+  it('should fetch all users from the database', async () => {
+    // Arrange: Create test users
+    await User.deleteMany({});
+    
+    const users = [
+      { username: 'user1', password: await bcrypt.hash('password1', 10) },
+      { username: 'user2', password: await bcrypt.hash('password2', 10) }
+    ];
+    
+    await User.insertMany(users);
+  
+    // Act: Request the list of users
+    const response = await request(app).get('/users');
+  
+    // Assert: Check the response
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveLength(2); // Ensure two users are returned
+    expect(response.body[0]).toHaveProperty('username');
+    expect(response.body[0]).toHaveProperty('_id'); 
+  });
+  
+
+  it('should return usernames for valid userIds', async () => {
+    // Arrange: Create test users
+    const user1 = new User({ username: 'user1', password: await bcrypt.hash('password1', 10) });
+    const user2 = new User({ username: 'user2', password: await bcrypt.hash('password2', 10) });
+    await user1.save();
+    await user2.save();
+
+    // Act: Send a request with valid user IDs
+    const response = await request(app)
+        .post('/getAllUsernamesWithIds')
+        .send({ userIds: [user1._id, user2._id] });
+
+    // Assert: Check the response
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+        [user1._id]: 'user1',
+        [user2._id]: 'user2'
+    });
+  });
+
 });
+
+
+
