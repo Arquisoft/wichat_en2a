@@ -458,6 +458,7 @@ describe('Gateway Service Error Handling', () => {
     const expectedUserId = 'mockID';
     const expectedIsVictory = true;
   
+    axios.get.mockReset();
     // Mock axios.post a /saveScore devuelve bien
     axios.post.mockImplementationOnce((url, data) => {
       expect(url).toContain('/saveScore');
@@ -495,6 +496,7 @@ describe('Gateway Service Error Handling', () => {
     const fakeToken = 'Bearer faketoken';
     const mockScores = [{ score: 800 }, { score: 500 }];
   
+    axios.get.mockReset();
     axios.get.mockImplementationOnce((url, config) => {
       expect(url).toContain('/scores');
       expect(config.headers.Authorization).toBe(fakeToken);
@@ -512,4 +514,20 @@ describe('Gateway Service Error Handling', () => {
       expect(response.body).toEqual(mockScores);
     }
   });
+
+  it('should forward /scoresByUser/:userId to game service', async () => {
+    const userId = 'sadasklasjdlkajs';
+    const mockResponse = [{ gameId: 'x1', score: 700 }];
+  
+    axios.get.mockReset();
+    axios.get.mockResolvedValueOnce({ data: mockResponse });
+  
+    const response = await request(app).get(`/scoresByUser/${userId}`);
+  
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining(`/scoresByUser/${userId}`));
+  });
+  
+  
 });
