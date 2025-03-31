@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Typography, Button, Box, CircularProgress } from '@mui/material';
+import { Container, Typography, Button, Box, CircularProgress, Grid } from '@mui/material';
 import Navbar from './Navbar';
 import './game-styles.css';
 import { useNavigate } from 'react-router-dom';
@@ -102,51 +102,42 @@ const Game = () => {
                 <Typography variant="h6">Score: {score} / {MAX_QUESTIONS * 100}</Typography>
                 <Typography>Question {questionCount} of {MAX_QUESTIONS}</Typography>
                 <Timer key={timerKey} duration={40} onTimeUp={() => setAnswerSelected(true)} answerSelected={answerSelected} />
-                
-                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 4, mt: 3 }}>
-                    {/* Columna de opciones */}
-                    <Box sx={{ flex: 1 }}>
-                        <Typography variant="h6">Which country is this flag from?</Typography>
+                <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12} md={6}>
                         {question.options.map((option, index) => (
                             <Button
                                 key={index}
                                 variant="contained"
                                 fullWidth
-                                sx={{ 
-                                    mb: 1, 
-                                    backgroundColor: answerSelected && option === correctAnswer ? COLORS.success : COLORS.primary 
-                                }}
+                                sx={{ backgroundColor: answerSelected && option === correctAnswer ? COLORS.success : COLORS.primary, marginBottom: 1 }}
                                 disabled={answerSelected}
                                 onClick={() => { setAnswerSelected(true); checkAnswer(option); }}
                             >
                                 {option}
                             </Button>
                         ))}
-                    </Box>
-
-                    {/* Columna de imagen */}
-                    <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Typography variant="h6">Which country is this flag from?</Typography>
                         {question?.imageUrl ? (
                             <img 
                                 src={question.imageUrl} 
                                 alt="Flag" 
                                 style={{ 
-                                    maxWidth: '90%',  
+                                    width: '90%', 
                                     maxHeight: '300px', 
-                                    width: 'auto', 
-                                    height: 'auto', 
-                                    objectFit: 'contain', 
-                                    borderRadius: '10px' 
+                                    objectFit: 'cover', 
+                                    borderRadius: 'inherit',
+                                    border: '1px solid black' 
                                 }} 
                             />
                         ) : (
                             <Typography variant="h6">No image available</Typography>
                         )}
-                    </Box>
-                </Box>
-                
-                <Button variant="contained" onClick={retrieveHint} sx={{ mt: 2 }}>Hint</Button>
-                <Button variant="contained" onClick={fetchQuestion} disabled={!answerSelected} sx={{ mt: 2, ml: 2 }}>Next Question</Button>
+                    </Grid>
+                </Grid>
+                <Button variant="contained" onClick={retrieveHint}>Hint</Button>
+                <Button variant="contained" onClick={fetchQuestion} disabled={!answerSelected}>Next Question</Button>
             </Container>
         </>
     );
