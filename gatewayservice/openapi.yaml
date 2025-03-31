@@ -497,3 +497,64 @@ paths:
                     type: string
                     description: Error information.
                     example: Internal Server Error
+  /saveScore:
+    post:
+      summary: Save the user's score.
+      operationId: saveScore
+      tags:
+        - Questions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: The ID of the user.
+                  example: "userId1"
+                score:
+                  type: integer
+                  description: The user's score.
+                  example: 10
+                isVictory:
+                  type: boolean
+                  description: Indicates if the user won.
+                  example: true
+      responses:
+        "200":
+          description: Score saved successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  userId:
+                    type: string
+                    description: The ID of the user.
+                    example: "userId1"
+                  score:
+                    type: integer
+                    description: The user's score.
+                    example: 10
+                  isVictory:
+                    type: boolean
+                    description: Indicates if the user won.
+                    example: true
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Creation date.
+                    example: "2024-03-17T20:47:23.935Z"
+        "400":
+          description: Error saving the score.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Invalid user ID or score.
