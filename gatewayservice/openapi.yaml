@@ -442,3 +442,58 @@ paths:
                     type: string
                     description: Error information.
                     example: Internal Server Error
+  /check-answer:
+    post:
+      summary: Check the answer to a question.
+      operationId: checkAnswer
+      tags:
+        - Questions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                questionId:
+                  type: string
+                  description: The ID of the question.
+                  example: "questionId1"
+                userAnswer:
+                  type: string
+                  description: The user's answer.
+                  example: "Spain"
+      responses:
+        "200":
+          description: Answer checked successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isCorrect:
+                    type: boolean
+                    description: Indicates if the answer is correct.
+                    example: true
+        "400":
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Invalid question ID or answer.
+        "500":
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error information.
+                    example: Internal Server Error
