@@ -104,6 +104,11 @@ const Game = () => {
                 <Timer key={timerKey} duration={40} onTimeUp={() => setAnswerSelected(true)} answerSelected={answerSelected} />
                 <Box>
                     <Typography variant="h6">Which country is this flag from?</Typography>
+                    {question?.imageUrl ? (
+                        <img src={question.imageUrl} alt="Flag" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+                    ) : (
+                        <Typography variant="h6">No image available</Typography>
+                    )}
                     {question.options.map((option, index) => (
                         <Button
                             key={index}
