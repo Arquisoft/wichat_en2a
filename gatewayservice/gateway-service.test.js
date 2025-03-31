@@ -17,6 +17,11 @@ describe('Gateway Service', () => {
       return Promise.resolve({ data: { userId: 'mockedUserId' } });
     } else if (url.endsWith('/ask')) {
       return Promise.resolve({ data: { answer: 'llmanswer' } });
+    } else if (url.endsWith("/generateIncorrectOptions")) {
+      return Promise.resolve({
+          status: 200,
+          data: {options: ["option1", "option2", "option3"]},
+      });
     }
   });
 
@@ -72,7 +77,7 @@ describe('Gateway Service', () => {
 
   it('should return an error response on failure', async () => {
     // Simula la respuesta de error de axios
-    axios.get.mockRejectedValue({
+    axios.get.mockRejectedValueOnce({
       response: {
         status: 500,
         data: { error: 'Internal Server Error' }
@@ -154,7 +159,7 @@ describe('Gateway Service', () => {
 
   it('should return error response when game service fails', async () => {
     // Simula un error en la respuesta de la solicitud al game service
-    axios.get.mockRejectedValue({
+    axios.get.mockRejectedValueOnce({
       response: {
         status: 500,
         data: { error: 'Game Service Error' },
@@ -188,7 +193,7 @@ describe('Gateway Service', () => {
     });
 
     // Simula un error en la respuesta de la solicitud al user service
-    axios.post.mockRejectedValue({
+    axios.post.mockRejectedValueOnce({
       response: {
         status: 500,
         data: { error: 'User Service Error' },
@@ -234,7 +239,7 @@ describe('Gateway Service', () => {
     const mockRequestBody = { questionId: 1, answer: 'France' };
     const mockResponse = { data: { correct: true } };
 
-    axios.post.mockResolvedValue(mockResponse);
+    axios.post.mockResolvedValueOnce(mockResponse);
 
     const response = await request(app)
       .post('/check-answer')
@@ -318,6 +323,17 @@ describe('Gateway Service', () => {
   expect(response.body).toEqual(mockResponse);
   }); 
 
+  it("should forward generateIncorrectOptions to the llm service", async () => {
+    const response = await request(app).post("/generateIncorrectOptions").send({
+        model: "empathy",
+        correctAnswer: "correctAnswer",
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({
+        options: ["option1", "option2", "option3"],
+    });
+});
 });
 
 // Add these tests to your existing test file
