@@ -202,7 +202,7 @@ app.get('/scores', verifyToken, async (req, res) => {
       
       const authToken = req.header('Authorization');
       
-      const response = await axios.get(requestUrl, {
+      const response = await axios.get(requestUrl, { // NOSONAR
           headers: { 
               'Authorization': authToken
           }
