@@ -2,6 +2,7 @@ import React from 'react';
 import {render, screen, fireEvent, waitFor} from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import Home from './Home';
 import Game from './Game';
 import GameOver from './GameOver';
 import { MemoryRouter } from 'react-router-dom';
@@ -57,6 +58,23 @@ describe('Game Component', () => {
         });
 
         expect(screen.getByRole('img', { name: /question related/i })).toBeInTheDocument();
+    });
+
+    test('Clicking on back redirect to /home', async () => {
+        setupMockApiResponse('question', mockQuestion);
+        renderGameComponent();
+        await waitFor(() => {
+            const backButton = screen.getByRole('button', { name: /Back/i});
+            fireEvent.click(backButton);
+        })
+        render(
+            <MemoryRouter>
+                <Home onNavigate={mockOnNavigate} />
+            </MemoryRouter>
+        );
+        await waitFor(() => {
+            expect(screen.getByText(/Welcome back/i)).toBeInTheDocument();
+        });
     });
 
     test('shows an error message if fetching fails', async () => {
