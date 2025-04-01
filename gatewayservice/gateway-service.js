@@ -190,6 +190,7 @@ app.get('/scores', verifyToken, async (req, res) => {
       // Define allowed endpoints and validate the destination
       const ALLOWED_SERVICES = {
           'game': process.env.GAME_SERVICE_URL || 'http://localhost:8005'
+          || 'http://localhost:8000' || 'http://localhost:3000'
       };
       
       // Ensure we're only making requests to whitelisted hosts
@@ -200,10 +201,12 @@ app.get('/scores', verifyToken, async (req, res) => {
           return res.status(400).json({ error: 'Invalid protocol' });
       }
       
+      // Pasar el token de autorización original
+      const authToken = req.header('Authorization');
+      
       const response = await axios.get(targetUrl.toString(), {
-          // Only pass necessary headers or transform them as needed
           headers: { 
-              'Authorization': req.userId ? `Bearer ${req.userId}` : undefined
+              'Authorization': authToken
           }
       });
       
