@@ -187,23 +187,22 @@ app.get('/scoresByUser/:userId', async (req, res) => {
 // Endpoint to get loggeduser scores
 app.get('/scores', verifyToken, async (req, res) => {
   try {
-      // Define allowed endpoints and validate the destination
-      const ALLOWED_SERVICES = {
-          'game': process.env.GAME_SERVICE_URL || 'http://localhost:8005'
-      };
+      // Definir URL explícitamente sin usar construcción dinámica
+      const GAME_SERVICE_BASE_URL = process.env.GAME_SERVICE_URL || 'http://localhost:8005';
+      const SCORES_ENDPOINT = '/scores';
       
-      // Ensure we're only making requests to whitelisted hosts
-      const targetUrl = new URL('/scores', ALLOWED_SERVICES['game']);
-      
-      // Validate URL before making request
-      if (targetUrl.protocol !== 'http:' && targetUrl.protocol !== 'https:') {
-          return res.status(400).json({ error: 'Invalid protocol' });
+      // Validar protocolo del servicio configurado
+      const urlObj = new URL(GAME_SERVICE_BASE_URL);
+      if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
+          return res.status(400).json({ error: 'Invalid protocol in service configuration' });
       }
       
-      // Pasar el token de autorización original
+      // Concatenar de manera segura (sin parámetros de usuario)
+      const requestUrl = `${GAME_SERVICE_BASE_URL}${SCORES_ENDPOINT}`;
+      
       const authToken = req.header('Authorization');
       
-      const response = await axios.get(targetUrl.toString(), {
+      const response = await axios.get(requestUrl, {
           headers: { 
               'Authorization': authToken
           }
