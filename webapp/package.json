@@ -45,6 +45,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@cucumber/cucumber": "^11.2.0",
     "axios-mock-adapter": "^2.1.0",
     "cucumber": "^6.0.7",

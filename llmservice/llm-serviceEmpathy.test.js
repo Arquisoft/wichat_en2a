@@ -22,10 +22,10 @@ describe("/ask endpoint with empathy", () => {
   it("the llm should reply", async () => {
     const response = await request(app)
       .post("/ask")
-      .send({ question: "a question", model: "empathy" });
+      .send({ question: "What is the capital of France?", userMessage: "Where is it roughly located?", model: "gemini", correctAnswer: "Paris" });
 
     expect(response.statusCode).toBe(200);
-    expect(response.body.answer).toBe("llmanswer");
+    expect(response.body.answer).toBe("llmAnswer");
   });
 });
 

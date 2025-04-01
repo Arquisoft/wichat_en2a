@@ -67,7 +67,7 @@ describe('App component', () => {
     await fillLoginFormAndSubmit(screen.getByRole('button', {name: /Login/i}));
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /Welcome back!/i})).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Welcome back/i})).toBeInTheDocument();
     });
   });
 

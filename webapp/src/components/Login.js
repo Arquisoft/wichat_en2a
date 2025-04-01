@@ -14,7 +14,12 @@ const Login = () => {
 
     const loginUser = async () => {
         try {
-            await axios.post(`${apiEndpoint}/login`, {username, password});
+            const response = await axios.post(`${apiEndpoint}/login`, {username, password});
+            // Store user info in localStorage
+            localStorage.setItem('userId', response.data.userId || '');
+            localStorage.setItem('username', response.data.username || '');
+            localStorage.setItem('token', response.data.token || '');
+            
             setOpenSnackbar(true);
             navigate('/home');
         } catch (error) {
