@@ -12,12 +12,13 @@ let currentCorrectAnswer = "";
 
 // Middleware to parse JSON in request body
 app.use(express.json());
- 
+
 const llmConfigs = {
   empathy: {
     url: () => "https://empathyai.prod.empathy.co/v1/chat/completions",
     transformRequest: (question) => ({
-      model: "qwen/Qwen2.5-Coder-7B-Instruct",
+      // model: "qwen/Qwen2.5-Coder-7B-Instruct",
+      model: "mistralai/Mistral-7B-Instruct-v0.3",
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: question },
@@ -44,7 +45,7 @@ function validateRequiredFields(req, requiredFields) {
 async function sendQuestionToLLM(question) {
   try {
     const config = llmConfigs['empathy'];
-    
+
     //Transform the url with apiKey passed
     const url = config.url(process.env.EMPATHY_KEY);
 
@@ -69,19 +70,19 @@ async function sendQuestionToLLM(question) {
 }
 
 //It returns the answer to the question by using the LLM of gemini (It's only for if in the future empathy's LLM gives problem with the answers change and dont waste time)
-async function sendQuestionToGemini(question){
-    try{
-      const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+async function sendQuestionToGemini(question) {
+  try {
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-      const result = await model.generateContent(question);
+    const result = await model.generateContent(question);
 
-      return result;
+    return result;
 
-    }catch(error){
-      console.error(`Error sending question to ${model}:`, error.message || error)
-      return null;
-    }
+  } catch (error) {
+    console.error(`Error sending question to ${model}:`, error.message || error)
+    return null;
+  }
 
 }
 
@@ -90,13 +91,13 @@ app.post("/ask", async (req, res) => {
   try {
     validateRequiredFields(req, ["question", "userMessage", "model", "correctAnswer"]);
 
-    const {question, userMessage, model, correctAnswer} = req.body;
+    const { question, userMessage, model, correctAnswer } = req.body;
     //if current question is not defined or has changed, reset
     //we reset the conversation whenever the question changes
-    if (currentQuestion==="" || currentQuestion!==question || currentCorrectAnswer==="" || currentCorrectAnswer!==correctAnswer){
-      currentQuestion=question;
-      currentCorrectAnswer=correctAnswer;
-      conversation=[];
+    if (currentQuestion === "" || currentQuestion !== question || currentCorrectAnswer === "" || currentCorrectAnswer !== correctAnswer) {
+      currentQuestion = question;
+      currentCorrectAnswer = correctAnswer;
+      conversation = [];
     }
 
     //What will be send to the LLM
@@ -148,7 +149,7 @@ app.post("/ask", async (req, res) => {
       throw new Error("The LLM did not return a valid response.");
     }
 
-    conversation.push({question: userMessage, answer: answer}); //Save the latest response
+    conversation.push({ question: userMessage, answer: answer }); //Save the latest response
 
     //Return the message
     res.json({ answer });
@@ -169,9 +170,9 @@ app.post("/generateIncorrectOptions", async (req, res) => {
 
     const { correctAnswer } = req.body;
     let question =
-      "I need to generate incorrect options for a multiple choice question of exactly 4 options. The question is: What country is represented by the flag shown? The correct answer to this question is:" +
+      "I need to generate incorrect options for a multiple choice question. The question is: What country is represented by the flag shown? The correct answer to this question is:" +
       correctAnswer +
-      ". I need you to generate 3 incorrect options for that question that could be used as distractors. They should be plausible but different from the correct one. Provide them as 3 comma-separated values, nothing more.";
+      ". I need you to generate exactly 3 incorrect options for that question that could be used as distractors. They should be plausible but different from the correct one. Provide them as 3 comma-separated values, nothing more. The response should look exactly like: \"country1,country2,country3\"";
 
     const answer = await sendQuestionToLLM(question);
 
