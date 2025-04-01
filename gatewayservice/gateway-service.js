@@ -190,7 +190,6 @@ app.get('/scores', verifyToken, async (req, res) => {
       // Define allowed endpoints and validate the destination
       const ALLOWED_SERVICES = {
           'game': process.env.GAME_SERVICE_URL || 'http://localhost:8005'
-          || 'http://localhost:8000' || 'http://localhost:3000'
       };
       
       // Ensure we're only making requests to whitelisted hosts
