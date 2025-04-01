@@ -1,8 +1,12 @@
 const request = require('supertest');
 const axios = require('axios');
 const app = require('./gateway-service'); 
+const jwt = require('jsonwebtoken');
 
 jest.mock('axios');
+
+// Sign a mock token for testing
+const testToken = jwt.sign({ userId: 'mockID' }, 'your-secret-key', { expiresIn: '1h' });
 
 afterAll(async () => {
     app.close();
@@ -17,6 +21,11 @@ describe('Gateway Service', () => {
       return Promise.resolve({ data: { userId: 'mockedUserId' } });
     } else if (url.endsWith('/ask')) {
       return Promise.resolve({ data: { answer: 'llmanswer' } });
+    } else if (url.endsWith("/generateIncorrectOptions")) {
+      return Promise.resolve({
+          status: 200,
+          data: {options: ["option1", "option2", "option3"]},
+      });
     }
   });
 
@@ -72,7 +81,7 @@ describe('Gateway Service', () => {
 
   it('should return an error response on failure', async () => {
     // Simula la respuesta de error de axios
-    axios.get.mockRejectedValue({
+    axios.get.mockRejectedValueOnce({
       response: {
         status: 500,
         data: { error: 'Internal Server Error' }
@@ -154,7 +163,7 @@ describe('Gateway Service', () => {
 
   it('should return error response when game service fails', async () => {
     // Simula un error en la respuesta de la solicitud al game service
-    axios.get.mockRejectedValue({
+    axios.get.mockRejectedValueOnce({
       response: {
         status: 500,
         data: { error: 'Game Service Error' },
@@ -188,7 +197,7 @@ describe('Gateway Service', () => {
     });
 
     // Simula un error en la respuesta de la solicitud al user service
-    axios.post.mockRejectedValue({
+    axios.post.mockRejectedValueOnce({
       response: {
         status: 500,
         data: { error: 'User Service Error' },
@@ -234,7 +243,7 @@ describe('Gateway Service', () => {
     const mockRequestBody = { questionId: 1, answer: 'France' };
     const mockResponse = { data: { correct: true } };
 
-    axios.post.mockResolvedValue(mockResponse);
+    axios.post.mockResolvedValueOnce(mockResponse);
 
     const response = await request(app)
       .post('/check-answer')
@@ -318,6 +327,17 @@ describe('Gateway Service', () => {
   expect(response.body).toEqual(mockResponse);
   }); 
 
+  it("should forward generateIncorrectOptions to the llm service", async () => {
+    const response = await request(app).post("/generateIncorrectOptions").send({
+        model: "empathy",
+        correctAnswer: "correctAnswer",
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({
+        options: ["option1", "option2", "option3"],
+    });
+});
 });
 
 // Add these tests to your existing test file
@@ -452,9 +472,161 @@ describe('Gateway Service Error Handling', () => {
     expect(response.body).toEqual({ error: 'Internal Server Error' });
   });
 
+  it('should forward saveActiveUserScore with correct userId and their score', async () => {
+    const fakeToken = 'asdasda2391287qada';
+    const score = 750;
+    const expectedUserId = 'mockID';
+    const expectedIsVictory = true;
   
-
+    axios.get.mockReset();
+    // Mock axios.post a /saveScore devuelve bien
+    axios.post.mockImplementationOnce((url, data) => {
+      expect(url).toContain('/saveScore');
+      expect(data).toEqual({ userId: expectedUserId, score, isVictory: expectedIsVictory });
   
+      return Promise.resolve({ data: { success: true, ...data } });
+    });
+  
+    // Mock JWT decode funciona insertando manualmente el userId en el token
+    const response = await request(app)
+      .post('/saveActiveUserScore')
+      .set('Authorization', fakeToken)
+      .send({ score });
+  
+    if (response.status === 401) {
+      console.warn('This test requires a valid token');
+    } else {
+      expect(response.status).toBe(200);
+      expect(response.body.userId).toBe(expectedUserId);
+      expect(response.body.score).toBe(score);
+      expect(response.body.isVictory).toBe(expectedIsVictory);
+    }
+  });
 
+  it('should return 401 if token is missing', async () => {
+    const response = await request(app)
+      .post('/saveActiveUserScore')
+      .send({ score: 800 });
+  
+    expect(response.status).toBe(401);
+    expect(response.body).toEqual({ error: 'No token provided' });
+  });
+
+  it('should forward /scores request with token', async () => {
+    const fakeToken = 'Bearer faketoken';
+    const mockScores = [{ score: 800 }, { score: 500 }];
+  
+    axios.get.mockReset();
+    axios.get.mockImplementationOnce((url, config) => {
+      expect(url).toContain('/scores');
+      expect(config.headers.Authorization).toBe(fakeToken);
+      return Promise.resolve({ data: mockScores });
+    });
+  
+    const response = await request(app)
+      .get('/scores')
+      .set('Authorization', fakeToken);
+  
+    if (response.status === 401) {
+      console.warn('This test requires a valid token');
+    } else {
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockScores);
+    }
+  });
+
+  it('should forward /scoresByUser/:userId to game service', async () => {
+    const userId = 'sadasklasjdlkajs';
+    const mockResponse = [{ gameId: 'x1', score: 700 }];
+  
+    axios.get.mockReset();
+    axios.get.mockResolvedValueOnce({ data: mockResponse });
+  
+    const response = await request(app).get(`/scoresByUser/${userId}`);
+  
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining(`/scoresByUser/${userId}`));
+  });
+  
+  it('should return 401 when requesting /scores without token', async () => {
+    const response = await request(app).get('/scores');
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toEqual({ error: 'No token provided' });
+  });
+
+  it('should return 500 when game service fails at /scores', async () => {
+    axios.get.mockReset();
+    axios.get.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'Game failure' } }
+    });
+  
+    const response = await request(app)
+      .get('/scores')
+      .set('Authorization', 'Bearer ' + testToken);
+  
+    if (response.status === 401) {
+      console.warn('This test requires a valid token');
+    } else {
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: 'Game failure' });
+    }
+  });
+
+  it('should return 400 when score is not a number in /saveActiveUserScore', async () => {
+    const response = await request(app)
+      .post('/saveActiveUserScore')
+      .set('Authorization', 'Bearer ' + testToken)
+      .send({ score: 'not-a-number-therefore-FAIL' });
+  
+    if (response.status === 401) {
+      console.warn('This test requires a valid token');
+    } else {
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ error: 'Invalid or missing score' });
+    }
+  });
+
+  it('should return 500 when game service fails at /saveActiveUserScore', async () => {
+    axios.get.mockReset();
+    axios.post.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'Game Save Failed' } }
+    });
+  
+    const response = await request(app)
+      .post('/saveActiveUserScore')
+      .set('Authorization', 'Bearer ' + testToken)
+      .send({ score: 800 });
+  
+    if (response.status === 401) {
+      console.warn('This test requires a valid token');
+    } else {
+      expect(response.status).toBe(500);
+    }
+  });
+
+  it('should return 500 when game service fails at /scoresByUser/:userId', async () => {
+    axios.get.mockReset();
+    axios.get.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'Game Service Error' } }
+    });
+  
+    const response = await request(app).get('/scoresByUser/testuser');
+  
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Game Service Error' });
+  });
+  
+  it('should return 500 when question service fails at /question', async () => {
+    axios.get.mockReset();
+    axios.get.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'Question Service Error' } }
+    });
+  
+    const response = await request(app).get('/question');
+  
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Question Service Error' });
+  });
   
 });

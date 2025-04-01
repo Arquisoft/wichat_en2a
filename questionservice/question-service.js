@@ -11,7 +11,7 @@ app.use(express.json());
 
 // Define the connection URL
 const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mongo-db-wichat_en2a';
-const llmServiceUrl = process.env.LLM_SERVICE_URL || 'http://localhost:8003';
+const gatewatServiceUrl = process.env.GATEWAY_SERVICE_URL || "http://localhost:8000";
 
 // Connect to MongoDB
 mongoose.connect(mongoURI)
@@ -19,8 +19,12 @@ mongoose.connect(mongoURI)
     .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // Fetch flag data from Wikidata
-async function fetchFlagData() {
+async function fetchFlagData(numberOfQuestions) {
     console.time('fetchFlagData');
+
+    if (numberOfQuestions == null || numberOfQuestions < 1 || !Number.isInteger(numberOfQuestions)) {
+        numberOfQuestions = 30; // Default to 30 if invalid
+      }
 
     const query = `
         SELECT ?country ?countryLabel ?flag WHERE {
@@ -28,7 +32,7 @@ async function fetchFlagData() {
                wdt:P41 ?flag.     
       SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
     }
-    LIMIT 30
+    LIMIT ${numberOfQuestions}
     `;
 
     const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=json`;
@@ -44,35 +48,30 @@ async function fetchFlagData() {
             const correctAnswer = entry.countryLabel.value;
             const imageUrl = entry.flag.value;
 
-            try {
-                // Call the LLM service to generate incorrect answers, if you are running the application with npm start, then
-                // use this link: 'http://localhost:8003/generateIncorrectOptions'
-                console.log('Link to llm is ', llmServiceUrl);
-                const llmResponse = await axios.post(llmServiceUrl + '/generateIncorrectOptions', {
-                    model: "empathy",
-                    correctAnswer: correctAnswer
-                });
-
-                const incorrectOptions = llmResponse.data.incorrectOptions;
-                const options = [correctAnswer, ...incorrectOptions];
-                options.sort(() => Math.random() - 0.5);
-
-                return {
-                    type: 'flag',
-                    imageUrl: imageUrl,
-                    options: options,
-                    correctAnswer: correctAnswer
-                };
-            } catch (llmError) {
-                console.error('Failed to generate incorrect options:', llmError.message);
-                return {
-                    type: 'flag',
-                    imageUrl: imageUrl,
-                    options: [correctAnswer],
-                    correctAnswer: correctAnswer
-                };
+            let incorrectOptions = await generateDistractors(correctAnswer);
+            let attempts = 0;
+            while (incorrectOptions.length != 3 && attempts < 2) {
+              // If the LLM service doesn't provide enough incorrect options, generate more until we have 3 or we have tried 3 times in total
+              console.log("Not enough incorrect options, trying again...");
+              incorrectOptions = await generateDistractors(correctAnswer);
+              attempts++;
             }
-        }));
+
+            if (incorrectOptions.length != 3) {
+                throw new Error("Not enough incorrect options generated");
+            }
+      
+            const options = [correctAnswer, ...incorrectOptions];
+            options.sort(() => Math.random() - 0.5);
+      
+            return {
+                type: "flag",
+                imageUrl: imageUrl,
+                options: options,
+                correctAnswer: correctAnswer
+              };
+            })
+          );
 
         await saveQuestionsToDB(results); // Save questions to the database
         console.log('Fetched Flag Data:', results);
@@ -83,6 +82,33 @@ async function fetchFlagData() {
         throw new Error('Failed to fetch flag data from Wikidata');
     }
 }
+
+async function generateDistractors(correctAnswer) {
+    try {
+      const llmResponse = await axios.post(
+        gatewatServiceUrl + "/generateIncorrectOptions",
+        {
+          model: "empathy",
+          correctAnswer: correctAnswer,
+        }
+      );
+  
+      // Check if the LLM service returned a successful response
+      if (llmResponse.status !== 200) {
+        throw new Error("Failed to generate distractors from LLM service");
+      }
+      const incorrectOptions = llmResponse.data.incorrectOptions;
+      // Remove leading and trailing spaces from each option
+      incorrectOptions.forEach((option, index) => {
+        incorrectOptions[index] = option.trim();
+      });
+  
+      return incorrectOptions;
+    } catch (error) {
+      console.error("Error while generating distractors:", error);
+      return [];
+    }
+  }
 
 // Save questions to the database
 async function saveQuestionsToDB(questions) {
@@ -156,12 +182,14 @@ app.post('/check-answer', async (req, res) => {
 });
 
 // Endpoint to fetch
-app.post('/fetch-flag-data', async (req, res) => {
+app.post("/fetch-flag-data", async (req, res) => {
     try {
-        const results = await fetchFlagData();
-        res.json(results);
+      const { numberOfQuestions } = req.body;
+      const results = await fetchFlagData(numberOfQuestions);
+      res.json(results);
     } catch (error) {
-        console.error("Error while fetching questions");
+      console.error("Error while fetching questions");
+      res.status(500).json({ error: "Failed generate the questions..." });
     }
 });
 

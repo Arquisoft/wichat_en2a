@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const promBundle = require('express-prom-bundle');
 
 //libraries required for OpenAPI-Swagger
@@ -18,14 +19,28 @@ const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
 const gameServiceUrl = process.env.GAME_SERVICE_URL || 'http://localhost:8005';
 
-
-
 app.use(cors());
 app.use(express.json());
 
 //Prometheus configuration
 const metricsMiddleware = promBundle({includeMethod: true});
 app.use(metricsMiddleware);
+
+// Middleware to verify token
+function verifyToken(req, res, next) {
+  const token = req.header('Authorization');
+  if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+  }
+  
+  try {
+      const decoded = jwt.verify(token.replace('Bearer ', ''), 'your-secret-key');
+      req.userId = decoded.userId;
+      next();
+  } catch (error) {
+      return res.status(401).json({ error: 'Invalid token' });
+  }
+}
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -128,6 +143,77 @@ app.post('/saveScore', async (req, res) => {
   }
 });
 
+//gateway one 
+// Endpoint to save the active user's score (on endgame)
+// En el gateway, modifica para usar /saveScore
+// Gateway endpoint to save active user's score
+app.post('/saveActiveUserScore', verifyToken, async (req, res) => {
+  try {
+      const { score } = req.body;
+
+      if (score === undefined || isNaN(score)) {
+          return res.status(400).json({ error: "Invalid or missing score" });
+      }
+
+      const userId = req.userId; // Extracted from token
+      const isVictory = score >= 700; // Determine victory condition
+
+      // Forward request to /saveScore in game service
+      const response = await axios.post(`${gameServiceUrl}/saveScore`,
+          { userId, score, isVictory }
+      );
+
+      res.json(response.data);
+  } catch (error) {
+      console.error("Error in Gateway saving score:", error.response?.data || error.message);
+      res.status(error.response?.status || 500).json({ error: error.response?.data?.error || "Internal Server Error" });
+  }
+});
+
+
+// En tu archivo de gateway
+app.get('/scoresByUser/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const response = await axios.get(`${gameServiceUrl}/scoresByUser/${userId}`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({ 
+      error: error.response?.data?.error || 'Internal Server Error' 
+    });
+  }
+});
+
+// Endpoint to get loggeduser scores
+app.get('/scores', verifyToken, async (req, res) => {
+  try {
+      // Definir URL explícitamente sin usar construcción dinámica
+      const GAME_SERVICE_BASE_URL = process.env.GAME_SERVICE_URL || 'http://localhost:8005';
+      const SCORES_ENDPOINT = '/scores';
+      
+      // Validar protocolo del servicio configurado
+      const urlObj = new URL(GAME_SERVICE_BASE_URL);
+      if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
+          return res.status(400).json({ error: 'Invalid protocol in service configuration' });
+      }
+      
+      // Concatenar de manera segura (sin parámetros de usuario)
+      const requestUrl = `${GAME_SERVICE_BASE_URL}${SCORES_ENDPOINT}`;
+      
+      const authToken = req.header('Authorization');
+      
+      const response = await axios.get(requestUrl, { // NOSONAR
+          headers: { 
+              'Authorization': authToken
+          }
+      });
+      
+      res.json(response.data);
+  } catch (error) {
+      res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal Server Error' });
+  }
+});
+
 // 8000!!!!!!!!!
 app.get('/leaderboard', async (req, res) => {
   try {
@@ -163,8 +249,17 @@ app.get('/leaderboard', async (req, res) => {
   }
 });
 
+app.post('/generateIncorrectOptions', async (req, res) => {
+  try {
+    const incorrectOptionsResponse = await axios.post(`${llmServiceUrl}/generateIncorrectOptions`, req.body);
+    res.json(incorrectOptionsResponse.data);
+  } catch (error) {
+      res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
 // Read the OpenAPI YAML file synchronously
-openapiPath='./openapi.yaml'
+const openapiPath='./openapi.yaml'
 if (fs.existsSync(openapiPath)) {
   const file = fs.readFileSync(openapiPath, 'utf8');
 

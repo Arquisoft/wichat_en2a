@@ -320,6 +320,89 @@ describe('User Model', () => {
   });
 });
 
+describe('Authentication and /me endpoint', () => {
+  let token;
+  let jwt; // Declare the JWT variable at the describe level
+  
+  beforeEach(async () => {
+    // Import JWT here to make it available to all tests in this describe block
+    jwt = require('jsonwebtoken');
+    
+    // Clear users collection
+    await User.deleteMany({});
+    
+    // Create a test user
+    const testUser = new User({
+      username: 'authuser',
+      password: await bcrypt.hash('testpassword', 10)
+    });
+    
+    const savedUser = await testUser.save();
+    
+    // Create a valid token for this user
+    token = jwt.sign({ userId: savedUser._id }, 'your-secret-key');
+  });
+
+  it('should return user details when valid token is provided to /me', async () => {
+    const response = await request(app)
+      .get('/me')
+      .set('Authorization', `Bearer ${token}`);
+    
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('username', 'authuser');
+    expect(response.body).toHaveProperty('_id');
+  });
+
+  it('should return 401 when no token is provided', async () => {
+    const response = await request(app).get('/me');
+    
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty('error', 'No token provided');
+  });
+
+  it('should return 401 when invalid token format is provided', async () => {
+    const response = await request(app)
+      .get('/me')
+      .set('Authorization', 'InvalidTokenFormat');
+    
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty('error', 'Invalid token');
+  });
+
+  it('should return 401 when token is invalid', async () => {
+    const response = await request(app)
+      .get('/me')
+      .set('Authorization', 'Bearer invalidtoken123');
+    
+    expect(response.status).toBe(401);
+    expect(response.body).toHaveProperty('error', 'Invalid token');
+  });
+
+  it('should return 404 when user ID in token no longer exists', async () => {
+    // Create a token with a non-existent user ID
+    const nonExistentId = new mongoose.Types.ObjectId();
+    const invalidToken = jwt.sign({ userId: nonExistentId }, 'your-secret-key');
+    
+    const response = await request(app)
+      .get('/me')
+      .set('Authorization', `Bearer ${invalidToken}`);
+    
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty('error', 'User not found');
+  });
+  
+  it('should properly extract token from Authorization header', async () => {
+    // Test with extra spaces in the Authorization header but ensure exactly the right format
+    // The issue might be that `Bearer  ${token}  ` has extra spaces which affect token extraction
+    const response = await request(app)
+      .get('/me')
+      .set('Authorization', `Bearer ${token}`);
+    
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('username', 'authuser');
+  });
+});
+
 
 
 

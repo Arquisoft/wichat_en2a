@@ -1,5 +1,6 @@
 const request = require('supertest');
 const { MongoMemoryServer } = require('mongodb-memory-server');
+const jwt = require('jsonwebtoken');
 const User = require('./user-model');
 const Score = require('./score-model');
 const mongoose = require('mongoose');
@@ -135,7 +136,22 @@ describe('Game Service Score Endpoints', () => {
       expect(actual.isVictory).toBe(expected.isVictory);
     });
   });
-  
+
+  it('should save a score for an authenticated user on POST /saveActiveUserScore', async () => {
+    const token = jwt.sign({ userId: testUserId1 }, 'your-secret-key', { expiresIn: '1h' });
+
+    const response = await request(app)
+        .post('/saveActiveUserScore')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ score: 800 });
+
+    verifyResponse(response, 200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.score.score).toBe(800);
+    expect(response.body.score.isVictory).toBe(true);
+  });
+
+
   it('should return 400 for invalid userId format', async () => {
     const response = await makeRequest('post', '/saveScore', {
       userId: 'invalid-id',
@@ -146,7 +162,14 @@ describe('Game Service Score Endpoints', () => {
     verifyResponse(response, 400);
     expect(response.body).toHaveProperty('error');
   });
-  
+
+  it('should return 401 if no token is provided when accessing /scores', async () => {
+    const response = await makeRequest('get', '/scores');
+
+    verifyResponse(response, 401, { error: 'No token provided' });
+  });
+
+
   it('should return 404 if no scores found for user', async () => {
     const nonExistentUserId = new mongoose.Types.ObjectId().toString();
     const response = await makeRequest('get', `/scoresByUser/${nonExistentUserId}`);
@@ -154,6 +177,26 @@ describe('Game Service Score Endpoints', () => {
     verifyResponse(response, 404);
     expect(response.body).toHaveProperty('error');
   });
+
+  it('should return 400 if updating score with invalid data', async () => {
+    const response = await makeRequest('put', '/updateScore', {
+      userId: "123",
+      score: "invalid-score",
+      isVictory: "invalid-boolean"
+    });
+
+    verifyResponse(response, 400);
+    expect(response.body).toHaveProperty('error');
+  });
+
+  it('should return 404 if no scores exist for the user', async () => {
+    const userId = new mongoose.Types.ObjectId().toString();
+    const response = await makeRequest('get', `/scoresByUser/${userId}`);
+
+    verifyResponse(response, 404, { error: 'No scores found for this user' });
+  });
+
+
 });
 
 describe('Game Service Leaderboard Endpoint', () => {
@@ -259,4 +302,14 @@ describe('Game Service Leaderboard Endpoint', () => {
     // Reconnect to the database for subsequent tests
     await mongoose.connect(process.env.MONGODB_URI);
   });
+
+  it('should return an empty array if no scores exist in leaderboard', async () => {
+    await Score.deleteMany({}); // Vaciar la colección
+
+    const response = await makeRequest('get', '/leaderboard');
+
+    verifyResponse(response, 200);
+    expect(response.body).toEqual([]);
+  });
+
 });
