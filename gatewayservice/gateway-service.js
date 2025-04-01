@@ -187,9 +187,26 @@ app.get('/scoresByUser/:userId', async (req, res) => {
 // Endpoint to get loggeduser scores
 app.get('/scores', verifyToken, async (req, res) => {
   try {
-      const response = await axios.get(`${gameServiceUrl}/scores`, {
-          headers: { Authorization: req.header('Authorization') }
+      // Define allowed endpoints and validate the destination
+      const ALLOWED_SERVICES = {
+          'game': process.env.GAME_SERVICE_URL || 'http://localhost:8005'
+      };
+      
+      // Ensure we're only making requests to whitelisted hosts
+      const targetUrl = new URL('/scores', ALLOWED_SERVICES['game']);
+      
+      // Validate URL before making request
+      if (targetUrl.protocol !== 'http:' && targetUrl.protocol !== 'https:') {
+          return res.status(400).json({ error: 'Invalid protocol' });
+      }
+      
+      const response = await axios.get(targetUrl.toString(), {
+          // Only pass necessary headers or transform them as needed
+          headers: { 
+              'Authorization': req.userId ? `Bearer ${req.userId}` : undefined
+          }
       });
+      
       res.json(response.data);
   } catch (error) {
       res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal Server Error' });
