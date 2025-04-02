@@ -54,34 +54,31 @@ const Home = () => {
     return (
         <>
             <Navbar />
-            <Box
-                sx={{
-                    minHeight: '100vh',
-                    width: '100vw',
-                    backgroundColor: '#6A5ACD', // Purple background
-                    display: 'flex',
-                    flexDirection: { xs: 'column', md: 'row' },
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: { xs: 4, md: 8 },
-                    padding: '0 5%',
-                    textAlign: { xs: 'center', md: 'left' },
-                }}
-            >
-                {/* Left container */}
-                <Box
-                    sx={{
-                        flex: 1,
-                        minWidth: '300px',
-                        maxWidth: { xs: '100%', md: '50%' },
-                    }}
-                >
+            <Box sx={{
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" }, // Column on small screens, row on larger
+                alignItems: "center",
+                justifyContent: "space-around",
+                height: "100vh",
+                width: "100vw",
+                textAlign: { xs: "center", md: "left" }, // Center text on small screens, left on big screens
+                backgroundColor: "#6A5ACD",
+                paddingTop: "64px",
+                paddingX: { xs: 2, md: 10 } // Add padding for small screens
+            }}>
+                {/* Left Section: Text */}
+                <Box sx={{ maxWidth: { xs: "90%", md: "40%" }, color: "white" }}>
                     <Typography
-                        component="h1"
-                        variant={{ xs: 'h3', sm: 'h2', md: 'h1' }}
-                        sx={{ color: 'white', fontWeight: 'bold' }}
+                        variant="h3"
+                        sx={{ fontWeight: "bold", fontSize: { xs: "2rem", md: "3.5rem" } }}
                     >
                         Welcome back, {username}!
+                    </Typography>
+                    <Typography
+                        variant="h5"
+                        sx={{ marginBottom: 3, fontSize: { xs: "1.2rem", md: "2rem" } }}
+                    >
+                        Get ready to test your knowledge!
                     </Typography>
                     <Button
                         variant="contained"
@@ -92,30 +89,24 @@ const Home = () => {
                             padding: '15px 40px',
                             fontSize: { xs: '1.2rem', md: '1.5rem' },
                             borderRadius: '30px',
-                            '&:hover': { backgroundColor: '#FFC107' },
-                            marginTop: 2, // Space below text
+                            '&:hover': { backgroundColor: '#FFC107' }
                         }}
-                        onClick={() => navigate('/game')}
+                        onClick={() => navigate("/game")}
                     >
-                        Play Game
+                        PLAY
                     </Button>
                 </Box>
-                {/* Imagen a la derecha */}
-                <Box
-                    sx={{
-                        flex: 1,
-                        minWidth: '300px',
-                        maxWidth: { xs: '80%', md: '50%' },
-                        display: 'flex',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <img
-                        src="/questionMark.webp"
-                        alt="Trivia Logo"
-                        style={{ width: 'auto', height: 'auto' }}
-                    />
-                </Box>
+
+                {/* Right Section: Image */}
+                <Box component="img"
+                     src="/questionMark.webp"
+                     alt="Play Icon"
+                     sx={{
+                         width: "40%" , // Smaller on mobile, bigger on large screens
+                         marginLeft: { xs: 0, md: 3 }, // Remove left margin for small screens
+                         marginTop: { xs: 3, md: 0 } // Add top margin on mobile
+                     }}
+                />
             </Box>
         </>
     );

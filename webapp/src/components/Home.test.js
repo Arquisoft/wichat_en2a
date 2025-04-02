@@ -26,13 +26,13 @@ describe('Home component', () => {
         expect(screen.getByText(/Welcome back/i)).toBeInTheDocument();
     });
 
-    it('navigates to "game" when "Play Game" button is clicked', () => {
+    it('navigates to "game" when "Play" button is clicked', () => {
         render(
             <MemoryRouter>
               <Home />
             </MemoryRouter>
     );
-    fireEvent.click(screen.getByRole('button', { name: /Play Game/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Play/i }));
     expect(mockNavigate).toHaveBeenCalledWith('/game');
     });
 
@@ -42,7 +42,7 @@ describe('Home component', () => {
               <Home />
             </MemoryRouter>
         );
-        expect(screen.getByRole('button', { name: /Play Game/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Play/i })).toBeInTheDocument();
     });
 
     it('handles fetch network error and displays "Guest"', async () => {

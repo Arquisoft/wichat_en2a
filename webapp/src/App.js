@@ -6,7 +6,7 @@ import Home from './components/Home';
 import Game from './components/Game';
 import Scores from './components/Scores';
 import CssBaseline from '@mui/material/CssBaseline';
-import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Leaderboard from './components/Leaderboard';
 import axios from 'axios';
@@ -36,7 +36,7 @@ function App() {
     }, []);
 
     return (
-        <Container component="main" maxWidth="xs">
+        <Box sx={{ width: "100vw", height: "100vh", overflowX: "hidden" }}>
             <CssBaseline/>
             {/* Muestra mensaje de error si existe */}
             {error && (
@@ -57,7 +57,7 @@ function App() {
                 <Route path="/scores" element={<Scores/>}/>
                 <Route path="/game-over" element={<GameOver/>} />
             </Routes>
-        </Container>
+        </Box>
     );
 }
 
