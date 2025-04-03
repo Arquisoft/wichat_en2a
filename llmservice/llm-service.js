@@ -32,6 +32,30 @@ const llmConfigs = {
   },
 };
 
+const questions = [
+  {
+    type: "flag",
+    question: "What country is represented by the flag shown?"
+  },
+  {
+    type: "pokemon",
+    question: "Who's that Pokémon?"
+  },
+  {
+    type: "famous-person",
+    question: "Who's this famous person?"
+  },
+  {
+    type: "company-logo",
+    question: "Which company does this logo belong to?"
+  },
+  {
+    type: "landmark",
+    question: "What famous landmark is shown in the image?"
+  }
+];
+
+
 // Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
   for (const field of requiredFields) {
@@ -166,11 +190,11 @@ function getConversation() {
 
 app.post("/generateIncorrectOptions", async (req, res) => {
   try {
-    validateRequiredFields(req, ["model", "correctAnswer"]);
+    validateRequiredFields(req, ["model", "correctAnswer", "type"]);
 
-    const { correctAnswer } = req.body;
+    const { correctAnswer, type } = req.body;
     let question =
-      "I need to generate incorrect options for a multiple choice question. The question is: What country is represented by the flag shown? The correct answer to this question is:" +
+      "I need to generate incorrect options for a multiple choice question. The question is: " + getQuestionByType(type) + " The correct answer to this question is:" +
       correctAnswer +
       ". I need you to generate exactly 3 incorrect options for that question that could be used as distractors. They should be plausible but different from the correct one. Provide them as 3 comma-separated values, nothing more. The response should look exactly like: \"country1,country2,country3\"";
 
@@ -182,6 +206,14 @@ app.post("/generateIncorrectOptions", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+function getQuestionByType(type) {
+  const match = questions.find(q => q.type === type);
+  if (!match) {
+    throw new Error(`No question found for type: ${type}`);
+  }
+  return match.question;
+}
 
 // Start the service
 const server = app.listen(port, () => {
