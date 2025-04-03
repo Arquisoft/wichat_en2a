@@ -12,6 +12,9 @@ const Home = () => {
         if (storedUsername) {
             setUsername(storedUsername);
         }
+        else{
+            setUsername('Guest');
+        }
     }, []);
 
     return (

@@ -44,4 +44,33 @@ describe('Home component', () => {
         );
         expect(screen.getByRole('button', { name: /Play/i })).toBeInTheDocument();
     });
+
+    it('Welcomes the user displaying its name', () => {
+        const mockUsername = 'JohnDoe';
+        Storage.prototype.getItem = jest.fn(() => mockUsername);
+
+        render(
+            <MemoryRouter>
+                <Home />
+            </MemoryRouter>
+        );
+
+        // Check if the username is displayed
+        expect(screen.getByText((content) => content.includes('Welcome back, JohnDoe'))).toBeInTheDocument();
+
+    })
+
+    it('If something went wrong and username is not stored, welcomes the user displaying guest', () => {
+        Storage.prototype.getItem = jest.fn(() => null);
+
+        render(
+            <MemoryRouter>
+                <Home />
+            </MemoryRouter>
+        );
+
+        // Check if 'Guest' is displayed when no username is found
+        expect(screen.getByText((content) => content.includes('Welcome back, Guest'))).toBeInTheDocument();
+
+    })
 });
