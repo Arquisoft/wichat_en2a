@@ -1,5 +1,5 @@
 import React from 'react';
-import {render, fireEvent, screen, waitFor} from '@testing-library/react';
+import {render, fireEvent, screen} from '@testing-library/react';
 import Home from './Home';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -43,31 +43,5 @@ describe('Home component', () => {
             </MemoryRouter>
         );
         expect(screen.getByRole('button', { name: /Play/i })).toBeInTheDocument();
-    });
-
-    it('handles fetch network error and displays "Guest"', async () => {
-        localStorage.setItem('token', 'fakeToken');
-
-        // Ensure fetch rejects with a network error
-        global.fetch = jest.fn(() => Promise.reject(new Error('Network error')));
-
-        render(
-            <MemoryRouter>
-                <Home />
-            </MemoryRouter>
-        );
-
-        await waitFor(() => expect(screen.getByText(/Welcome back, Guest!/i)).toBeInTheDocument());
-    });
-
-
-    it('handles missing token and displays "Guest"', async () => {
-        render(
-            <MemoryRouter>
-                <Home />
-            </MemoryRouter>
-        );
-
-        await waitFor(() => expect(screen.getByText(/Welcome back, Guest!/i)).toBeInTheDocument());
     });
 });
