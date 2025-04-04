@@ -12,9 +12,23 @@ afterAll(async () => {
     app.close();
 });
 
+const mockAxiosError = (statusCode, errorMessage) => {
+  axios.get.mockRejectedValueOnce({
+    response: {
+      status: statusCode,
+      data: { error: errorMessage }
+    }
+  });
+};
+
+const assertErrorResponse = (response, statusCode, errorMessage) => {
+  expect(response.status).toBe(statusCode);
+  expect(response.body).toEqual({ error: errorMessage });
+};
+
 describe('Gateway Service', () => {
   // Mock responses from external services
-  axios.post.mockImplementation((url, data) => {
+  axios.post.mockImplementation((url) => {
     if (url.endsWith('/login')) {
       return Promise.resolve({ data: { token: 'mockedToken' } });
     } else if (url.endsWith('/adduser')) {
@@ -80,20 +94,41 @@ describe('Gateway Service', () => {
   });
 
   it('should return an error response on failure', async () => {
-    // Simula la respuesta de error de axios
+    mockAxiosError(500, 'Internal Server Error');
+
+    const response = await request(app).get('/users');
+
+    assertErrorResponse(response, 500, 'Internal Server Error');
+  });
+
+  it('should forward getUserById request to user service', async () => {
+    const mockUser = { id: '1', username: 'user1' };
+    const userId = '1';
+
+    axios.get.mockResolvedValueOnce({ data: mockUser });
+
+    const response = await request(app).get(`/getUserById/${userId}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual(mockUser);
+    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/users'));
+  });
+
+  it('should return an error response on failure', async () => {
+    const userId = 'nonexistentid';
+
     axios.get.mockRejectedValueOnce({
       response: {
-        status: 500,
-        data: { error: 'Internal Server Error' }
+        status: 404,
+        data: { error: 'User not found' }
       }
     });
 
-    const response = await request(app).get('/users');
-    
-    expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: 'Internal Server Error' });
-  });
+    const response = await request(app).get(`/getUserById/${userId}`);
 
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'User not found' });
+  })
 
   // Test /saveScore endpoint
   it('should forward saveScore request to game service', async () => {
@@ -174,6 +209,30 @@ describe('Gateway Service', () => {
     
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Game Service Error' });
+  });
+
+  it('should forward request to game service to get top3 users', async () => {
+    const mockTop3 = [
+      { userId: '1', totalScore: 300 },
+      { userId: '2', totalScore: 250 },
+      { userId: '3', totalScore: 200 },
+    ];
+
+    axios.get.mockResolvedValueOnce({ data: mockTop3 });
+
+    const response = await request(app).get('/leaderboard/top3');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockTop3);
+    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/leaderboard/top3'));
+  });
+
+  it('should return error response when internal error', async () => {
+    mockAxiosError(500, 'Internal Server Error');
+
+    const response = await request(app).get('/leaderboard/top3');
+
+    assertErrorResponse(response, 500, 'Internal Server Error');
   });
 
   // Test /askllm endpoint

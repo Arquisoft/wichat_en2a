@@ -312,4 +312,34 @@ describe('Game Service Leaderboard Endpoint', () => {
     expect(response.body).toEqual([]);
   });
 
+  it('should return top 3 users with highest total scores', async () => {
+    // Arrange: mock the result of the aggregate
+    const mockScores = [
+      { userId: '1', totalScore: 300 },
+      { userId: '2', totalScore: 250 },
+      { userId: '3', totalScore: 200 },
+    ];
+
+    // Mock the Score.aggregate call
+    Score.aggregate = jest.fn().mockResolvedValueOnce(mockScores);
+
+    // Act
+    const response = await request(app).get('/leaderboard/top3');
+
+    // Assert
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual(mockScores);
+    expect(Score.aggregate).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return 500 if an error occurs during aggregation', async () => {
+    Score.aggregate = jest.fn().mockRejectedValueOnce(new Error('Aggregation failed'));
+
+    const response = await request(app).get('/leaderboard/top3');
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toHaveProperty('error', 'Internal Server Error');
+    expect(response.body).toHaveProperty('details', 'Aggregation failed');
+  });
+
 });

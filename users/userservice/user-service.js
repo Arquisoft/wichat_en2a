@@ -161,31 +161,18 @@ app.put('/users/:userId', async (req, res) => {
 });
 
 // Endpoint to get username of one userId
-app.get('/getUserById/:userId', async (req, res) => {
-    try {
-        const { userId } = req.params;
+app.get('/getUserById/:userId', (req, res) => {
+    const { userId } = req.params;
 
-        // Validate that userId is a valid ObjectId
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({ error: 'Invalid userId format' });
-        }
-
-        // Fetch user and select only the necessary fields
-        const user = await User.findById(userId).select('username _id');
-       
-        if (!user) {
+    User.findById(userId).then((user) => {
+        if(!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-
-        // Return an object with both _id and username
-        res.json({
-            _id: user._id.toString(), // Ensure it's a string
-            username: user.username
-        });
-    } catch (error) {
-        console.error('Error getting user:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+        res.json(user);
+    })
+    .catch((error) => {
+        res.status(500).json({ error: error.message });
+    });
 });
 
 // Endpoint to get usernames by multiple userIds

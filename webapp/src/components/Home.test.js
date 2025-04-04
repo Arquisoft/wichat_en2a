@@ -1,13 +1,15 @@
 import React from 'react';
-import {render, fireEvent, screen, waitFor} from '@testing-library/react';
+import {render, fireEvent, screen} from '@testing-library/react';
 import Home from './Home';
 import { MemoryRouter } from 'react-router-dom';
+import axios from "axios";
 
 //useNavigate Mock
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
 }));
+jest.mock('axios');
 
 describe('Home component', () => {
     const mockNavigate = jest.fn();
@@ -26,13 +28,13 @@ describe('Home component', () => {
         expect(screen.getByText(/Welcome back/i)).toBeInTheDocument();
     });
 
-    it('navigates to "game" when "Play Game" button is clicked', () => {
+    it('navigates to "game" when "Play" button is clicked', () => {
         render(
             <MemoryRouter>
               <Home />
             </MemoryRouter>
     );
-    fireEvent.click(screen.getByRole('button', { name: /Play Game/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Play/i }));
     expect(mockNavigate).toHaveBeenCalledWith('/game');
     });
 
@@ -42,14 +44,12 @@ describe('Home component', () => {
               <Home />
             </MemoryRouter>
         );
-        expect(screen.getByRole('button', { name: /Play Game/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Play/i })).toBeInTheDocument();
     });
 
-    it('handles fetch network error and displays "Guest"', async () => {
-        localStorage.setItem('token', 'fakeToken');
-
-        // Ensure fetch rejects with a network error
-        global.fetch = jest.fn(() => Promise.reject(new Error('Network error')));
+    it('Welcomes the user displaying its name', () => {
+        const mockUsername = 'JohnDoe';
+        Storage.prototype.getItem = jest.fn(() => mockUsername);
 
         render(
             <MemoryRouter>
@@ -57,17 +57,54 @@ describe('Home component', () => {
             </MemoryRouter>
         );
 
-        await waitFor(() => expect(screen.getByText(/Welcome back, Guest!/i)).toBeInTheDocument());
-    });
+        // Check if the username is displayed
+        expect(screen.getByText((content) => content.includes('Welcome back, JohnDoe'))).toBeInTheDocument();
 
+    })
 
-    it('handles missing token and displays "Guest"', async () => {
+    it('If something went wrong and username is not stored, welcomes the user displaying guest', () => {
+        Storage.prototype.getItem = jest.fn(() => null);
+
         render(
             <MemoryRouter>
                 <Home />
             </MemoryRouter>
         );
 
-        await waitFor(() => expect(screen.getByText(/Welcome back, Guest!/i)).toBeInTheDocument());
+        // Check if 'Guest' is displayed when no username is found
+        expect(screen.getByText((content) => content.includes('Welcome back, Guest'))).toBeInTheDocument();
+
+    })
+
+    it('displays top 3 players from leaderboard', async () => {
+        const leaderboardData = [
+            { _id: '1', totalScore: 300 },
+            { _id: '2', totalScore: 250 },
+            { _id: '3', totalScore: 200 },
+        ];
+        axios.get.mockResolvedValueOnce({ data: leaderboardData });
+
+        //Mock fetch for each user's data
+        global.fetch = jest.fn()
+            .mockResolvedValueOnce({
+                json: async () => ({ username: 'Alice' })
+            })
+            .mockResolvedValueOnce({
+                json: async () => ({ username: 'Bob' })
+            })
+            .mockResolvedValueOnce({
+                json: async () => ({ username: 'Charlie' })
+            });
+
+        render(
+            <MemoryRouter>
+                <Home />
+            </MemoryRouter>
+        );
+
+        expect(await screen.findByText('🥇Alice - 300 pts')).toBeInTheDocument();
+        expect(await screen.findByText('🥈Bob - 250 pts')).toBeInTheDocument();
+        expect(await screen.findByText('🥉Charlie - 200 pts')).toBeInTheDocument();
+        expect(fetch).toHaveBeenCalledTimes(3);
     });
 });

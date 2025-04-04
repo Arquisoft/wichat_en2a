@@ -32,6 +32,13 @@ const verifyToken = (req, res, next) => {
     }
   };
 
+const sortFields = {
+    'totalScore': 'totalScore',
+    'gamesPlayed': 'gamesPlayed',
+    'avgPointsPerGame': 'avgPointsPerGame',
+    'winRate': 'winRate'
+};
+
 // endpoitn to save game score
 app.post('/saveScore', async (req, res) => {
     try {
@@ -141,13 +148,6 @@ app.get('/leaderboard', async (req, res) => {
         const sortBy = req.query.sortBy || 'totalScore';
         const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
 
-        const sortFields = {
-            'totalScore': 'totalScore',
-            'gamesPlayed': 'gamesPlayed',
-            'avgPointsPerGame': 'avgPointsPerGame',
-            'winRate': 'winRate'
-        };
-
         if (!sortFields[sortBy]) {
             return res.status(400).json({ 
                 error: 'Invalid sort field', 
@@ -202,6 +202,37 @@ app.get('/leaderboard', async (req, res) => {
     }
 });
 
+app.get('/leaderboard/top3', async (req, res) => {
+    try {
+        const scores = await Score.aggregate([
+            {
+                $group: {
+                    _id: '$userId',
+                    totalScore: { $sum: '$score' },
+                },
+            },
+            {
+                $project: {
+                    userId: '$_id',
+                    totalScore: 1,
+                },
+            },
+            {
+                $sort: {
+                    [sortFields['totalScore']]: -1
+                }
+            },
+            {
+                $limit: 3
+            }
+        ]);
+
+        res.json(scores);
+    } catch (error) {
+        console.error('Leaderboard Error:', error);
+        res.status(500).json({ error: 'Internal Server Error', details: error.message });
+    }
+});
 
 // Start the server
 const server = app.listen(port, () => {
