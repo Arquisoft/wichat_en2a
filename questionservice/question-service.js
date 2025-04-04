@@ -25,50 +25,47 @@ const queries = [
       `
     },
     {
-      type: "pokemon",
+      type: "videogame",
       query: `
-        SELECT ?pokemon ?pokemonLabel ?image WHERE {
-          ?pokemon wdt:P31 wd:Q3966183;  # Instancia de Pokémon
-                   wdt:P18 ?image.       # Imagen
-          SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+        SELECT ?videogame ?videogameLabel ?image WHERE {
+        ?videogame wdt:P31 wd:Q7889;     # Instancia de videojuego
+                    wdt:P18 ?image.       # Imagen
+        FILTER NOT EXISTS { ?videogame wdt:P136 wd:Q8604 }  # Excluir música
+        FILTER NOT EXISTS { ?videogame wdt:P31 wd:Q386724 } # Excluir demo
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
         }
+
       `
     },
     {
       type: "famous-person",
       query: `
         SELECT ?person ?personLabel ?image WHERE {
-          ?person wdt:P31 wd:Q5;         # Instancia de ser humano
-                  wdt:P18 ?image.        # Imagen
-          ?person wdt:P106 ?occupation.  # Ocupación
-          FILTER(?occupation IN (
-            wd:Q82955,  # actor
-            wd:Q937857, # singer
-            wd:Q36180,  # politician
-            wd:Q36834,  # writer
-            wd:Q28389   # scientist
-          ))
-          SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+        ?person wdt:P31 wd:Q5;         # Instancia de ser humano
+                wdt:P106 wd:Q33999;    # Ocupación: actor de cine
+                wdt:P18 ?image.        # Imagen
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
         }
       `
     },
     {
-      type: "company-logo",
+      type: "car",
       query: `
         SELECT ?company ?companyLabel ?logo WHERE {
-          ?company wdt:P31 wd:Q4830453;  # Instancia de empresa
-                   wdt:P154 ?logo.       # Logo de la empresa
-          SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+        ?company wdt:P31 wd:Q4830453;  # Instancia de empresa
+                wdt:P452 wd:Q14006;  # Industria automotriz
+                wdt:P154 ?logo.      # Logo
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
         }
       `
     },
     {
-      type: "landmark",
-      query: `
-        SELECT ?landmark ?landmarkLabel ?image WHERE {
-          ?landmark wdt:P31/wdt:P279* wd:Q839954;  # Monumento o lugar turístico
-                    wdt:P18 ?image.                # Imagen
-          SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+        type: "building",
+        query: `
+          SELECT ?building ?buildingLabel ?image WHERE {
+            ?building wdt:P31/wdt:P279* wd:Q41176;  # Instancia de edificio notable
+                        wdt:P18 ?image.              # Imagen
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
         }
       `
     }
@@ -91,6 +88,20 @@ async function fetchQuestionData(numberOfQuestions, questionType) {
 
     const query = getQueryByType(questionType, numberOfQuestions);
 
+    const answerKey = questionType === "flag" ? "countryLabel"
+                 : questionType === "videogame" ? "videogameLabel"
+                 : questionType === "famous-person" ? "personLabel"
+                 : questionType === "car" ? "companyLabel"
+                 : questionType === "building" ? "buildingLabel"
+                 : null;
+
+    const imageKey = questionType === "flag" ? "flag"
+               : questionType === "videogame" ? "image"
+               : questionType === "famous-person" ? "image"
+               : questionType === "car" ? "logo"
+               : questionType === "building" ? "image"
+               : null;
+
     const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=json`;
 
     try {
@@ -101,15 +112,17 @@ async function fetchQuestionData(numberOfQuestions, questionType) {
         });
 
         const results = await Promise.all(response.data.results.bindings.map(async (entry) => {
-            const correctAnswer = entry.countryLabel.value;
-            const imageUrl = entry.flag.value;
+            console.log("🔎 Entry keys:", Object.keys(entry));
+            console.log("📦 Entry preview:", entry);
+            const correctAnswer = entry[answerKey].value;
+            const imageUrl = entry[imageKey].value;
 
-            let incorrectOptions = await generateDistractors(correctAnswer);
+            let incorrectOptions = await generateDistractors(correctAnswer, questionType);
             let attempts = 0;
             while (incorrectOptions.length != 3 && attempts < 2) {
               // If the LLM service doesn't provide enough incorrect options, generate more until we have 3 or we have tried 3 times in total
               console.log("Not enough incorrect options, trying again...");
-              incorrectOptions = await generateDistractors(correctAnswer);
+              incorrectOptions = await generateDistractors(correctAnswer, questionType);
               attempts++;
             }
 
@@ -156,7 +169,7 @@ function capitalize(str) {
 async function generateDistractors(correctAnswer, questionType) {
     try {
       const llmResponse = await axios.post(
-        gatewayServiceUrl + "/generateIncorrectOptions",
+        gatewatServiceUrl + "/generateIncorrectOptions",
         {
           model: "empathy",
           correctAnswer: correctAnswer,

@@ -7,10 +7,10 @@ const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000
 
 const gameModes = [
   {type: "flag", label: "Flags", color: "#1976d2"},
-  {type: "pokemon", label: "Pokémon", color: "#FFD700"},
+  {type: "videogame", label: "Videogames", color: "#FFD700"},
   {type: "famous-person", label: "Famous People", color: "#6A5ACD"},
-  {type: "company-logo", label: "Logo", color: "#e53935"},
-  {type: "landmark", label: "Landmark", color: "#00897b"},
+  {type: "car", label: "Logo", color: "#e53935"},
+  {type: "building", label: "Buildings", color: "#00897b"},
   {type: "custom", label: "Custom Game", color: "#2e7d32"}
 ];
 
