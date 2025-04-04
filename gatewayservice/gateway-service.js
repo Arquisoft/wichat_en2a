@@ -123,11 +123,11 @@ app.post('/check-answer', async (req, res) => {
   }
 });
 
-app.post('/fetch-flag-data', async (req, res) => {
+app.post('/fetch-question-data', async (req, res) => {
   try {
-    // Forward fetch flag data request to the question service
-    const fetchFlagDataResponse = await axios.post(`${questionServiceUrl}/fetch-flag-data`);
-    res.json(fetchFlagDataResponse.data);
+    // Forward fetch question data request to the question service
+    const fetchQuestionDataResponse = await axios.post(`${questionServiceUrl}/fetch-question-data`);
+    res.json(fetchQuestionDataResponse.data);
   } catch (error) {
       res.status(error.response.status).json({ error: error.response.data.error });
   }
