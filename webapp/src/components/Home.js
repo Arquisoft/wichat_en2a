@@ -27,7 +27,7 @@ const Home = () => {
                         const userData = await res.json();
                         return {
                             ...player,
-                            username: userData.username || 'Unknown',
+                            username: userData.username,
                         };
                     })
                 );
