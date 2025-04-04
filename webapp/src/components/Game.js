@@ -324,7 +324,7 @@ const Game = () => {
 
                 {/* Back and Next Question buttons */}
                 <Box sx={{mt: '0.5rem', display: 'flex', justifyContent: 'flex-start', width: '100%'}}>
-                    <Button variant="contained" color="error" onClick={() => navigate('/home')}>
+                    <Button variant="contained" color="error" onClick={() => navigate('/gamemodes')}>
                         Back
                     </Button>
                     <Button

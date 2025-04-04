@@ -95,7 +95,7 @@ const Home = () => {
                             '&:hover': { backgroundColor: '#FFC107' },
                             marginTop: 2, // Space below text
                         }}
-                        onClick={() => navigate('/game')}
+                        onClick={() => navigate('/gamemodes')}
                     >
                         Play Game
                     </Button>

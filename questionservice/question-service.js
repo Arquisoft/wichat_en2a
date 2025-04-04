@@ -86,8 +86,10 @@ async function fetchQuestionData(numberOfQuestions, questionType) {
     if (numberOfQuestions == null || numberOfQuestions < 1 || !Number.isInteger(numberOfQuestions)) {
         numberOfQuestions = 30; // Default to 30 if invalid
       }
+      
+    console.log("🧠 Request to fetch questions with:", { questionType, numberOfQuestions });
 
-    const query = getQueryByType(numberOfQuestions, questionType);
+    const query = getQueryByType(questionType, numberOfQuestions);
 
     const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=json`;
 
@@ -138,6 +140,8 @@ async function fetchQuestionData(numberOfQuestions, questionType) {
 }
 
 function getQueryByType(type, numberOfQuestions) {
+  console.log("📦 getQueryByType:", type);
+
     const match = queries.find(q => q.type === type);
     if (!match) {
       throw new Error(`No query found for type: ${type}`);
@@ -152,7 +156,7 @@ function capitalize(str) {
 async function generateDistractors(correctAnswer, questionType) {
     try {
       const llmResponse = await axios.post(
-        gatewatServiceUrl + "/generateIncorrectOptions",
+        gatewayServiceUrl + "/generateIncorrectOptions",
         {
           model: "empathy",
           correctAnswer: correctAnswer,
@@ -251,14 +255,28 @@ app.post('/check-answer', async (req, res) => {
 // Endpoint to fetch
 app.post("/fetch-question-data", async (req, res) => {
     try {
-      const { numberOfQuestions } = req.body;
-      const results = await fetchQuestionData(numberOfQuestions);
+      const { questionType, numberOfQuestions } = req.body;
+      const results = await fetchQuestionData(numberOfQuestions, questionType);
       res.json(results);
     } catch (error) {
       console.error("Error while fetching questions");
       res.status(500).json({ error: "Failed generate the questions..." });
     }
 });
+
+// Endpoint to erase the questions from the database
+app.post('/clear-questions', async (req, res) => {
+  try {
+    await Question.deleteMany({});
+    console.log('Cleared all questions from the database');
+    res.json({ message: 'Questions cleared' });
+  } catch (error) {
+    console.error('Error clearing questions:', error);
+    res.status(500);
+    res.json({ error: 'Failed to clear questions' });
+  }
+});
+
 
 // Start the question service
 const server = app.listen(port, () => {

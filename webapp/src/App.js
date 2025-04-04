@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import Leaderboard from './components/Leaderboard';
 import axios from 'axios';
 import GameOver from "./components/GameOver";
+import GameModes from './components/GameModes';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -18,23 +19,10 @@ function App() {
     const navigate = useNavigate(); // Hook for routes
     const [error, setError] = useState(null); // state of error messages
 
-    //Load question from wikidata just when deploying the application
     useEffect(() => {
-        const initializeQuestions = async () => {
-            try {
-                console.log("Checking and initializing question data...");
-                await axios.post(`${apiEndpoint}/fetch-flag-data`);
-                console.log('Database initialized successfully');
-            } catch (error) {
-                setError(error.response?.data?.error || 'Error initializing database');
-                console.error('Error during initialization:', error);
-            }
-        };
         navigate('/login');
-
-        initializeQuestions(); // Llama al inicializador
-    }, []);
-
+      }, []);
+    
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline/>
@@ -56,6 +44,7 @@ function App() {
                 <Route path="/leaderboard" element={<Leaderboard/>}/>
                 <Route path="/scores" element={<Scores/>}/>
                 <Route path="/game-over" element={<GameOver/>} />
+                <Route path="/gamemodes" element={<GameModes />} />
             </Routes>
         </Container>
     );
