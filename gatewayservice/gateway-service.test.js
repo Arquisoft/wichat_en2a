@@ -12,6 +12,20 @@ afterAll(async () => {
     app.close();
 });
 
+const mockAxiosError = (statusCode, errorMessage) => {
+  axios.get.mockRejectedValueOnce({
+    response: {
+      status: statusCode,
+      data: { error: errorMessage }
+    }
+  });
+};
+
+const assertErrorResponse = (response, statusCode, errorMessage) => {
+  expect(response.status).toBe(statusCode);
+  expect(response.body).toEqual({ error: errorMessage });
+};
+
 describe('Gateway Service', () => {
   // Mock responses from external services
   axios.post.mockImplementation((url) => {
@@ -80,18 +94,11 @@ describe('Gateway Service', () => {
   });
 
   it('should return an error response on failure', async () => {
-    // Simula la respuesta de error de axios
-    axios.get.mockRejectedValueOnce({
-      response: {
-        status: 500,
-        data: { error: 'Internal Server Error' }
-      }
-    });
+    mockAxiosError(500, 'Internal Server Error');
 
     const response = await request(app).get('/users');
-    
-    expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: 'Internal Server Error' });
+
+    assertErrorResponse(response, 500, 'Internal Server Error');
   });
 
   it('should forward getUserById request to user service', async () => {
@@ -221,17 +228,11 @@ describe('Gateway Service', () => {
   });
 
   it('should return error response when internal error', async () => {
-    axios.get.mockRejectedValueOnce({
-      response: {
-        status: 500,
-        data: { error: 'Internal Server Error' }
-      }
-    });
+    mockAxiosError(500, 'Internal Server Error');
 
     const response = await request(app).get('/leaderboard/top3');
 
-    expect(response.status).toBe(500);
-    expect(response.body).toEqual({ error: 'Internal Server Error' });
+    assertErrorResponse(response, 500, 'Internal Server Error');
   });
 
   // Test /askllm endpoint
