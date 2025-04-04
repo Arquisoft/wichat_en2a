@@ -1,20 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Typography, Box } from '@mui/material';
+import {Button, Typography, Box} from '@mui/material';
 import Navbar from './Navbar';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
 const Home = () => {
     const [username, setUsername] = useState(null);
     const navigate = useNavigate();
+    const [topPlayers, setTopPlayers] = useState([]);
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
-        if (storedUsername) {
-            setUsername(storedUsername);
-        }
-        else{
-            setUsername('Guest');
-        }
+        setUsername(storedUsername || 'Guest');
+
+
+         async function fetchTopPlayers() {
+            try {
+                let response = await axios.get(`${apiEndpoint}/leaderboard/top3`);
+                let players = response.data;
+
+                players = await Promise.all(
+                    players.map(async (player) => {
+                        const res = await fetch(`${apiEndpoint}/getUserById/${player._id}`);
+                        const userData = await res.json();
+                        return {
+                            ...player,
+                            username: userData.username || 'Unknown',
+                        };
+                    })
+                );
+
+                setTopPlayers(players);
+            } catch (error) {
+                console.error('Error fetching top players:', error);
+            }
+         }
+        fetchTopPlayers();
     }, []);
 
     return (
@@ -61,6 +84,37 @@ const Home = () => {
                     >
                         PLAY
                     </Button>
+                    {/* Top Players Box */}
+                    <Box
+                        sx={{
+                            mt: 5, // More separation from PLAY button
+                            backgroundColor: "#4B0082",
+                            padding: 2,
+                            borderRadius: "10px",
+                            boxShadow: 3,
+                            textAlign: "center"
+                        }}
+                    >
+                        <Typography variant="h6" sx={{ fontWeight: "bold", color: "gold" }}>
+                            🏆 Top Players 🏆
+                        </Typography>
+                        <Box sx={{ mt: 1 }}>
+                            {topPlayers.length > 2 ? (
+                                topPlayers.map((player, index) => (
+                                    <Typography key={player.userId} variant="body1" sx={{ color: "white" }}>
+                                        {index === 0 && '🥇'}
+                                        {index === 1 && '🥈'}
+                                        {index === 2 && '🥉'}
+                                        {player.username} - {player.totalScore} pts
+                                    </Typography>
+                                ))
+                            ) : (
+                                <Typography variant="body1" sx={{ color: "white" }}>
+                                    Not enough players to show the leaderboard
+                                </Typography>
+                            )}
+                        </Box>
+                    </Box>
                 </Box>
 
                 {/* Right Section: Image */}

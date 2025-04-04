@@ -2,12 +2,14 @@ import React from 'react';
 import {render, fireEvent, screen} from '@testing-library/react';
 import Home from './Home';
 import { MemoryRouter } from 'react-router-dom';
+import axios from "axios";
 
 //useNavigate Mock
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
 }));
+jest.mock('axios');
 
 describe('Home component', () => {
     const mockNavigate = jest.fn();
@@ -73,4 +75,36 @@ describe('Home component', () => {
         expect(screen.getByText((content) => content.includes('Welcome back, Guest'))).toBeInTheDocument();
 
     })
+
+    it('displays top 3 players from leaderboard', async () => {
+        const leaderboardData = [
+            { _id: '1', totalScore: 300 },
+            { _id: '2', totalScore: 250 },
+            { _id: '3', totalScore: 200 },
+        ];
+        axios.get.mockResolvedValueOnce({ data: leaderboardData });
+
+        //Mock fetch for each user's data
+        global.fetch = jest.fn()
+            .mockResolvedValueOnce({
+                json: async () => ({ username: 'Alice' })
+            })
+            .mockResolvedValueOnce({
+                json: async () => ({ username: 'Bob' })
+            })
+            .mockResolvedValueOnce({
+                json: async () => ({ username: 'Charlie' })
+            });
+
+        render(
+            <MemoryRouter>
+                <Home />
+            </MemoryRouter>
+        );
+
+        expect(await screen.findByText('🥇Alice - 300 pts')).toBeInTheDocument();
+        expect(await screen.findByText('🥈Bob - 250 pts')).toBeInTheDocument();
+        expect(await screen.findByText('🥉Charlie - 200 pts')).toBeInTheDocument();
+        expect(fetch).toHaveBeenCalledTimes(3);
+    });
 });

@@ -93,6 +93,15 @@ app.get('/users', async (req, res) => {
   }
 });
 
+app.get('/getUserById/:userId', async (req, res) => {
+    try {
+        const response = await axios.get(`${userServiceUrl}/getUserById/${req.params.userId}`);
+        res.json(response.data);
+    } catch (error) {
+        res.status(error.response.status).json({error: error.response.data.error});
+    }
+})
+
 app.post('/askllm', async (req, res) => {
   try {
     // Forward the add user request to the user service
@@ -247,6 +256,15 @@ app.get('/leaderboard', async (req, res) => {
       error: error.response?.data?.error || 'Internal Server Error' 
     });
   }
+});
+
+app.get('/leaderboard/top3', async (req, res) => {
+    try{
+        const response = await axios.get(`${gameServiceUrl}/leaderboard/top3`)
+        res.json(response.data);
+    } catch(error){
+        res.status(error.response.status).json({ error: error.response.data.error });
+    }
 });
 
 app.post('/generateIncorrectOptions', async (req, res) => {
