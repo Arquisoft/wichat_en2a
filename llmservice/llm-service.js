@@ -196,7 +196,7 @@ app.post("/generateIncorrectOptions", async (req, res) => {
     let question =
       "I need to generate incorrect options for a multiple choice question. The question is: " + getQuestionByType(type) + " The correct answer to this question is:" +
       correctAnswer +
-      ". I need you to generate exactly 3 incorrect options for that question that could be used as distractors. They should be plausible but different from the correct one. Provide them as 3 comma-separated values, nothing more. The response should look exactly like: \"answer1,answer2,answer3\"";
+      ". I need you to generate exactly 3 incorrect options for that question that could be used as distractors. They should be plausible options but different from the correct one. Provide them as 3 comma-separated values, AND DO NOT WRITE ANYTHING MORE THAN THOSE VALUES. The response should look exactly like: answer1,answer2,answer3";
 
     const answer = await sendQuestionToLLM(question);
 
