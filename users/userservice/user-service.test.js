@@ -13,8 +13,7 @@ let testUserId;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
-  const mongoUri = mongoServer.getUri();
-  process.env.MONGODB_URI = mongoUri;
+  process.env.MONGODB_URI = mongoServer.getUri();
   app = require('./user-service'); 
 });
 
@@ -194,6 +193,15 @@ describe('User Service', () => {
     // Assert: Check the response
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty('error', 'User not found');
+  });
+
+  it('should return 500 if the userId is invalid', async () => {
+    const invalidId = 'not-a-valid-objectid';
+
+    const response = await request(app).get(`/getUserById/${invalidId}`);
+
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty('error');
   });
 
   it('should fetch all users from the database', async () => {
