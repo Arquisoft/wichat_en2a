@@ -26,7 +26,6 @@ describe('Login component', () => {
     });
   };
 
-
   beforeEach(() => {
     mockNavigate.mockClear(); // Clear mock before the start of each test
     jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(mockNavigate);
@@ -35,6 +34,22 @@ describe('Login component', () => {
   afterEach(() => {
     mockAxios.reset();
   });
+
+  it('Renders all components', async () => {
+    mockAxios.onPost('http://localhost:8000/login').reply(200, {createdAt: '2024-01-01T12:34:56Z'});
+
+    render(
+        <MemoryRouter>
+          <Login/>
+        </MemoryRouter>
+    );
+    expect(await screen.findByText('Challenge your knowledge!')).toBeInTheDocument();
+    expect(await screen.getByText(/Login 🧠/i)).toBeInTheDocument();
+    expect(await screen.getByLabelText(/Username/i)).toBeInTheDocument();
+    expect(await screen.getByLabelText(/Password/i)).toBeInTheDocument();
+    expect(await screen.getByAltText(/Question Mark/i)).toBeInTheDocument();
+    expect(await screen.findByText('HappySW-RTVE')).toBeInTheDocument();
+  })
 
   it('should log in successfully', async () => {
     mockAxios.onPost('http://localhost:8000/login').reply(200, { createdAt: '2024-01-01T12:34:56Z' });
@@ -66,5 +81,19 @@ describe('Login component', () => {
     await waitFor(() => {
       expect(screen.getByText(/Error: Unauthorized/i)).toBeInTheDocument();
     });
+  });
+
+  it('should apply the spinning animation to the image', async () => {
+    mockAxios.onPost('http://localhost:8000/login').reply(200, {createdAt: '2024-01-01T12:34:56Z'});
+
+    render(
+        <MemoryRouter>
+          <Login/>
+        </MemoryRouter>
+    );
+
+    const image = screen.getByAltText(/Question Mark/i);
+    const style = window.getComputedStyle(image);
+    expect(style.animation).toContain('spin 6s linear infinite');
   });
 });
