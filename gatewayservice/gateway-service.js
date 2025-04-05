@@ -223,6 +223,41 @@ app.get('/scores', verifyToken, async (req, res) => {
   }
 });
 
+app.get('/allScores', async (req, res) => {
+  try {
+    // Fetch Top Scores from the game service
+    const allScoresResponse = await axios.get(`${gameServiceUrl}/allScores`, {
+      params: req.query, // Forward sorting params if any
+    });
+
+    const allScoresData = allScoresResponse.data;
+    
+    // Extract userIds from the Top Scores response
+    const userIds = allScoresData.map(entry => entry.userId);
+
+    // Fetch usernames from the user service
+    const usernamesResponse = await axios.post(`${userServiceUrl}/getAllUsernamesWithIds`, {
+      userIds
+    });
+
+    const usernamesMap = usernamesResponse.data; // Assuming it returns an object { userId: username }
+
+    // Merge Top Scores data with usernames
+    const scoresWithUsernames = allScoresData.map(entry => ({
+      ...entry,
+      username: usernamesMap[entry.userId] || 'Unknown User'
+    }));
+
+    res.json(scoresWithUsernames);
+  } catch (error) {
+    console.error('Top Scores Fetch Error:', error);
+    res.status(error.response?.status || 500).json({ 
+      error: error.response?.data?.error || 'Internal Server Error' 
+    });
+  }
+});
+
+
 // 8000!!!!!!!!!
 app.get('/leaderboard', async (req, res) => {
   try {

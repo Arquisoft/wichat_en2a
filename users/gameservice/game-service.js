@@ -136,6 +136,25 @@ app.get('/scores', verifyToken, async (req, res) => {
     }
 });
 
+// Endpoint to obtain all scores
+app.get('/allScores', async (req, res) => {
+    try {
+        //  find all socres in the DB
+        const scores = await Score.find();
+
+        if (scores.length === 0) {
+            return res.status(404).json({ error: 'No scores found' });
+        }
+
+        res.json(scores); // Returns scores list
+    } catch (error) {
+        console.error('Error fetching scores:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+
 //endpoint Ladearboard
 /* Possible calls:
    - GET http://localhost:8005/leaderboard
