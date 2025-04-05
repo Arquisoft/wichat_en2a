@@ -28,8 +28,6 @@ const Game = () => {
     const [loadingMessage, setLoadingMessage] = useState(false);
     const [score, setScore] = useState(0);
 
-    const [hint, setHint] = useState(null);
-
     const COLORS = {
         primary: '#6A5ACD',
         success: '#4CAF50',
@@ -143,6 +141,8 @@ const Game = () => {
 
     useEffect(() => {
         fetchQuestion();
+        // This function is safe to be used as this, we can ignore the warning
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (loading) {
