@@ -38,20 +38,20 @@ const questions = [
     question: "What country is represented by the flag shown?"
   },
   {
-    type: "pokemon",
-    question: "Who's that Pokémon?"
+    type: "car",
+    question: "Which is the car in the picture?"
   },
   {
     type: "famous-person",
     question: "Who's this famous person?"
   },
   {
-    type: "company-logo",
-    question: "Which company does this logo belong to?"
+    type: "painting",
+    question: "Which famous painting is shown in the picture?"
   },
   {
-    type: "landmark",
-    question: "What famous landmark is shown in the image?"
+    type: "place",
+    question: "What famous place is shown in the image?"
   }
 ];
 

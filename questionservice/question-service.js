@@ -25,16 +25,13 @@ const queries = [
       `
     },
     {
-      type: "videogame",
+      type: "car",
       query: `
-        SELECT ?videogame ?videogameLabel ?image WHERE {
-        ?videogame wdt:P31 wd:Q7889;     # Instancia de videojuego
-                    wdt:P18 ?image.       # Imagen
-        FILTER NOT EXISTS { ?videogame wdt:P136 wd:Q8604 }  # Excluir música
-        FILTER NOT EXISTS { ?videogame wdt:P31 wd:Q386724 } # Excluir demo
+        SELECT ?carModel ?carModelLabel ?image WHERE {
+        ?carModel wdt:P31 wd:Q3231690;   # Instancia de modelo de coche
+                  wdt:P18 ?image.        # Imagen disponible
         SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-        }
-
+      }
       `
     },
     {
@@ -49,24 +46,24 @@ const queries = [
       `
     },
     {
-      type: "car",
+      type: "painting",
       query: `
-        SELECT ?company ?companyLabel ?logo WHERE {
-        ?company wdt:P31 wd:Q4830453;  # Instancia de empresa
-                wdt:P452 wd:Q14006;  # Industria automotriz
-                wdt:P154 ?logo.      # Logo
+        SELECT ?painting ?paintingLabel ?image WHERE {
+        ?painting wdt:P31 wd:Q3305213;       # Instancia de pintura
+                  wdt:P18 ?image.            # Imagen disponible
+
         SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-        }
+      }
       `
     },
     {
-        type: "building",
-        query: `
-          SELECT ?building ?buildingLabel ?image WHERE {
-            ?building wdt:P31/wdt:P279* wd:Q41176;  # Instancia de edificio notable
-                        wdt:P18 ?image.              # Imagen
-            SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-        }
+      type: "place",
+      query: `
+        SELECT ?place ?placeLabel ?image WHERE {
+        ?place wdt:P31/wdt:P279* wd:Q570116;  # Sitio turístico o atracción
+              wdt:P18 ?image.
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+      }
       `
     }
   ];
@@ -89,17 +86,17 @@ async function fetchQuestionData(numberOfQuestions, questionType) {
     const query = getQueryByType(questionType, numberOfQuestions);
 
     const answerKey = questionType === "flag" ? "countryLabel"
-                 : questionType === "videogame" ? "videogameLabel"
+                 : questionType === "car" ? "carModelLabel"
                  : questionType === "famous-person" ? "personLabel"
-                 : questionType === "car" ? "companyLabel"
-                 : questionType === "building" ? "buildingLabel"
+                 : questionType === "painting" ? "paintingLabel"
+                 : questionType === "place" ? "placeLabel"
                  : null;
 
     const imageKey = questionType === "flag" ? "flag"
-               : questionType === "videogame" ? "image"
+               : questionType === "car" ? "image"
                : questionType === "famous-person" ? "image"
-               : questionType === "car" ? "logo"
-               : questionType === "building" ? "image"
+               : questionType === "painting" ? "image"
+               : questionType === "place" ? "image"
                : null;
 
     const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=json`;
