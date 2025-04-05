@@ -33,6 +33,9 @@ function App() {
         navigate('/login');
 
         initializeQuestions(); // Llama al inicializador
+
+        /// This is only executed once, so it is not necessary to add it to the dependencies array (otherwise CI fails)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

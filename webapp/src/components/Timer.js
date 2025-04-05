@@ -20,7 +20,7 @@ const Timer = ({ duration = 40, onTimeUp, answerSelected }) => {
         }, 1000);
 
         return () => clearInterval(timerInterval);
-    }, [timeLeft, answerSelected]); // 🔹 Ahora depende de `timeLeft` también
+    }, [timeLeft, answerSelected, onTimeUp]); // 🔹 Ahora depende de `timeLeft` también
 
     return (
         <Box sx={{ width: "100%", bgcolor: "#ddd", borderRadius: "5px", mt: 2 }}>
