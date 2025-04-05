@@ -108,11 +108,26 @@ async function fetchQuestionData(numberOfQuestions, questionType) {
             }
         });
 
-        const results = await Promise.all(response.data.results.bindings.map(async (entry) => {
+        // Randomizing results
+        const shuffle = response.data.results.bindings.sort(() => Math.random() - 0.5);
+        const limitedByNum = shuffle.slice(0, numberOfQuestions);
+
+        const results = await Promise.all(limitedByNum.map(async (entry) => {
             console.log("🔎 Entry keys:", Object.keys(entry));
             console.log("📦 Entry preview:", entry);
             const correctAnswer = entry[answerKey].value;
             const imageUrl = entry[imageKey].value;
+
+            if (
+              imageUrl.includes("upload.wikimedia.org") &&
+              imageUrl.includes("/commons/")
+            ) {
+              const parts = imageUrl.split('/');
+              const filename = parts.pop();
+              const hash1 = parts[parts.length - 2];
+              const hash2 = parts[parts.length - 1];
+              imageUrl = `https://upload.wikimedia.org/wikipedia/commons/thumb/${hash1}/${hash2}/${filename}/300px-${filename}`;
+            }
 
             let incorrectOptions = await generateDistractors(correctAnswer, questionType);
             let attempts = 0;
@@ -156,7 +171,7 @@ function getQueryByType(type, numberOfQuestions) {
     if (!match) {
       throw new Error(`No query found for type: ${type}`);
     }
-    return match.query + ` LIMIT ${numberOfQuestions}`;
+    return match.query + ` LIMIT ${Math.max(100, numberOfQuestions * 3)}`;
 }
 
 function capitalize(str) {

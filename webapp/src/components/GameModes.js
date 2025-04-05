@@ -7,7 +7,7 @@ const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000
 
 const gameModes = [
   { type: "flag", label: "Flags", color: "#1976d2", icon: "/flag.png" },
-  { type: "car", label: "Cars", color: "#FF8C00", icon: "/car.png" }, // nuevo color naranja
+  { type: "car", label: "Cars", color: "#FF8C00", icon: "/car.png" },
   { type: "famous-person", label: "Famous People", color: "#6A5ACD", icon: "/star.png" },
   { type: "painting", label: "Paintings", color: "#e53935", icon: "/painting.png" },
   { type: "place", label: "Places", color: "#00897b", icon: "/place.png" },
@@ -41,8 +41,6 @@ const GameModes = () => {
   return (
     <>
       <Navbar />
-
-      {/* Fondo general más intenso */}
       <Box
         sx={{
           backgroundImage: 'url(/questionMark.webp)',
@@ -55,7 +53,7 @@ const GameModes = () => {
           left: 0,
           width: '100vw',
           height: '100vh',
-          opacity: 0.25, // más intenso que antes
+          opacity: 0.25,
           zIndex: -1,
         }}
       />
@@ -97,7 +95,7 @@ const GameModes = () => {
                 disabled={!!loadingType}
               >
                 {loadingType === mode.type ? (
-                  <CircularProgress size={24} color="inherit" />
+                  <CircularProgress size={24} sx={{ color: '#ff69b4' }} />
                 ) : (
                   <>
                     <img
