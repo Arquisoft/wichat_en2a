@@ -9,7 +9,7 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
 }));
-jest.setTimeout(12000);
+jest.setTimeout(20000);
 
 describe('Login component', () => {
   const mockNavigate = jest.fn();
@@ -84,6 +84,21 @@ describe('Login component', () => {
     });
   });
 
+  it('should show error message when no server error is provided', async () => {
+    // Simulate error response without "error" field
+    mockAxios.onPost('http://localhost:8000/login').reply(500, {});
+
+    render(
+        <MemoryRouter>
+          <Login />
+        </MemoryRouter>
+    );
+
+    await fillLoginFormAndSubmit();
+
+    expect(await screen.findByText(/Error: Login failed/i)).toBeInTheDocument();
+  });
+
   it('should apply the spinning animation to the image', async () => {
     mockAxios.onPost('http://localhost:8000/login').reply(200, {createdAt: '2024-01-01T12:34:56Z'});
 
@@ -134,5 +149,8 @@ describe('Login component', () => {
     await fillLoginFormAndSubmit();
 
     expect(await screen.findByText(/Error: Unauthorized/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText(/Error: Unauthorized/i)).not.toBeInTheDocument();
+    }, { timeout: 7000 });
   });
 });
