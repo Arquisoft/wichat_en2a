@@ -12,6 +12,7 @@ import Leaderboard from './components/Leaderboard';
 import axios from 'axios';
 import GameOver from "./components/GameOver";
 import GameModes from './components/GameModes';
+import CustomGameMode from './components/CustomGameMode';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -45,6 +46,8 @@ function App() {
                 <Route path="/scores" element={<Scores/>}/>
                 <Route path="/game-over" element={<GameOver/>} />
                 <Route path="/gamemodes" element={<GameModes />} />
+                <Route path="/gamemodes/custom" element={<CustomGameMode/>}/>
+
             </Routes>
         </Box>
     );

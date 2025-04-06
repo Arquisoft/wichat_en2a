@@ -146,6 +146,23 @@ app.post('/fetch-question-data', async (req, res) => {
   }
 });
 
+app.post('/fetch-custom-question-data', async (req, res) => {
+  try {
+    const { timeLimit, questions, shuffle = true } = req.body;
+    if (!Array.isArray(questions) || questions.length === 0) {
+      return res.status(400).json({ error: 'Questions array is required' });
+    }
+    const response = await axios.post(`${questionServiceUrl}/fetch-custom-question-data`, {
+      questions,
+      shuffle
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error when fetching custom question data", error);
+    res.status(error.response?.status || 500).json({ error: "Failed to load custom question data"});
+  }
+});
+
 //Clears the questions from the database. To be used before loading more
 app.post('/clear-questions', async (req, res) => {
   try {

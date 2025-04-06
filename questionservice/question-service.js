@@ -164,6 +164,33 @@ async function fetchQuestionData(numberOfQuestions, questionType) {
     }
 }
 
+app.post('/fetch-custom-question-data', async (req, res) => {
+  try {
+    const { questions, shuffle } = req.body;
+
+    if (!Array.isArray(questions)) { //if questions is not an array -> fail
+      return res.status(400).json({ error: 'Invalid format for questions' });
+    }
+
+    const allResults = []; //final result -> array with all questions
+
+    for (const item of questions) {
+      const { questionType, numberOfQuestions } = item;
+      const result = await fetchQuestionData(numberOfQuestions, questionType); //gets questions for each type
+      allResults.push(...result); //into the final result array
+    }
+    
+    //if requested shuffling -> shuffle, otherwise, leave it as it is
+    const finalResults = shuffle ? allResults.sort(() => Math.random() - 0.5) : allResults;
+
+    res.json(finalResults);
+    
+  } catch (error) {
+    console.error("QuestionService Error - fetchCustomQuestionData:", error);
+    res.status(500).json({ error: 'Failed to fetch custom question data' });
+  }
+});
+
 function getQueryByType(type, numberOfQuestions) {
   console.log("📦 getQueryByType:", type);
 

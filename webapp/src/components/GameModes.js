@@ -19,8 +19,10 @@ const GameModes = () => {
   const navigate = useNavigate();
 
   const handleGameModeClick = async (type) => {
-    if (type === 'custom') return;
-
+    if (type === 'custom'){
+      navigate('/gamemodes/custom');
+      return;
+    }
     setLoadingType(type);
 
     try {
