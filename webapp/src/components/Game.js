@@ -142,6 +142,20 @@ const Game = () => {
                 setCorrectAnswer(question.correctAnswer);
                 // Aunque el usuario haya fallado, guardo la correcta
             }
+
+            // Espera 5 segundos antes de pasar a la siguiente pregunta
+            setTimeout(() => {
+                if (questionCount < MAX_QUESTIONS) {
+                    setChosenAnswer(null);  // Reseteamos la respuesta elegida
+                    setCorrectAnswer(null); // Reseteamos la respuesta correcta
+                    setIsCorrect(null);     // Reseteamos el estado de corrección
+                    setAnswerSelected(false);
+                    setMessages([]);
+                    setInput("");
+                    fetchQuestion();
+                }
+            }, 5000);
+            
         } catch (error) {
             console.error('Error checking answer:', error);
             setError('Failed to check answer');
@@ -155,6 +169,20 @@ const Game = () => {
             setIsCorrect(false); // No fue seleccionada por el usuario, así que es incorrecta
             setCorrectAnswer(question.correctAnswer); // Muestra la respuesta correcta en verde
             setAnswerSelected(true); // Evita más respuestas
+
+            // Espera 5 segundos antes de pasar a la siguiente pregunta
+            setTimeout(() => {
+                if (questionCount < MAX_QUESTIONS) {
+                    setChosenAnswer(null);  // Reseteamos la respuesta elegida
+                    setCorrectAnswer(null); // Reseteamos la respuesta correcta
+                    setIsCorrect(null);     // Reseteamos el estado de corrección
+                    setAnswerSelected(false);
+                    setMessages([]);
+                    setInput("");
+                    fetchQuestion();
+                }
+            }, 5000);
+
         }
     };
 
