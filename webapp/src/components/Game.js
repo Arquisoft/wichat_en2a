@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import {Container, Typography, Button, Box, CircularProgress, TextField, Paper} from '@mui/material';
+import {Container, Typography, Button, Box, CircularProgress, TextField, Paper,Dialog, DialogTitle, DialogContent, DialogActions} from '@mui/material';
 import Navbar from './Navbar';
 import './game-styles.css';
 import {useNavigate} from 'react-router-dom';
@@ -27,6 +27,8 @@ const Game = () => {
     const [input, setInput] = useState('');
     const [loadingMessage, setLoadingMessage] = useState(false);
     const [score, setScore] = useState(0);
+
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
     const COLORS = {
         primary: '#f5f5dc', // beige claro para botones no seleccionados
@@ -86,6 +88,19 @@ const Game = () => {
         await saveScore();
         navigate('/game-over');
         setLoading(false);
+    };
+
+    const handleBackClick = () => {
+        setOpenConfirmDialog(true);
+    };
+
+    const handleConfirmLeave = () => {
+        setOpenConfirmDialog(false);
+        navigate('/home');
+    };
+
+    const handleCancelLeave = () => {
+        setOpenConfirmDialog(false);
     };
 
     const retrieveHint = async () => {
@@ -183,6 +198,24 @@ const Game = () => {
                            bgcolor: COLORS.background,
                            paddingBottom: '2rem'
                        }}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: '1rem' }}>
+                    <Button
+                        variant="outlined"
+                        onClick={handleBackClick}
+                        sx={{
+                            color: COLORS.textOnColor,
+                            borderColor: COLORS.textOnColor,
+                            '&:hover': {
+                                borderColor: COLORS.hover,
+                                backgroundColor: COLORS.hover,
+                                color: 'black'
+                            }
+                        }}
+                    >
+                        Exit
+                    </Button>
+                </Box>
+
                 <Typography component="h1" variant="h4" sx={{mb: '1rem', color: COLORS.textOnColor}}>
                     Quiz Game!
                 </Typography>
@@ -338,6 +371,24 @@ const Game = () => {
                     </Box>
                 </Box>
             </Container>
+
+            <Dialog open={openConfirmDialog} onClose={handleCancelLeave}>
+                <DialogTitle>Leave Game?</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        If you leave now, your progress will be lost. Are you sure you want to exit the game?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelLeave} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleConfirmLeave} color="error">
+                        Leave
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
         </>
     );
 };
