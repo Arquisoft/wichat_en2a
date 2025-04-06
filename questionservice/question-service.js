@@ -46,14 +46,13 @@ const queries = [
       `
     },
     {
-      type: "painting",
+      type: "dino",
       query: `
-        SELECT ?painting ?paintingLabel ?image WHERE {
-        ?painting wdt:P31 wd:Q3305213;       # Instancia de pintura
-                  wdt:P18 ?image.            # Imagen disponible
-
-        SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-      }
+        SELECT ?dino ?dinoLabel ?image WHERE {
+          ?dino wdt:P31/wdt:P279* wd:Q23038290.
+          ?dino wdt:P18 ?image.
+          SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+        }
       `
     },
     {
@@ -88,14 +87,14 @@ async function fetchQuestionData(numberOfQuestions, questionType) {
     const answerKey = questionType === "flag" ? "countryLabel"
                  : questionType === "car" ? "carModelLabel"
                  : questionType === "famous-person" ? "personLabel"
-                 : questionType === "painting" ? "paintingLabel"
+                 : questionType === "dino" ? "dinoLabel"
                  : questionType === "place" ? "placeLabel"
                  : null;
 
     const imageKey = questionType === "flag" ? "flag"
                : questionType === "car" ? "image"
                : questionType === "famous-person" ? "image"
-               : questionType === "painting" ? "image"
+               : questionType === "dino" ? "image"
                : questionType === "place" ? "image"
                : null;
 

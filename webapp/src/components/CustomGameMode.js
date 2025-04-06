@@ -22,7 +22,7 @@ const categories = [
   { type: 'flag', label: 'Flags' },
   { type: 'car', label: 'Cars' },
   { type: 'famous-person', label: 'Famous People' },
-  { type: 'painting', label: 'Paintings' },
+  { type: 'dino', label: 'Dinosaurs' },
   { type: 'place', label: 'Places' }
 ];
 

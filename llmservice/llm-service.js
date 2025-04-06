@@ -46,8 +46,8 @@ const questions = [
     question: "Who's this famous person?"
   },
   {
-    type: "painting",
-    question: "Which famous painting is shown in the picture?"
+    type: "dino",
+    question: "Which dinosaur is shown in the picture?"
   },
   {
     type: "place",

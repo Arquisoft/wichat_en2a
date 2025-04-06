@@ -9,7 +9,7 @@ const gameModes = [
   { type: "flag", label: "Flags", color: "#1976d2", icon: "/flag.png" },
   { type: "car", label: "Cars", color: "#FF8C00", icon: "/car.png" },
   { type: "famous-person", label: "Famous People", color: "#6A5ACD", icon: "/star.png" },
-  { type: "painting", label: "Paintings", color: "#e53935", icon: "/painting.png" },
+  { type: "dino", label: "Dinosaurs", color: "#e53935", icon: "/dinosaur.png" },
   { type: "place", label: "Places", color: "#00897b", icon: "/place.png" },
   { type: "custom", label: "Custom Game", color: "#2e7d32", icon: "/questionMark.png" }
 ];
