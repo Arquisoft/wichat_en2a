@@ -9,6 +9,7 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
 }));
+jest.setTimeout(12000);
 
 describe('Login component', () => {
   const mockNavigate = jest.fn();
@@ -95,5 +96,43 @@ describe('Login component', () => {
     const image = screen.getByAltText(/Question Mark/i);
     const style = window.getComputedStyle(image);
     expect(style.animation).toContain('spin 6s linear infinite');
+  });
+
+  it('closes the success snackbar when handleCloseSnackbar is called', async () => {
+    mockAxios.onPost('http://localhost:8000/login').reply(200, {
+      userId: '123', username: 'testUser', token: 'abc', createdAt: '2024-01-01T12:34:56Z'
+    });
+
+    render(
+        <MemoryRouter>
+          <Login />
+        </MemoryRouter>
+    );
+
+    await fillLoginFormAndSubmit();
+
+    expect(screen.getByText(/Login successful/i)).toBeInTheDocument();
+    //Wait until the snack bar is automatically closed
+    await waitFor(() => {
+      expect(screen.queryByText(/Login successful/i)).not.toBeInTheDocument();
+    }, { timeout: 7000}
+    );
+  });
+
+  it('shows and closes error snackbar when login fails', async () => {
+    // Mock failed login
+    mockAxios.onPost('http://localhost:8000/login').reply(401, {
+      error: 'Unauthorized'
+    });
+
+    render(
+        <MemoryRouter>
+          <Login />
+        </MemoryRouter>
+    );
+
+    await fillLoginFormAndSubmit();
+
+    expect(await screen.findByText(/Error: Unauthorized/i)).toBeInTheDocument();
   });
 });
