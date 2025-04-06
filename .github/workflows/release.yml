@@ -106,6 +106,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: ghcr.io
         workdir: users/userservice
+        platforms: linux/amd64,linux/arm64
 
   docker-push-gameservice:
     name: Push game service Docker Image to GitHub Packages
@@ -124,6 +125,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: ghcr.io
         workdir: users/gameservice
+        platforms: linux/amd64,linux/arm64
 
   docker-push-llmservice:
     name: Push llm service Docker Image to GitHub Packages
@@ -142,6 +144,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: ghcr.io
         workdir: llmservice
+        platforms: linux/amd64,linux/arm64
 
   docker-push-questionservice:
     name: Push question service Docker Image to GitHub Packages
@@ -160,6 +163,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: ghcr.io
         workdir: questionservice
+        platforms: linux/amd64,linux/arm64
 
   docker-push-gatewayservice:
     name: Push gateway service Docker Image to GitHub Packages
@@ -182,6 +186,8 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: ghcr.io
         workdir: gatewayservice
+        platforms: linux/amd64,linux/arm64
+        
   deploy:
     name: Deploy over SSH
     runs-on: ubuntu-latest
