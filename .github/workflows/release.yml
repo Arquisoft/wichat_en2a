@@ -68,6 +68,8 @@ jobs:
           registry: ghcr.io
           workdir: webapp
           buildargs: API_URI,LLM_API_KEY
+          platforms: linux/amd64,linux/arm64
+
   docker-push-authservice:
     name: Push auth service Docker Image to GitHub Packages
     runs-on: ubuntu-latest
@@ -187,7 +189,7 @@ jobs:
         registry: ghcr.io
         workdir: gatewayservice
         platforms: linux/amd64,linux/arm64
-        
+
   deploy:
     name: Deploy over SSH
     runs-on: ubuntu-latest
