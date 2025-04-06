@@ -29,12 +29,16 @@ const Game = () => {
     const [score, setScore] = useState(0);
 
     const COLORS = {
-        primary: '#6A5ACD',
-        success: '#4CAF50',
-        error: '#F44336',
-        hover: '#1565c0',
-        textOnColor: 'white'
+        primary: '#f5f5dc', // beige claro para botones no seleccionados
+        success: '#4CAF50', // verde correcto
+        error: '#F44336',   // rojo incorrecto
+        hover: '#dcdcdc',   // gris clarito al pasar el mouse
+        background: '#6A5ACD', // fondo azul claro
+        textOnColor: '#FFFFFF',
+        userBubble: '#F8BBD0', // rosa claro
+        botBubble: '#FFD700'   // amarillo claro
     };
+
 
     const navigate = useNavigate();
     // Fetch question from the API
@@ -170,11 +174,19 @@ const Game = () => {
         <>
             <Navbar />
             <Container component="main" maxWidth="xl"
-                       sx={{textAlign: 'center', mt: '0.5rem', minHeight: '85vh', width: '100%', px: '1rem'}}>
-                <Typography component="h1" variant="h4" sx={{mb: '1rem'}}>
+                       sx={{
+                           textAlign: 'center',
+                           mt: '0.5rem',
+                           minHeight: '85vh',
+                           width: '100%',
+                           px: '1rem',
+                           bgcolor: COLORS.background,
+                           paddingBottom: '2rem'
+                       }}>
+                <Typography component="h1" variant="h4" sx={{mb: '1rem', color: COLORS.textOnColor}}>
                     Quiz Game!
                 </Typography>
-                <Typography variant="h6">Score: {score} / {MAX_QUESTIONS * 100}</Typography>
+                <Typography variant="h6" sx={{color: COLORS.textOnColor}}>Score: {score} / {MAX_QUESTIONS * 100}</Typography>
 
                 {/* Timer */}
                 <Timer key={timerKey} duration={40} onTimeUp={handleTimeUp} answerSelected={answerSelected} />
@@ -195,7 +207,8 @@ const Game = () => {
                         alignItems: 'center',
                         gap: '1rem'
                     }}>
-                        <Typography variant="h6" sx={{mb: '0.5rem'}}>What country is this flag from?</Typography>
+                        <Typography variant="h6" sx={{mb: '0.5rem', color: COLORS.textOnColor}}>
+                            What country is this flag from?</Typography>
 
                         {/* Flag image */}
                         <Box sx={{
@@ -226,12 +239,15 @@ const Game = () => {
                         }}>
                             {question.options.map((option, index) => {
                                 let bgColor = COLORS.primary;
+                                let textColor = 'black';
 
                                 if (answerSelected) {
                                     if (option === chosenAnswer) {
                                         bgColor = isCorrect ? COLORS.success : COLORS.error;
+                                        textColor = COLORS.textOnColor;
                                     } else if (option === correctAnswer) {
                                         bgColor = COLORS.success;
+                                        textColor = COLORS.textOnColor;
                                     }
                                 }
 
@@ -243,12 +259,13 @@ const Game = () => {
                                         sx={{
                                             py: '1rem',
                                             backgroundColor: bgColor,
+                                            color: textColor,
                                             "&:hover": {
                                                 backgroundColor: answerSelected ? undefined : COLORS.hover,
                                             },
                                             "&.Mui-disabled": {
                                                 backgroundColor: bgColor,
-                                                color: "white",
+                                                color: textColor,
                                                 opacity: 1,
                                             }
                                         }}
@@ -277,10 +294,11 @@ const Game = () => {
                         border: '1px solid gray',
                         borderRadius: '0.5rem',
                         height: '100%',
-                        minHeight: '60vh'
+                        minHeight: '60vh',
+                        backgroundColor: COLORS.primary
                     }}>
                         <Typography variant="h6" sx={{ mb: '1rem', textAlign: 'center' }}>Get help from AI</Typography>
-                        <Paper sx={{ maxHeight: '45vh', overflowY: 'auto', p: '1rem', mb: '1rem' }}>
+                        <Paper sx={{ maxHeight: '45vh', overflowY: 'auto', p: '1rem', mb: '1rem', bgColor: COLORS.primary}}>
                             {messages.map((msg, index) => (
                                 <Box key={index} sx={{
                                     textAlign: msg.sender === 'user' ? 'right' : 'left',
@@ -292,7 +310,7 @@ const Game = () => {
                                             display: 'inline-block',
                                             p: '0.5rem',
                                             borderRadius: '0.5rem',
-                                            bgcolor: msg.sender === 'user' ? 'primary.light' : 'secondary.light'
+                                            bgcolor: msg.sender === 'user' ? COLORS.userBubble : COLORS.botBubble
                                         }}>
                                         {msg.text}
                                     </Typography>
@@ -300,7 +318,7 @@ const Game = () => {
                             ))}
                         </Paper>
 
-                        <Box sx={{ display: 'flex' }}>
+                        <Box sx={{ display: 'flex', backgroundColor: COLORS.primary }}>
                             <TextField
                                 fullWidth
                                 variant="outlined"
