@@ -28,8 +28,6 @@ const Game = () => {
     const [loadingMessage, setLoadingMessage] = useState(false);
     const [score, setScore] = useState(0);
 
-    const [hint, setHint] = useState(null);
-
     const COLORS = {
         primary: '#6A5ACD',
         success: '#4CAF50',
@@ -184,29 +182,51 @@ const Game = () => {
                 <Box sx={{
                     display: 'flex',
                     width: '100%',
-                    minHeight: '40vh',
-                    maxHeight: '60vh',
-                    gap: '1rem',
                     flexDirection: 'row',
-                    overflow: 'auto'
+                    gap: '1rem',
+                    mt: '1rem',
+                    justifyContent: 'space-between'
                 }}>
-                    {/* Left side - 1/3 (antes era 2/3) */}
-                    <Box sx={{flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%'}}>
-                        {/* Upper part - Question and answers */}
+                    {/* Main content - 2/3 width */}
+                    <Box sx={{
+                        flex: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '1rem'
+                    }}>
+                        <Typography variant="h6" sx={{mb: '0.5rem'}}>What country is this flag from?</Typography>
+
+                        {/* Flag image */}
                         <Box sx={{
-                            flex: 1,
-                            p: '1rem',
+                            width: '100%',
+                            maxWidth: '500px',
                             border: '1px solid gray',
                             borderRadius: '0.5rem',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            width: '100%'
+                            overflow: 'hidden'
                         }}>
-                            <Typography variant="h6" sx={{mb: '1rem'}}>Which country is this flag from?</Typography>
+                            {question?.imageUrl ? (
+                                <img
+                                    src={question.imageUrl}
+                                    alt="Question related"
+                                    style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+                                />
+                            ) : (
+                                <Typography variant="h6">No image available</Typography>
+                            )}
+                        </Box>
+
+                        {/* Answer buttons (2x2 grid) */}
+                        <Box sx={{
+                            display: 'grid',
+                            gridTemplateColumns: '1fr 1fr',
+                            gap: '1rem',
+                            width: '100%',
+                            maxWidth: '500px'
+                        }}>
                             {question.options.map((option, index) => {
                                 let bgColor = COLORS.primary;
 
-                                // Solo cambiamos el color después de haber seleccionado una respuesta
                                 if (answerSelected) {
                                     if (option === chosenAnswer) {
                                         bgColor = isCorrect ? COLORS.success : COLORS.error;
@@ -221,7 +241,6 @@ const Game = () => {
                                         variant="contained"
                                         fullWidth
                                         sx={{
-                                            mb: '0.5rem',
                                             py: '1rem',
                                             backgroundColor: bgColor,
                                             "&:hover": {
@@ -229,8 +248,8 @@ const Game = () => {
                                             },
                                             "&.Mui-disabled": {
                                                 backgroundColor: bgColor,
-                                                color: "white", // Asegura que el texto siga siendo visible si es necesario
-                                                opacity: 1, // Elimina la opacidad que Material-UI pone en los botones deshabilitados
+                                                color: "white",
+                                                opacity: 1,
                                             }
                                         }}
                                         disabled={!!answerSelected}
@@ -246,105 +265,59 @@ const Game = () => {
                                 );
                             })}
                         </Box>
-
-                        {/* Lower part - Hint box */}
-                        <Box sx={{
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            p: '1.5rem',
-                            border: '1px solid gray',
-                            borderRadius: '0.5rem',
-                            width: '100%',
-                            overflow: 'hidden'
-                        }}>
-                            <Paper sx={{ maxHeight: '30vh', overflowY: 'auto', p: '1rem', border: '1px solid gray' }}>
-                                {messages.map((msg, index) => (
-                                    <Box key={index} sx={{ 
-                                        textAlign: msg.sender === 'user' ? 'right' : 'left', 
-                                        mb: '0.5rem'
-                                    }}>
-                                        <Typography 
-                                            variant="body1" 
-                                            sx={{ 
-                                                display: 'inline-block',
-                                                p: '0.5rem',
-                                                borderRadius: '0.5rem',
-                                                bgcolor: msg.sender === 'user' ? 'primary.light' : 'secondary.light'
-                                            }}>
-                                            {msg.text}
-                                        </Typography>
-                                    </Box>
-                                ))}
-                            </Paper>
-
-                            <Box sx={{ display: 'flex', mt: '1rem' }}>
-                                <TextField 
-                                    fullWidth 
-                                    variant="outlined" 
-                                    placeholder="Type a message..."
-                                    value={input} 
-                                    onChange={(e) => setInput(e.target.value)}
-                                />
-                                <Button 
-                                    variant="contained" 
-                                    sx={{ ml: '1rem' }}
-                                    onClick={retrieveHint} 
-                                    disabled={loadingMessage}
-                                >
-                                    Send
-                                </Button>
-                            </Box>
-                        </Box>
                     </Box>
 
-                    {/* Right side - 2/3 (antes era 1/3) */}
+                    {/* AI Chat - 1/3 width */}
                     <Box sx={{
-                        flex: 2,
+                        flex: 1,
                         display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        p: '1.5rem',
                         border: '1px solid gray',
                         borderRadius: '0.5rem',
-                        width: '100%',
-                        height: 'auto',
-                        minHeight: '40vh',
-                        maxHeight: '60vh',
-                        overflow: 'hidden'
+                        height: '100%',
+                        minHeight: '60vh'
                     }}>
-                        {question?.imageUrl ? (
-                            <img src={question.imageUrl} alt="Question related"
-                                 style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit'}}/>
-                        ) : (
-                            <Typography variant="h6">No image available</Typography>
-                        )}
+                        <Typography variant="h6" sx={{ mb: '1rem', textAlign: 'center' }}>Get help from AI</Typography>
+                        <Paper sx={{ maxHeight: '45vh', overflowY: 'auto', p: '1rem', mb: '1rem' }}>
+                            {messages.map((msg, index) => (
+                                <Box key={index} sx={{
+                                    textAlign: msg.sender === 'user' ? 'right' : 'left',
+                                    mb: '0.5rem'
+                                }}>
+                                    <Typography
+                                        variant="body1"
+                                        sx={{
+                                            display: 'inline-block',
+                                            p: '0.5rem',
+                                            borderRadius: '0.5rem',
+                                            bgcolor: msg.sender === 'user' ? 'primary.light' : 'secondary.light'
+                                        }}>
+                                        {msg.text}
+                                    </Typography>
+                                </Box>
+                            ))}
+                        </Paper>
+
+                        <Box sx={{ display: 'flex' }}>
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                placeholder="Type a message..."
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                            />
+                            <Button
+                                variant="contained"
+                                sx={{ ml: '1rem' }}
+                                onClick={retrieveHint}
+                                disabled={loadingMessage}
+                            >
+                                Send
+                            </Button>
+                        </Box>
                     </Box>
-                </Box>
-
-                {/* Back and Next Question buttons */}
-                <Box sx={{mt: '0.5rem', display: 'flex', justifyContent: 'flex-start', width: '100%'}}>
-                    <Button variant="contained" color="error" onClick={() => navigate('/home')}>
-                        Back
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color = 'primary'
-                        disabled={!answerSelected} // Solo habilitado si se ha seleccionado una respuesta
-                        onClick={() => {
-                            setChosenAnswer(null);  // Reseteamos la respuesta elegida
-                            setCorrectAnswer(null); // Reseteamos la respuesta correcta
-                            setIsCorrect(null);     // Reseteamos el estado de corrección
-                            setAnswerSelected(false);
-                            setMessages([]);
-                            setInput("");
-                            setTimeout(() => fetchQuestion(), 100); // Cargamos nueva pregunta
-                        }}
-                        sx={{ ml: '1rem' }}
-                    >
-                        Next Question
-                    </Button>
-
                 </Box>
             </Container>
         </>
