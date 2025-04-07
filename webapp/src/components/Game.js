@@ -41,7 +41,6 @@ const Game = () => {
         botBubble: '#FFD700'   // amarillo claro
     };
 
-
     const navigate = useNavigate();
     // Fetch question from the API
     const fetchQuestion = async () => {
@@ -159,7 +158,7 @@ const Game = () => {
             }
 
             skipNextQuestion();
-            
+
         } catch (error) {
             console.error('Error checking answer:', error);
             setError('Failed to check answer');
@@ -181,6 +180,8 @@ const Game = () => {
 
     useEffect(() => {
         fetchQuestion();
+        // This function is safe to be used as this, we can ignore the warning
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (loading) {
@@ -295,6 +296,7 @@ const Game = () => {
                                 let bgColor = COLORS.primary;
                                 let textColor = 'black';
 
+                                // Solo cambiamos el color después de haber seleccionado una respuesta
                                 if (answerSelected) {
                                     if (option === chosenAnswer) {
                                         bgColor = isCorrect ? COLORS.success : COLORS.error;
