@@ -209,7 +209,7 @@ async function generateDistractors(correctAnswer, questionType) {
       const llmResponse = await axios.post(
         gatewatServiceUrl + "/generateIncorrectOptions",
         {
-          model: "empathy",
+          model: "gemini",
           correctAnswer: correctAnswer,
           type: questionType
         }

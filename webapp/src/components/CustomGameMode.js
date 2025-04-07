@@ -13,6 +13,7 @@ import {
   TableCell,
   TableBody,
   FormControlLabel,
+  CircularProgress,
 } from '@mui/material';
 import Navbar from './Navbar';
 
@@ -32,6 +33,7 @@ const CustomGameMode = () => {
   const [questionCounts, setQuestionCounts] = useState({});
   const [readyEnabled, setReadyEnabled] = useState(false);
   const [shuffle, setShuffle] = useState(true);
+  const [loadingReady, setLoadingReady] = useState(false);
   const navigate = useNavigate();
 
   const maxTotal = 30;
@@ -65,6 +67,7 @@ const CustomGameMode = () => {
       .map(([type, count]) => ({ questionType: type, numberOfQuestions: count })); //format it to work on the backend
 
     try {
+      setLoadingReady(true);
       await fetch(`${apiEndpoint}/clear-questions`, { method: 'POST' });
       await fetch(`${apiEndpoint}/fetch-custom-question-data`, {
         method: 'POST',
@@ -78,6 +81,8 @@ const CustomGameMode = () => {
       navigate('/game');
     } catch (error) {
       console.error('Failed to start custom game:', error);
+    } finally {
+      setLoadingReady(false);
     }
   };
 
@@ -189,9 +194,14 @@ const CustomGameMode = () => {
             variant="contained"
             color="primary"
             onClick={handleReady}
-            disabled={!readyEnabled}
-          >
-            Ready
+            disabled={!readyEnabled || loadingReady}
+            sx={{ minWidth: 100, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              {loadingReady ? (
+                <CircularProgress size={24} sx={{ color: '#ff69b4' }} />
+              ) : (
+                'Ready'
+              )}
           </Button>
         </Box>
       </Container>
