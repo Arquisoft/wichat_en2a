@@ -5,7 +5,6 @@ import { MemoryRouter } from "react-router-dom";
 
 // Mock fetch
 global.fetch = jest.fn();
-
 const mockScores = [
     { score: 80, createdAt: "2025-03-28T12:34:56Z", isVictory: true },
     { score: 60, createdAt: "2025-03-27T10:20:30Z", isVictory: false },
@@ -32,31 +31,32 @@ describe("Scores Component", () => {
             ok: true,
             json: async () => mockScores,
         });
-
         render(
             <MemoryRouter>
                 <Scores />
             </MemoryRouter>
         );
-
         await waitFor(() => {
-            expect(screen.getByText("Your Scores")).toBeInTheDocument();
+            // Check for the correct heading based on actual component
+            expect(screen.getByText("📊 Your Game History")).toBeInTheDocument();
+            
+            // Check for scores
             expect(screen.getByText("80")).toBeInTheDocument();
             expect(screen.getByText("60")).toBeInTheDocument();
-            expect(screen.getByText("Yes")).toBeInTheDocument();
-            expect(screen.getByText("No")).toBeInTheDocument();
+            
+            // Check for victory indicators
+            expect(screen.getByText("✅")).toBeInTheDocument();
+            expect(screen.getByText("❌")).toBeInTheDocument();
         });
     });
 
     test("displays an error message if fetch fails", async () => {
         fetch.mockRejectedValueOnce(new Error("Failed to fetch"));
-
         render(
             <MemoryRouter>
                 <Scores />
             </MemoryRouter>
         );
-
         await waitFor(() => {
             expect(screen.getByText("Failed to fetch")).toBeInTheDocument();
         });
@@ -67,13 +67,11 @@ describe("Scores Component", () => {
             ok: true,
             json: async () => [],
         });
-
         render(
             <MemoryRouter>
                 <Scores />
             </MemoryRouter>
         );
-
         await waitFor(() => {
             expect(screen.getByText("No scores available")).toBeInTheDocument();
         });
@@ -86,7 +84,6 @@ describe("Scores Component", () => {
                 <Scores />
             </MemoryRouter>
         );
-
         await waitFor(() => {
             expect(screen.getByText("No token found. Please log in.")).toBeInTheDocument();
         });

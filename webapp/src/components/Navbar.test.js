@@ -23,7 +23,9 @@ describe('Navbar component', () => {
         </MemoryRouter>
     );
     expect(screen.getByRole('button', { name: /Home/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /User Scores/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Game/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /My Scores/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Top Scores/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Leaderboards/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Log Out/i })).toBeInTheDocument();
   });
@@ -44,8 +46,18 @@ describe('Navbar component', () => {
           <Navbar />
         </MemoryRouter>
     );
-    fireEvent.click(screen.getByRole('button', { name: /User Scores/i }));
+    fireEvent.click(screen.getByRole('button', { name: /My Scores/i }));
     expect(mockNavigate).toHaveBeenCalledWith('/scores');
+  });
+
+  it('navigates to "Top Scores" when the User Scores button is clicked', () => {
+    render(
+        <MemoryRouter>
+          <Navbar />
+        </MemoryRouter>
+    );
+    fireEvent.click(screen.getByRole('button', { name: /Top Scores/i }));
+    expect(mockNavigate).toHaveBeenCalledWith('/allScores');
   });
 
   it('navigates to "Leaderboard" when the Leaderboard button is clicked', () => {
