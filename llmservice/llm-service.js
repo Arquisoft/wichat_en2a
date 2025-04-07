@@ -47,7 +47,7 @@ const questions = [
   },
   {
     type: "dino",
-    question: "Which dinosaur is shown in the picture?"
+    question: "Which dinosaur or prehistorical being is shown in the picture?"
   },
   {
     type: "place",
