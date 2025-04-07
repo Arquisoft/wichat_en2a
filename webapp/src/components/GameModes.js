@@ -20,6 +20,7 @@ const GameModes = () => {
 
   const handleGameModeClick = async (type) => {
     if (type === 'custom'){
+      await fetch(`${apiEndpoint}/clear-questions`, { method: 'POST' });
       navigate('/gamemodes/custom');
       return;
     }
