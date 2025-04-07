@@ -56,13 +56,15 @@ const queries = [
       `
     },
     {
-      type: "place",
+      type: "place", //only places with a wikipedia article
       query: `
         SELECT ?place ?placeLabel ?image WHERE {
-        ?place wdt:P31/wdt:P279* wd:Q570116;  # Sitio turístico o atracción
-              wdt:P18 ?image.
-        SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
-      }
+          ?place wdt:P31 wd:Q515;      # Instancia de ciudad
+                wdt:P18 ?image;
+                wdt:P625 ?coord.
+
+          SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+        }
       `
     }
   ];
