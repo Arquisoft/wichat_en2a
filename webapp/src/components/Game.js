@@ -90,6 +90,21 @@ const Game = () => {
         setLoading(false);
     };
 
+    const skipNextQuestion = () => {
+        // Espera 5 segundos antes de pasar a la siguiente pregunta
+        setTimeout(() => {
+            if (questionCount < MAX_QUESTIONS) {
+                setChosenAnswer(null);  // Reseteamos la respuesta elegida
+                setCorrectAnswer(null); // Reseteamos la respuesta correcta
+                setIsCorrect(null);     // Reseteamos el estado de corrección
+                setAnswerSelected(false);
+                setMessages([]);
+                setInput("");
+                fetchQuestion();
+            }
+        }, 3000);
+    }
+
     const handleBackClick = () => {
         setOpenConfirmDialog(true);
     };
@@ -143,18 +158,7 @@ const Game = () => {
                 // Aunque el usuario haya fallado, guardo la correcta
             }
 
-            // Espera 5 segundos antes de pasar a la siguiente pregunta
-            setTimeout(() => {
-                if (questionCount < MAX_QUESTIONS) {
-                    setChosenAnswer(null);  // Reseteamos la respuesta elegida
-                    setCorrectAnswer(null); // Reseteamos la respuesta correcta
-                    setIsCorrect(null);     // Reseteamos el estado de corrección
-                    setAnswerSelected(false);
-                    setMessages([]);
-                    setInput("");
-                    fetchQuestion();
-                }
-            }, 5000);
+            skipNextQuestion();
             
         } catch (error) {
             console.error('Error checking answer:', error);
@@ -170,18 +174,7 @@ const Game = () => {
             setCorrectAnswer(question.correctAnswer); // Muestra la respuesta correcta en verde
             setAnswerSelected(true); // Evita más respuestas
 
-            // Espera 5 segundos antes de pasar a la siguiente pregunta
-            setTimeout(() => {
-                if (questionCount < MAX_QUESTIONS) {
-                    setChosenAnswer(null);  // Reseteamos la respuesta elegida
-                    setCorrectAnswer(null); // Reseteamos la respuesta correcta
-                    setIsCorrect(null);     // Reseteamos el estado de corrección
-                    setAnswerSelected(false);
-                    setMessages([]);
-                    setInput("");
-                    fetchQuestion();
-                }
-            }, 5000);
+            skipNextQuestion();
 
         }
     };
