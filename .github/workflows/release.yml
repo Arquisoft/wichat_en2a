@@ -149,17 +149,16 @@ jobs:
       uses: docker/setup-buildx-action@v2
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@v5
-      env:
-        GEMINI_KEY: ${{ secrets.GEMINI_KEY }}
-        EMPATHY_KEY: ${{ secrets.EMPATHY_KEY }}
       with:
         name: arquisoft/wichat_en2a/llmservice
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
         registry: ghcr.io
         workdir: llmservice
-        buildargs: GEMINI_KEY,EMPATHY_KEY
         platforms: linux/amd64,linux/arm64
+        buildargs: |
+          GEMINI_KEY=${{ secrets.GEMINI_KEY }}
+          EMPATHY_KEY=${{ secrets.EMPATHY_KEY }}
 
   docker-push-questionservice:
     name: Push question service Docker Image to GitHub Packages
