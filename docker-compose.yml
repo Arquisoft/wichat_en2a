@@ -56,11 +56,18 @@ services:
     container_name: llmservice-wichat_en2a
     image: ghcr.io/arquisoft/wichat_en2a/llmservice:latest
     profiles: ["dev", "prod"]
-    build: ./llmservice
+    build:
+      context: ./llmservice
+      args:
+        GEMINI_KEY: ${GEMINI_KEY}
+        EMPATHY_KEY: ${EMPATHY_KEY}
     ports:
       - "8003:8003"
     networks:
       - mynetwork
+    environment:
+      GEMINI_KEY: ${GEMINI_KEY}
+      EMPATHY_KEY: ${EMPATHY_KEY}
 
   gatewayservice:
     container_name: gatewayservice-wichat_en2a
