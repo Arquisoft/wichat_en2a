@@ -92,15 +92,13 @@ const Game = () => {
     const skipNextQuestion = () => {
         // Espera 3 segundos antes de pasar a la siguiente pregunta
         setTimeout(() => {
-            if (questionCount < MAX_QUESTIONS) {
-                setChosenAnswer(null);  // Reseteamos la respuesta elegida
-                setCorrectAnswer(null); // Reseteamos la respuesta correcta
-                setIsCorrect(null);     // Reseteamos el estado de corrección
-                setAnswerSelected(false);
-                setMessages([]);
-                setInput("");
-                fetchQuestion();
-            }
+            setChosenAnswer(null);  // Reseteamos la respuesta elegida
+            setCorrectAnswer(null); // Reseteamos la respuesta correcta
+            setIsCorrect(null);     // Reseteamos el estado de corrección
+            setAnswerSelected(false);
+            setMessages([]);
+            setInput("");
+            fetchQuestion();
         }, 3000);
     }
 
