@@ -1,5 +1,5 @@
 import React from 'react';
-import {render, screen, fireEvent, waitFor} from '@testing-library/react';
+import {render, screen, fireEvent, waitFor, act} from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Home from './Home';
@@ -24,6 +24,11 @@ describe('Game Component', () => {
 
     beforeEach(() => {
         mockAxios.reset();
+    });
+
+    afterEach(() => {
+        jest.clearAllMocks();
+        jest.restoreAllMocks();
     });
 
     // Render component
@@ -64,9 +69,26 @@ describe('Game Component', () => {
         setupMockApiResponse('question', mockQuestion);
         renderGameComponent();
         await waitFor(() => {
-            const backButton = screen.getByRole('button', { name: /Back/i});
+            const backButton = screen.getByRole('button', { name: /Exit/i});
             fireEvent.click(backButton);
         })
+
+        // test dialog
+        expect(screen.getByText(/Leave Game\?/i)).toBeInTheDocument();
+        expect(screen.getByText(/If you leave now, your progress will be lost/i)).toBeInTheDocument();
+
+        // 3. Click en Cancel → debería cerrar el diálogo
+        fireEvent.click(screen.getByRole('button', { name: /Cancel/i }));
+        await waitFor(() => {
+            expect(screen.queryByText(/Leave Game\?/i)).not.toBeInTheDocument();
+        });
+
+        // 4. Volver a hacer click en Exit para abrir el diálogo otra vez
+        fireEvent.click(screen.getByRole('button', { name: /Exit/i }));
+
+        // 5. Click en Leave → debe navegar a /home
+        fireEvent.click(screen.getByRole('button', { name: /Leave/i }));
+
         render(
             <MemoryRouter>
                 <Home onNavigate={mockOnNavigate} />
@@ -118,8 +140,25 @@ describe('Game Component', () => {
 
     });
 
-    test('allows selecting an answer and enables "Next Question" button', async () => {
+    test('next question will be shown 3 seconds after selecting an option', async () => {
         setupMockApiResponse('question', mockQuestion);
+        const mockQuestion2 = {
+            _id: '2',
+            imageUrl: 'https://example.com/flag2.png',
+            correctAnswer: 'Germany',
+            options: ['Spain', 'France', 'Germany', 'Italy']
+        };
+
+        // Mocks de axios
+        const getSpy = jest.spyOn(axios, 'get');
+        const postSpy = jest.spyOn(axios, 'post');
+
+        // Orden: primera pregunta, luego segunda
+        getSpy
+            .mockResolvedValueOnce({ data: mockQuestion }) // primer fetch
+            .mockResolvedValueOnce({ data: mockQuestion2 }); // segundo fetch (después de 3s)
+
+        postSpy.mockResolvedValue({ data: { isCorrect: true } });
         renderGameComponent();
 
         await waitFor(() => {
@@ -129,8 +168,13 @@ describe('Game Component', () => {
         const answerButton = screen.getByRole('button', { name: 'Spain' });
         fireEvent.click(answerButton);
 
-        const nextQuestionButton = screen.getByRole('button', { name: /Next Question/i });
-        expect(nextQuestionButton).toBeEnabled();
+        await waitFor(() =>
+            expect(screen.getByRole('button', { name: 'Germany' })).toBeInTheDocument()
+        );
+
+        // Limpia los mocks
+        getSpy.mockRestore();
+        postSpy.mockRestore();
     });
 
     test('disables all buttons after selecting an answer', async () => {

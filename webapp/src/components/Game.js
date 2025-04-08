@@ -90,7 +90,7 @@ const Game = () => {
     };
 
     const skipNextQuestion = () => {
-        // Espera 5 segundos antes de pasar a la siguiente pregunta
+        // Espera 3 segundos antes de pasar a la siguiente pregunta
         setTimeout(() => {
             if (questionCount < MAX_QUESTIONS) {
                 setChosenAnswer(null);  // Reseteamos la respuesta elegida
@@ -263,7 +263,7 @@ const Game = () => {
                         gap: '1rem'
                     }}>
                         <Typography variant="h6" sx={{mb: '0.5rem', color: COLORS.textOnColor}}>
-                            What country is this flag from?</Typography>
+                            Which country is this flag from?</Typography>
 
                         {/* Flag image */}
                         <Box sx={{
