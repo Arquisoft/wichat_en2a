@@ -217,7 +217,7 @@ const Game = () => {
                            minHeight: '85vh',
                            width: '100%',
                            px: '1rem',
-                           bgcolor: COLORS.background,
+                           bgColor: COLORS.background,
                            paddingBottom: '2rem'
                        }}>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: '1rem' }}>

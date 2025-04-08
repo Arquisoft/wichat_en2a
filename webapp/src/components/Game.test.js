@@ -11,6 +11,7 @@ const mockAxios = new MockAdapter(axios);
 const apiEndpoint = 'http://localhost:8000';
 
 const mockQuestion = {
+    _id: '1',
     correctAnswer: 'Spain',
     imageUrl: 'https://via.placeholder.com/300',
     options: ['Spain', 'France', 'Germany', 'Italy']
@@ -141,6 +142,8 @@ describe('Game Component', () => {
     });
 
     test('next question will be shown 3 seconds after selecting an option', async () => {
+        jest.useFakeTimers(); // Usamos timers fake para avanzar tiempo
+
         setupMockApiResponse('question', mockQuestion);
         const mockQuestion2 = {
             _id: '2',
@@ -149,16 +152,15 @@ describe('Game Component', () => {
             options: ['Spain', 'France', 'Germany', 'Italy']
         };
 
-        // Mocks de axios
         const getSpy = jest.spyOn(axios, 'get');
         const postSpy = jest.spyOn(axios, 'post');
 
-        // Orden: primera pregunta, luego segunda
         getSpy
-            .mockResolvedValueOnce({ data: mockQuestion }) // primer fetch
-            .mockResolvedValueOnce({ data: mockQuestion2 }); // segundo fetch (después de 3s)
+            .mockResolvedValueOnce({ data: mockQuestion })   // Pregunta 1
+            .mockResolvedValueOnce({ data: mockQuestion2 }); // Pregunta 2
 
         postSpy.mockResolvedValue({ data: { isCorrect: true } });
+
         renderGameComponent();
 
         await waitFor(() => {
@@ -168,14 +170,35 @@ describe('Game Component', () => {
         const answerButton = screen.getByRole('button', { name: 'Spain' });
         fireEvent.click(answerButton);
 
-        await waitFor(() =>
-            expect(screen.getByRole('button', { name: 'Germany' })).toBeInTheDocument()
-        );
+        // Avanza 3s para que se dispare skipNextQuestion
+        act(() => {
+            jest.advanceTimersByTime(3000);
+        });
 
-        // Limpia los mocks
+        await waitFor(() => {
+            expect(screen.getByRole('button', { name: 'Germany' })).toBeInTheDocument();
+        });
+
+        // Comprobamos que los botones están habilitados (answerSelected = false)
+        const allOptionButtons = mockQuestion2.options.map(option =>
+            screen.getByRole('button', { name: option })
+        );
+        allOptionButtons.forEach(btn => {
+            expect(btn).toBeDisabled();
+        });
+
+        // Comprobamos que el input del chat esté vacío (input === "")
+        expect(screen.getByPlaceholderText(/Type a message.../i)).toHaveValue('');
+
+        // Comprobamos que el chat esté vacío (messages === [])
+        // Podés usar algún testId si los mensajes están en una lista
+        const chatMessages = screen.queryAllByTestId('chat-message');
+        expect(chatMessages.length).toBe(0);
+
         getSpy.mockRestore();
         postSpy.mockRestore();
     });
+
 
     test('disables all buttons after selecting an answer', async () => {
         setupMockApiResponse('question', mockQuestion);
@@ -241,6 +264,8 @@ describe('Game Component', () => {
         await waitFor(() => {
             expect(mockAxios.history.post.length).toBe(1); // It should have called the POST request once
             expect(mockAxios.history.post[0].url).toBe(`${apiEndpoint}/fetch-flag-data`);
+            expect(mockAxios.history.get.length).toBe(1); // It should have called the get request once
+            expect(mockAxios.history.get[0].url).toBe(`${apiEndpoint}/question`);
         });
 
         // Simulate the successful fetch of the question after database initialization
@@ -319,4 +344,25 @@ describe('Game Component', () => {
             expect(screen.getByText(/Game Over!/i)).toBeInTheDocument();
         });
     });
+
+    test('function handleTimeUp() is called after timer ends', async () => {
+        setupMockApiResponse('question', mockQuestion);
+        renderGameComponent();
+
+        await waitFor(() => {
+            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+        });
+
+        act(() => {
+            jest.advanceTimersByTime(40000); // Simula 3 segundos
+        });
+
+        const correctAnswerButton = screen.getByRole('button', { name: 'Spain' });
+        await waitFor(() => {
+            expect(correctAnswerButton).toHaveStyle('background-color: #F44336');
+        });
+
+    });
+
+
 });
