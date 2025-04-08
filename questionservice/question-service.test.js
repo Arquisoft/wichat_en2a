@@ -77,9 +77,9 @@ async function addMockQuestionToDB() {
 }
 
 describe("Question Service", () => {
-  it("should fetch data from wikidata and store in the DB on POST /fetch-flag-data", async () => {
-    // Make a POST request to /fetch-flag-data
-    const response = await request(app).post("/fetch-flag-data");
+  it("should fetch data from wikidata and store in the DB on POST /fetch-question-data", async () => {
+    // Make a POST request to /fetch-question-data
+    const response = await request(app).post("/fetch-question-data").send({ questionType: "flag" });
 
     // Check the response status and body
     expect(response.statusCode).toBe(200); //200 is HTTP status code for a successful request
@@ -189,7 +189,7 @@ describe("Question Service Error Handling", () => {
     expect(response.body).toEqual({ isCorrect: false });
   });
 
-  it("should should fail and do not generate questions on POST /fetch-flag-data if the LLM has some issue", async () => {
+  it("should fail and do not generate questions on POST /fetch-question-data if the LLM has some issue", async () => {
     axios.post.mockImplementation((url) => {
       if (url.includes("/generateIncorrectOptions")) {
         return Promise.resolve({
@@ -199,7 +199,7 @@ describe("Question Service Error Handling", () => {
       }
     });
 
-    const response = await request(app).post("/fetch-flag-data");
+    const response = await request(app).post("/fetch-question-data").send({ questionType: "flag" });
 
     // Check the response status
     expect(response.statusCode).toBe(500);
@@ -214,10 +214,9 @@ describe("Question Generation parametrization", () => {
   it("should generate a specified number of questions", async () => {
     const numberOfQuestions = 5; // Specify the number of questions to generate
 
-    // Make a POST request to /fetch-flag-data with the specified number of questions
+    // Make a POST request to /fetch-question-data with the specified number of questions
     const response = await request(app)
-      .post("/fetch-flag-data")
-      .send({ numberOfQuestions });
+      .post("/fetch-question-data").send({ questionType: "flag", numberOfQuestions });
 
     // Check the response status and body
     expect(response.statusCode).toBe(200); //200 is HTTP status code for a successful request
@@ -230,8 +229,8 @@ describe("Question Generation parametrization", () => {
   });
 
   it("should default to 30 questions if an invalid number (any negative number or 0) is provided", async () => {
-    // Make a POST request to /fetch-flag-data without specifying the number of questions
-    const response = await request(app).post("/fetch-flag-data").send({
+    // Make a POST request to /fetch-question-data without specifying the number of questions
+    const response = await request(app).post("/fetch-question-data").send({ questionType: "flag",
       numberOfQuestions: -1, // Invalid number of questions
     });
 
@@ -245,8 +244,7 @@ describe("Question Generation parametrization", () => {
     expect(questions.length).toBe(30);
 
     const response2 = await request(app)
-      .post("/fetch-flag-data")
-      .send({ numberOfQuestions: 0 });
+      .post("/fetch-question-data").send({ questionType: "flag", numberOfQuestions: 0 });
 
     // Check the response status and body
     expect(response2.statusCode).toBe(200);
@@ -259,8 +257,8 @@ describe("Question Generation parametrization", () => {
   });
 
   it("should generate 30 questions if the number of questions is not a number", async () => {
-    // Make a POST request to /fetch-flag-data with an invalid number of questions
-    const response = await request(app).post("/fetch-flag-data").send({
+    // Make a POST request to /fetch-question-data with an invalid number of questions
+    const response = await request(app).post("/fetch-question-data").send({ questionType: "flag",
       numberOfQuestions: "invalid", // Invalid number of questions
     });
 
@@ -276,8 +274,8 @@ describe("Question Generation parametrization", () => {
   });
 
   it("should generate 30 questions if a type other than 'Integer' is provided", async () => {
-    // Make a POST request to /fetch-flag-data with an invalid type for number of questions
-    const response = await request(app).post("/fetch-flag-data").send({
+    // Make a POST request to /fetch-question-data with an invalid type for number of questions
+    const response = await request(app).post("/fetch-question-data").send({ questionType: "flag",
       numberOfQuestions: 3.455, // Invalid type
     });
 
