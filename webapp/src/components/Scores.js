@@ -13,6 +13,8 @@ import {
 } from '@mui/material';
 import Navbar from './Navbar';
 
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+
 const Scores = () => {
     const [scores, setScores] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -27,7 +29,7 @@ const Scores = () => {
                     throw new Error('No token found. Please log in.');
                 }
 
-                const response = await fetch("http://localhost:8000/scores", {
+                const response = await fetch(`${apiEndpoint}/scores`, {
                     headers: {
                         Authorization: `Bearer ${token}`  // Include in header
                         // in postman or curl
