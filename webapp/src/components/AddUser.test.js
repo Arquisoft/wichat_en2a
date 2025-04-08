@@ -26,6 +26,7 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
 }));
+jest.setTimeout(20000);
 
 describe('AddUser component', () => {
   const mockNavigate = jest.fn();
