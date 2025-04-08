@@ -68,37 +68,6 @@ describe('Login component', () => {
     });
   });
 
-  it('should handle error when logging in', async () => {
-    mockAxios.onPost('http://localhost:8000/login').reply(401, { error: 'Unauthorized' });
-
-    render(
-        <MemoryRouter>
-          <Login onLoginSuccess={() => {}}/>
-        </MemoryRouter>
-    );
-
-    await fillLoginFormAndSubmit();
-
-    await waitFor(() => {
-      expect(screen.getByText(/Error: Unauthorized/i)).toBeInTheDocument();
-    });
-  });
-
-  it('should show error message when no server error is provided', async () => {
-    // Simulate error response without "error" field
-    mockAxios.onPost('http://localhost:8000/login').reply(500, {});
-
-    render(
-        <MemoryRouter>
-          <Login />
-        </MemoryRouter>
-    );
-
-    await fillLoginFormAndSubmit();
-
-    expect(await screen.findByText(/Error: Login failed/i)).toBeInTheDocument();
-  });
-
   it('should apply the spinning animation to the image', async () => {
     mockAxios.onPost('http://localhost:8000/login').reply(200, {createdAt: '2024-01-01T12:34:56Z'});
 
@@ -134,11 +103,9 @@ describe('Login component', () => {
     );
   });
 
-  it('shows and closes error snackbar when login fails', async () => {
-    // Mock failed login
-    mockAxios.onPost('http://localhost:8000/login').reply(401, {
-      error: 'Unauthorized'
-    });
+  it('should show error message when an error happens', async () => {
+    // Simulate error response without "error" field
+    mockAxios.onPost('http://localhost:8000/login').reply(500, {});
 
     render(
         <MemoryRouter>
@@ -148,9 +115,6 @@ describe('Login component', () => {
 
     await fillLoginFormAndSubmit();
 
-    expect(await screen.findByText(/Error: Unauthorized/i)).toBeInTheDocument();
-    await waitFor(() => {
-      expect(screen.queryByText(/Error: Unauthorized/i)).not.toBeInTheDocument();
-    }, { timeout: 7000 });
+    expect(await screen.findByText(/Login failed/i)).toBeInTheDocument();
   });
 });

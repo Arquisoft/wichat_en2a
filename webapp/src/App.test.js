@@ -40,7 +40,7 @@ describe('App component', () => {
         </MemoryRouter>
     );
     fireEvent.click(screen.getByRole('button', { name: /Don't have an account?/i }));
-    expect(screen.getByRole('heading', { name: /Add User/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Register/i })).toBeInTheDocument();
   });
 
   it('navigates to login view when "Already have an account?" is clicked', () => {
@@ -81,10 +81,10 @@ describe('App component', () => {
     );
     fireEvent.click(screen.getByRole('button', { name: /Don't have an account?/i })); // Go to registration page
 
-    await fillLoginFormAndSubmit(screen.getByRole('button', {name: /Add User/i}));
+    await fillLoginFormAndSubmit(screen.getByRole('button', {name: /Register/i}));
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /Login/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Login 🧠/i })).toBeInTheDocument();
     });
   });
 });
