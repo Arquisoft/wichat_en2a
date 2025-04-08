@@ -117,4 +117,25 @@ describe('Login component', () => {
 
     expect(await screen.findByText(/Login failed/i)).toBeInTheDocument();
   });
+
+  it('should display and close the error Snackbar when an error occurs', async () => {
+    mockAxios.onPost('http://localhost:8000/login').reply(500, { error: 'Invalid credentials' });
+
+    render(
+        <MemoryRouter>
+          <Login />
+        </MemoryRouter>
+    );
+
+    await fillLoginFormAndSubmit();
+
+    const snackbar = await screen.findByText(/Error: Invalid credentials/i);
+    expect(snackbar).toBeInTheDocument();
+
+    fireEvent.click(snackbar);
+
+    await waitFor(() => {
+      expect(screen.queryByText(/Error: Invalid credentials/i)).not.toBeInTheDocument();
+    }, { timeout: 7000 });
+  });
 });

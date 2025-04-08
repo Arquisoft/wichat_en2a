@@ -12,7 +12,7 @@
                 await axios.post(`${apiEndpoint}/adduser`, {username, password});
                 navigate('/login');
             } catch(error){
-                throw new Error (error.response?.data?.error || 'Login failed');
+                throw new Error (error.response?.data?.error || 'Register failed');
             }
         };
 

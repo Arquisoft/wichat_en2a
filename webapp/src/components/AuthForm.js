@@ -32,7 +32,7 @@ const AuthForm = ({type, onSubmit}) => {
             setOpenSnackbar(true);
             setError('');
         } catch (err) {
-            setError(error.response?.data?.error || `${submitText} failed`);
+            setError(err);
         }
     };
 
