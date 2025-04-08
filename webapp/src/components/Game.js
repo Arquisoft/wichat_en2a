@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import {Container, Typography, Button, Box, CircularProgress, TextField, Paper} from '@mui/material';
+import {Container, Typography, Button, Box, CircularProgress, TextField, Paper,Dialog, DialogTitle, DialogContent, DialogActions} from '@mui/material';
 import Navbar from './Navbar';
 import './game-styles.css';
 import {useNavigate} from 'react-router-dom';
@@ -28,12 +28,17 @@ const Game = () => {
     const [loadingMessage, setLoadingMessage] = useState(false);
     const [score, setScore] = useState(0);
 
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+
     const COLORS = {
-        primary: '#6A5ACD',
-        success: '#4CAF50',
-        error: '#F44336',
-        hover: '#1565c0',
-        textOnColor: 'white'
+        primary: '#f5f5dc', // beige claro para botones no seleccionados
+        success: '#4CAF50', // verde correcto
+        error: '#F44336',   // rojo incorrecto
+        hover: '#dcdcdc',   // gris clarito al pasar el mouse
+        background: '#6A5ACD', // fondo azul claro
+        textOnColor: '#FFFFFF',
+        userBubble: '#F8BBD0', // rosa claro
+        botBubble: '#FFD700'   // amarillo claro
     };
 
     const navigate = useNavigate();
@@ -84,6 +89,32 @@ const Game = () => {
         setLoading(false);
     };
 
+    const skipNextQuestion = () => {
+        // Espera 3 segundos antes de pasar a la siguiente pregunta
+        setTimeout(() => {
+            setChosenAnswer(null);  // Reseteamos la respuesta elegida
+            setCorrectAnswer(null); // Reseteamos la respuesta correcta
+            setIsCorrect(null);     // Reseteamos el estado de corrección
+            setAnswerSelected(false);
+            setMessages([]);
+            setInput("");
+            fetchQuestion();
+        }, 3000);
+    }
+
+    const handleBackClick = () => {
+        setOpenConfirmDialog(true);
+    };
+
+    const handleConfirmLeave = () => {
+        setOpenConfirmDialog(false);
+        navigate('/home');
+    };
+
+    const handleCancelLeave = () => {
+        setOpenConfirmDialog(false);
+    };
+
     const retrieveHint = async () => {
         if (!input.trim()) return;
         const newMessages = [...messages, { text: input, sender: 'user' }];
@@ -123,6 +154,9 @@ const Game = () => {
                 setCorrectAnswer(question.correctAnswer);
                 // Aunque el usuario haya fallado, guardo la correcta
             }
+
+            skipNextQuestion();
+
         } catch (error) {
             console.error('Error checking answer:', error);
             setError('Failed to check answer');
@@ -136,6 +170,9 @@ const Game = () => {
             setIsCorrect(false); // No fue seleccionada por el usuario, así que es incorrecta
             setCorrectAnswer(question.correctAnswer); // Muestra la respuesta correcta en verde
             setAnswerSelected(true); // Evita más respuestas
+
+            skipNextQuestion();
+
         }
     };
 
@@ -172,11 +209,37 @@ const Game = () => {
         <>
             <Navbar />
             <Container component="main" maxWidth="xl"
-                       sx={{textAlign: 'center', mt: '0.5rem', minHeight: '85vh', width: '100%', px: '1rem'}}>
-                <Typography component="h1" variant="h4" sx={{mb: '1rem'}}>
+                       sx={{
+                           textAlign: 'center',
+                           mt: '0.5rem',
+                           minHeight: '85vh',
+                           width: '100%',
+                           px: '1rem',
+                           bgColor: COLORS.background,
+                           paddingBottom: '2rem'
+                       }}>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: '1rem' }}>
+                    <Button
+                        variant="outlined"
+                        onClick={handleBackClick}
+                        sx={{
+                            color: COLORS.textOnColor,
+                            borderColor: COLORS.textOnColor,
+                            '&:hover': {
+                                borderColor: COLORS.hover,
+                                backgroundColor: COLORS.hover,
+                                color: 'black'
+                            }
+                        }}
+                    >
+                        Exit
+                    </Button>
+                </Box>
+
+                <Typography component="h1" variant="h4" sx={{mb: '1rem', color: COLORS.textOnColor}}>
                     Quiz Game!
                 </Typography>
-                <Typography variant="h6">Score: {score} / {MAX_QUESTIONS * 100}</Typography>
+                <Typography variant="h6" sx={{color: COLORS.textOnColor}}>Score: {score} / {MAX_QUESTIONS * 100}</Typography>
 
                 {/* Timer */}
                 <Timer key={timerKey} duration={40} onTimeUp={handleTimeUp} answerSelected={answerSelected} />
@@ -184,34 +247,61 @@ const Game = () => {
                 <Box sx={{
                     display: 'flex',
                     width: '100%',
-                    minHeight: '40vh',
-                    maxHeight: '60vh',
-                    gap: '1rem',
                     flexDirection: 'row',
-                    overflow: 'auto'
+                    gap: '1rem',
+                    mt: '1rem',
+                    justifyContent: 'space-between'
                 }}>
-                    {/* Left side - 1/3 (antes era 2/3) */}
-                    <Box sx={{flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%'}}>
-                        {/* Upper part - Question and answers */}
+                    {/* Main content - 2/3 width */}
+                    <Box sx={{
+                        flex: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '1rem'
+                    }}>
+                        <Typography variant="h6" sx={{mb: '0.5rem', color: COLORS.textOnColor}}>
+                            Which country is this flag from?</Typography>
+
+                        {/* Flag image */}
                         <Box sx={{
-                            flex: 1,
-                            p: '1rem',
+                            width: '100%',
+                            maxWidth: '500px',
                             border: '1px solid gray',
                             borderRadius: '0.5rem',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            width: '100%'
+                            overflow: 'hidden'
                         }}>
-                            <Typography variant="h6" sx={{mb: '1rem'}}>Which country is this flag from?</Typography>
+                            {question?.imageUrl ? (
+                                <img
+                                    src={question.imageUrl}
+                                    alt="Question related"
+                                    style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+                                />
+                            ) : (
+                                <Typography variant="h6">No image available</Typography>
+                            )}
+                        </Box>
+
+                        {/* Answer buttons (2x2 grid) */}
+                        <Box sx={{
+                            display: 'grid',
+                            gridTemplateColumns: '1fr 1fr',
+                            gap: '1rem',
+                            width: '100%',
+                            maxWidth: '500px'
+                        }}>
                             {question.options.map((option, index) => {
                                 let bgColor = COLORS.primary;
+                                let textColor = 'black';
 
                                 // Solo cambiamos el color después de haber seleccionado una respuesta
                                 if (answerSelected) {
                                     if (option === chosenAnswer) {
                                         bgColor = isCorrect ? COLORS.success : COLORS.error;
+                                        textColor = COLORS.textOnColor;
                                     } else if (option === correctAnswer) {
                                         bgColor = COLORS.success;
+                                        textColor = COLORS.textOnColor;
                                     }
                                 }
 
@@ -221,16 +311,16 @@ const Game = () => {
                                         variant="contained"
                                         fullWidth
                                         sx={{
-                                            mb: '0.5rem',
                                             py: '1rem',
                                             backgroundColor: bgColor,
+                                            color: textColor,
                                             "&:hover": {
                                                 backgroundColor: answerSelected ? undefined : COLORS.hover,
                                             },
                                             "&.Mui-disabled": {
                                                 backgroundColor: bgColor,
-                                                color: "white", // Asegura que el texto siga siendo visible si es necesario
-                                                opacity: 1, // Elimina la opacidad que Material-UI pone en los botones deshabilitados
+                                                color: textColor,
+                                                opacity: 1,
                                             }
                                         }}
                                         disabled={!!answerSelected}
@@ -246,107 +336,80 @@ const Game = () => {
                                 );
                             })}
                         </Box>
-
-                        {/* Lower part - Hint box */}
-                        <Box sx={{
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            p: '1.5rem',
-                            border: '1px solid gray',
-                            borderRadius: '0.5rem',
-                            width: '100%',
-                            overflow: 'hidden'
-                        }}>
-                            <Paper sx={{ maxHeight: '30vh', overflowY: 'auto', p: '1rem', border: '1px solid gray' }}>
-                                {messages.map((msg, index) => (
-                                    <Box key={index} sx={{ 
-                                        textAlign: msg.sender === 'user' ? 'right' : 'left', 
-                                        mb: '0.5rem'
-                                    }}>
-                                        <Typography 
-                                            variant="body1" 
-                                            sx={{ 
-                                                display: 'inline-block',
-                                                p: '0.5rem',
-                                                borderRadius: '0.5rem',
-                                                bgcolor: msg.sender === 'user' ? 'primary.light' : 'secondary.light'
-                                            }}>
-                                            {msg.text}
-                                        </Typography>
-                                    </Box>
-                                ))}
-                            </Paper>
-
-                            <Box sx={{ display: 'flex', mt: '1rem' }}>
-                                <TextField 
-                                    fullWidth 
-                                    variant="outlined" 
-                                    placeholder="Type a message..."
-                                    value={input} 
-                                    onChange={(e) => setInput(e.target.value)}
-                                />
-                                <Button 
-                                    variant="contained" 
-                                    sx={{ ml: '1rem' }}
-                                    onClick={retrieveHint} 
-                                    disabled={loadingMessage}
-                                >
-                                    Send
-                                </Button>
-                            </Box>
-                        </Box>
                     </Box>
 
-                    {/* Right side - 2/3 (antes era 1/3) */}
+                    {/* AI Chat - 1/3 width */}
                     <Box sx={{
-                        flex: 2,
+                        flex: 1,
                         display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between',
+                        p: '1.5rem',
                         border: '1px solid gray',
                         borderRadius: '0.5rem',
-                        width: '100%',
-                        height: 'auto',
-                        minHeight: '40vh',
-                        maxHeight: '60vh',
-                        overflow: 'hidden'
+                        height: '100%',
+                        minHeight: '60vh',
+                        backgroundColor: COLORS.primary
                     }}>
-                        {question?.imageUrl ? (
-                            <img src={question.imageUrl} alt="Question related"
-                                 style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit'}}/>
-                        ) : (
-                            <Typography variant="h6">No image available</Typography>
-                        )}
+                        <Typography variant="h6" sx={{ mb: '1rem', textAlign: 'center' }}>Get help from AI</Typography>
+                        <Paper sx={{ maxHeight: '45vh', overflowY: 'auto', p: '1rem', mb: '1rem', bgColor: COLORS.primary}}>
+                            {messages.map((msg, index) => (
+                                <Box key={index} sx={{
+                                    textAlign: msg.sender === 'user' ? 'right' : 'left',
+                                    mb: '0.5rem'
+                                }}>
+                                    <Typography
+                                        variant="body1"
+                                        sx={{
+                                            display: 'inline-block',
+                                            p: '0.5rem',
+                                            borderRadius: '0.5rem',
+                                            bgcolor: msg.sender === 'user' ? COLORS.userBubble : COLORS.botBubble
+                                        }}>
+                                        {msg.text}
+                                    </Typography>
+                                </Box>
+                            ))}
+                        </Paper>
+
+                        <Box sx={{ display: 'flex', backgroundColor: COLORS.primary }}>
+                            <TextField
+                                fullWidth
+                                variant="outlined"
+                                placeholder="Type a message..."
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                            />
+                            <Button
+                                variant="contained"
+                                sx={{ ml: '1rem' }}
+                                onClick={retrieveHint}
+                                disabled={loadingMessage}
+                            >
+                                Send
+                            </Button>
+                        </Box>
                     </Box>
                 </Box>
-
-                {/* Back and Next Question buttons */}
-                <Box sx={{mt: '0.5rem', display: 'flex', justifyContent: 'flex-start', width: '100%'}}>
-                    <Button variant="contained" color="error" onClick={() => navigate('/gamemodes')}>
-                        Back
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color = 'primary'
-                        disabled={!answerSelected} // Solo habilitado si se ha seleccionado una respuesta
-                        onClick={() => {
-                            setChosenAnswer(null);  // Reseteamos la respuesta elegida
-                            setCorrectAnswer(null); // Reseteamos la respuesta correcta
-                            setIsCorrect(null);     // Reseteamos el estado de corrección
-                            setAnswerSelected(false);
-                            setMessages([]);
-                            setInput("");
-                            setTimeout(() => fetchQuestion(), 100); // Cargamos nueva pregunta
-                        }}
-                        sx={{ ml: '1rem' }}
-                    >
-                        Next Question
-                    </Button>
-
-                </Box>
             </Container>
+
+            <Dialog open={openConfirmDialog} onClose={handleCancelLeave}>
+                <DialogTitle>Leave Game?</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        If you leave now, your progress will be lost. Are you sure you want to exit the game?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelLeave} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleConfirmLeave} color="error">
+                        Leave
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
         </>
     );
 };

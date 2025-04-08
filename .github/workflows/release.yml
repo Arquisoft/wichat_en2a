@@ -219,6 +219,8 @@ jobs:
         user: ${{ secrets.DEPLOY_USER }}
         key: ${{ secrets.DEPLOY_KEY }}
         command: |
+          echo "GEMINI_KEY=${{ secrets.GEMINI_KEY }}" > .env
+          echo "EMPATHY_KEY=${{ secrets.EMPATHY_KEY }}" >> .env
           wget https://raw.githubusercontent.com/arquisoft/wichat_en2a/master/docker-compose.yml -O docker-compose.yml
           docker compose --profile prod down
           docker compose --profile prod up -d --pull always

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
     Paper,
     Table,
@@ -13,6 +13,8 @@ import {
 } from '@mui/material';
 import Navbar from './Navbar';
 
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+
 const Leaderboard = () => {
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -23,7 +25,7 @@ const Leaderboard = () => {
             try {
                 setLoading(true);
                 // check if 8005 or 8000. Its 8000! takes gateway one in order to get
-                const response = await fetch("http://localhost:8000/leaderboard");
+                const response = await fetch(`${apiEndpoint}/leaderboard`);
                 if (!response.ok) {
                     throw new Error(`Error: ${response.status}`);
                 }
@@ -44,9 +46,9 @@ const Leaderboard = () => {
     if (loading) {
         return (
             <>
-                <Navbar/>
-                <Box sx={{display: 'flex', justifyContent: 'center', my: 4}}>
-                    <CircularProgress/>
+                <Navbar />
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+                    <CircularProgress />
                 </Box>
             </>
         );
@@ -55,8 +57,8 @@ const Leaderboard = () => {
     if (error) {
         return (
             <>
-                <Navbar/>
-                <Box sx={{my: 2, textAlign: 'center'}}>
+                <Navbar />
+                <Box sx={{ my: 2, textAlign: 'center' }}>
                     <Typography color="error">{error}</Typography>
                 </Box>
             </>
@@ -65,12 +67,12 @@ const Leaderboard = () => {
 
     return (
         <>
-            <Navbar/>
-            <Paper elevation={3} sx={{width: '100%', overflow: 'hidden', mt: 2}}>
-                <Typography variant="h6" sx={{p: 2, bgcolor: 'primary.main', color: 'white'}}>
+            <Navbar />
+            <Paper elevation={3} sx={{ width: '100%', overflow: 'hidden', mt: 2 }}>
+                <Typography variant="h6" sx={{ p: 2, bgcolor: 'primary.main', color: 'white' }}>
                     Leaderboard
                 </Typography>
-                <TableContainer sx={{maxHeight: 440}}>
+                <TableContainer sx={{ maxHeight: 440 }}>
                     <Table stickyHeader aria-label="leaderboard table" size="small">
                         <TableHead>
                             <TableRow>
@@ -86,7 +88,7 @@ const Leaderboard = () => {
                                 players.map((player, index) => (
                                     <TableRow
                                         key={player._id}
-                                        sx={{'&:nth-of-type(odd)': {bgcolor: 'action.hover'}}}
+                                        sx={{ '&:nth-of-type(odd)': { bgcolor: 'action.hover' } }}
                                     >
                                         <TableCell component="th" scope="row">
                                             {player.username}
