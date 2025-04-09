@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {Container, Typography, Button, Box, CircularProgress, TextField, Paper,Dialog, DialogTitle, DialogContent, DialogActions} from '@mui/material';
 import Navbar from './Navbar';
-import './game-styles.css';
 import {useNavigate} from 'react-router-dom';
 import Timer from './Timer';
 
@@ -210,13 +209,20 @@ const Game = () => {
             <Navbar />
             <Container component="main" maxWidth="xl"
                        sx={{
+                           minHeight: '100vh',
+                           display: 'flex',
+                           flexDirection: 'column',
+                           justifyContent: 'flex-start',
+                           alignItems: 'stretch',
                            textAlign: 'center',
-                           mt: '0.5rem',
-                           minHeight: '85vh',
-                           width: '100%',
+                           //mt: '0.5rem',
+                           //minHeight: '85vh',
+                           //width: '100%',
                            px: '1rem',
-                           bgColor: COLORS.background,
-                           paddingBottom: '2rem'
+                           pt: '4rem',
+                           backgroundColor: COLORS.background,
+                           //paddingBottom: '2rem',
+                           overflow: 'auto',
                        }}>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: '1rem' }}>
                     <Button
