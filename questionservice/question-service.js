@@ -172,10 +172,31 @@ app.post('/fetch-custom-question-data', async (req, res) => {
     if (!Array.isArray(questions)) { //if questions is not an array -> fail
       return res.status(400).json({ error: 'Invalid format for questions' });
     }
-
-    for (const item of questions) {
-      const { questionType, numberOfQuestions } = item;
-      await fetchQuestionData(numberOfQuestions, questionType); //gets questions for each type
+    if (!shuffle){
+      for (const item of questions) {
+        const { questionType, numberOfQuestions } = item;
+        await fetchQuestionData(numberOfQuestions, questionType); //gets questions for each type
+      }
+    } else {
+        const counters = {};
+        questions.forEach(({ questionType, numberOfQuestions }) => {
+          counters[questionType] = {
+            remaining: numberOfQuestions,
+          };
+        });
+      
+        const totalQuestions = Object.values(counters).reduce((sum, obj) => sum + obj.remaining, 0);
+        const availableTypes = Object.keys(counters);
+      
+        for (let i = 0; i < totalQuestions; i++) {
+          let validTypes = availableTypes.filter(type => counters[type].remaining > 0);
+          
+          if (validTypes.length === 0) break;
+      
+          const randomType = validTypes[Math.floor(Math.random() * validTypes.length)];
+          await fetchQuestionData(1, randomType);
+          counters[randomType].remaining--;
+        }
     }
 
     let allQuestions = await getAllUnshownQuestions();

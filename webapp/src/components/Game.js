@@ -215,13 +215,9 @@ const Game = () => {
                            justifyContent: 'flex-start',
                            alignItems: 'stretch',
                            textAlign: 'center',
-                           //mt: '0.5rem',
-                           //minHeight: '85vh',
-                           //width: '100%',
                            px: '1rem',
                            pt: '4rem',
                            backgroundColor: COLORS.background,
-                           //paddingBottom: '2rem',
                            overflow: 'auto',
                        }}>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: '1rem' }}>
