@@ -21,6 +21,7 @@ const Game = () => {
 
     const MAX_QUESTIONS = 10;
     const [questionCount, setQuestionCount] = useState(0);
+    const [questionText, setQuestionText] = useState('');
   
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
@@ -29,6 +30,23 @@ const Game = () => {
 
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
+    const questions = [
+        {type: "flag",
+          question: "What country is represented by the flag shown?"
+        },
+        {type: "car",
+          question: "Which is the car in the picture?"
+        },
+        {type: "famous-person",
+          question: "Who's this famous person?"
+        },
+        {type: "dino",
+          question: "Which dinosaur or prehistorical being is shown in the picture?"
+        },
+        {type: "place",
+          question: "Which famous place is shown in the image?"
+        }
+    ];
     const COLORS = {
         primary: '#f5f5dc', // beige claro para botones no seleccionados
         success: '#4CAF50', // verde correcto
@@ -43,7 +61,7 @@ const Game = () => {
     const navigate = useNavigate();
     // Fetch question from the API
     const fetchQuestion = async () => {
-        if (questionCount >= MAX_QUESTIONS) {
+        if (questionCount >= MAX_QUESTIONS) { //Need to change the max questions as it is a param in custom
             return endGame();
         }
 
@@ -58,6 +76,8 @@ const Game = () => {
                 response = await axios.get(`${apiEndpoint}/question`);
             }
             setQuestion(response.data);
+            const text = await getQuestionByType(response.data.type);
+            setQuestionText(text);
             setTimerKey((prevKey) => prevKey + 1); //to reload timer
             setQuestionCount((prevCount) => prevCount + 1);
         } catch (error) {
@@ -107,7 +127,7 @@ const Game = () => {
 
     const handleConfirmLeave = () => {
         setOpenConfirmDialog(false);
-        navigate('/home');
+        navigate('/gamemodes');
     };
 
     const handleCancelLeave = () => {
@@ -124,7 +144,7 @@ const Game = () => {
 
         try {
             const response = await axios.post(`${apiEndpoint}/askllm`, {
-                question: "Which country is this flag from?", //hardcoded for now until we get more question types
+                question: questionText,
                 userMessage: inputOld,
                 model: "gemini",
                 correctAnswer: question.correctAnswer
@@ -136,6 +156,14 @@ const Game = () => {
             setLoadingMessage(false);
         }
     };
+
+    const getQuestionByType = async (type) => {
+        const match = questions.find(q => q.type === type);
+        if (!match) {
+          throw new Error(`No question found for type: ${type}`);
+        }
+        return match.question;
+    }
 
     const checkAnswer = async (answer) => {
         try {
@@ -263,9 +291,9 @@ const Game = () => {
                         gap: '1rem'
                     }}>
                         <Typography variant="h6" sx={{mb: '0.5rem', color: COLORS.textOnColor}}>
-                            Which country is this flag from?</Typography>
+                        {questionText}</Typography>
 
-                        {/* Flag image */}
+                        {/* Question image */}
                         <Box sx={{
                             width: '100%',
                             maxWidth: '500px',

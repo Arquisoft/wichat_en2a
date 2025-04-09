@@ -51,7 +51,7 @@ const questions = [
   },
   {
     type: "place",
-    question: "What famous place is shown in the image?"
+    question: "Which famous place is shown in the image?"
   }
 ];
 
