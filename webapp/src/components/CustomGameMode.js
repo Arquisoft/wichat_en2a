@@ -78,6 +78,7 @@ const CustomGameMode = () => {
           shuffle
         })
       });
+      localStorage.setItem('totalQuestions', totalQuestions);
       navigate('/game');
     } catch (error) {
       console.error('Failed to start custom game:', error);

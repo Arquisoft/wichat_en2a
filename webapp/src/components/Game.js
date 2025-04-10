@@ -19,7 +19,7 @@ const Game = () => {
 
     const [timerKey, setTimerKey] = useState(0);
 
-    const MAX_QUESTIONS = 10;
+    const [maxQuestions, setMaxQuestions] = useState(10);
     const [questionCount, setQuestionCount] = useState(0);
     const [questionText, setQuestionText] = useState('');
   
@@ -61,7 +61,7 @@ const Game = () => {
     const navigate = useNavigate();
     // Fetch question from the API
     const fetchQuestion = async () => {
-        if (questionCount >= MAX_QUESTIONS) { //Need to change the max questions as it is a param in custom
+        if (questionCount >= maxQuestions) { //Need to change the max questions as it is a param in custom
             return endGame();
         }
 
@@ -204,6 +204,10 @@ const Game = () => {
     };
 
     useEffect(() => {
+        const stored = localStorage.getItem('totalQuestions');
+        if (stored) {
+            setMaxQuestions(parseInt(stored));
+        }
         fetchQuestion();
         // This function is safe to be used as this, we can ignore the warning
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -269,7 +273,7 @@ const Game = () => {
                 <Typography component="h1" variant="h4" sx={{mb: '1rem', color: COLORS.textOnColor}}>
                     Quiz Game!
                 </Typography>
-                <Typography variant="h6" sx={{color: COLORS.textOnColor}}>Score: {score} / {MAX_QUESTIONS * 100}</Typography>
+                <Typography variant="h6" sx={{color: COLORS.textOnColor}}>Score: {score} / {maxQuestions * 100}</Typography>
 
                 {/* Timer */}
                 <Timer key={timerKey} duration={40} onTimeUp={handleTimeUp} answerSelected={answerSelected} />
