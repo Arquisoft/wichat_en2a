@@ -18,7 +18,7 @@ const Navbar = () => {
                 <Toolbar sx={{display: "flex", justifyContent: "space-between"}}>
                     <Box sx={{display: "flex", gap: 2}}>
                         <Button sx={navButtonStyle} onClick={() => navigate("/home")}>Home</Button>
-                        <Button sx={navButtonStyle} onClick={() => navigate("/game")}>Game</Button>
+                        <Button sx={navButtonStyle} onClick={() => navigate("/gamemodes")}>Game</Button>
                         <Button sx={navButtonStyle} onClick={() => navigate("/scores")}>User Scores</Button>
                         <Button sx={navButtonStyle} onClick={() => navigate("/leaderboard")}>Leaderboards</Button>
                     </Box>
