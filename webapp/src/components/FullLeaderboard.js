@@ -46,6 +46,14 @@ const FullLeaderboard = ({ players, currentUsername, order, orderBy, onRequestSo
     // Calculate which page contains the current user to auto-scroll there
     const userPage = Math.floor(currentUserIndex / rowsPerPage);
 
+    // Calculate points needed to level up for the current user
+    const pointsToLevelUp = React.useMemo(() => {
+        if (!currentUser || currentUserIndex === 0) return null;
+        
+        const playerAbove = players[currentUserIndex - 1];
+        return playerAbove.totalScore - currentUser.totalScore + 1;
+    }, [players, currentUserIndex, currentUser]);
+
     useEffect(() => {
         // Set the page to show the current user
         if (currentUserIndex >= 0) {
@@ -75,7 +83,7 @@ const FullLeaderboard = ({ players, currentUsername, order, orderBy, onRequestSo
     return (
         <>
             <Navbar />
-            <Box sx={{ maxWidth: 1200, mx: 'auto', p: 2, pt: 10 }}>
+            <Box sx={{ maxWidth: 1200, mx: 'auto', p: 2, pt: 2 }}>
                 <Paper elevation={3} sx={{ width: '100%', borderRadius: 2 }}>
                     <Box sx={{
                         p: 2,
@@ -130,6 +138,8 @@ const FullLeaderboard = ({ players, currentUsername, order, orderBy, onRequestSo
                                             </TableSortLabel>
                                         </TableCell>
                                     ))}
+                                    {/* Adding a new column for Points To Level Up */}
+                                    <TableCell align="right">Points To Level Up</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -137,6 +147,13 @@ const FullLeaderboard = ({ players, currentUsername, order, orderBy, onRequestSo
                                     const playerRank = players.findIndex(p => p._id === player._id);
                                     const isCurrentUser = player.username === currentUsername;
                                     const isTop3 = playerRank < 3;
+                                    
+                                    // Calculate points needed for this player to level up
+                                    let pointsNeeded = null;
+                                    if (playerRank > 0) {
+                                        const playerAbove = players[playerRank - 1];
+                                        pointsNeeded = playerAbove.totalScore - player.totalScore + 1;
+                                    }
                                     
                                     let bgColor = 'inherit';
                                     if (isCurrentUser) {
@@ -178,6 +195,17 @@ const FullLeaderboard = ({ players, currentUsername, order, orderBy, onRequestSo
                                             <TableCell align="right">{player.gamesPlayed}</TableCell>
                                             <TableCell align="right">{player.avgPointsPerGame?.toFixed(2)}</TableCell>
                                             <TableCell align="right"><WinRateBar winRate={player.winRate} /></TableCell>
+                                            <TableCell align="right">
+                                                {playerRank === 0 ? (
+                                                    <Typography sx={{ color: '#66bb6a', fontWeight: 'bold' }}>
+                                                        🏆 Top Player!
+                                                    </Typography>
+                                                ) : pointsNeeded !== null ? (
+                                                    <Typography>
+                                                        {pointsNeeded}
+                                                    </Typography>
+                                                ) : '-'}
+                                            </TableCell>
                                         </TableRow>
                                     );
                                 })}
@@ -195,44 +223,6 @@ const FullLeaderboard = ({ players, currentUsername, order, orderBy, onRequestSo
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />
                 </Paper>
-                
-                {/* Always show the current user's stats at the bottom */}
-                {currentUser && (
-                    <Paper 
-                        elevation={3}
-                        sx={{
-                            mt: 2,
-                            mb: 2,
-                            p: 1,
-                            bgcolor: '#3949AB',
-                            color: 'white',
-                            borderRadius: 2
-                        }}
-                    >
-                        <Box sx={{ display: 'flex', alignItems: 'center', p: 1 }}>
-                            <Box sx={{ width: '50px', textAlign: 'center' }}>
-                                {currentUserIndex < 3 && order === 'desc' ? 
-                                    <Typography sx={{ fontSize: '1.2rem' }}>{medalEmojis[currentUserIndex]}</Typography> : 
-                                    <Typography>#{currentUserIndex + 1}</Typography>
-                                }
-                            </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center', flex: 2 }}>
-                                <Avatar sx={{ bgcolor: '#2196F3', width: 32, height: 32, mr: 1 }}>
-                                    {currentUser.username[0]?.toUpperCase()}
-                                </Avatar>
-                                <Typography fontWeight="bold">
-                                    {currentUser.username} (You)
-                                </Typography>
-                            </Box>
-                            <Box sx={{ flex: 1, textAlign: 'right' }}>{currentUser.totalScore}</Box>
-                            <Box sx={{ flex: 1, textAlign: 'right' }}>{currentUser.gamesPlayed}</Box>
-                            <Box sx={{ flex: 1, textAlign: 'right' }}>{currentUser.avgPointsPerGame?.toFixed(2)}</Box>
-                            <Box sx={{ flex: 1.5, '& .MuiTypography-root': { color: 'white' } }}>
-                                <WinRateBar winRate={currentUser.winRate} />
-                            </Box>
-                        </Box>
-                    </Paper>
-                )}
             </Box>
         </>
     );
