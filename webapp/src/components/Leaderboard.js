@@ -2,13 +2,14 @@ import React, { useEffect, useState, useRef } from "react";
 import {
     Paper, Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, Typography, CircularProgress,
-    Box, TableSortLabel, Avatar, TablePagination
+    Box, TableSortLabel, Avatar, Button
 } from '@mui/material';
 import Navbar from './Navbar';
+import FullLeaderboard from './FullLeaderboard';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
-//component for the win-rate bar showing % graphically
+// Component for the win-rate bar showing % graphically
 const WinRateBar = ({ winRate }) => {
     const rate = parseFloat(winRate) || 0;
     return (
@@ -34,6 +35,7 @@ const WinRateBar = ({ winRate }) => {
     );
 };
 
+const medalEmojis = ['🥇', '🥈', '🥉'];
 const medalColors = ['#FFD700', '#C0C0C0', '#CD7F32']; // gold, silver, bronze
 
 const Leaderboard = () => {
@@ -42,9 +44,8 @@ const Leaderboard = () => {
     const [error, setError] = useState(null);
     const [order, setOrder] = useState('desc');
     const [orderBy, setOrderBy] = useState('totalScore');
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
     const [currentUsername, setCurrentUsername] = useState(null);
+    const [showFullLeaderboard, setShowFullLeaderboard] = useState(false);
     const currentUserRef = useRef(null);
 
     useEffect(() => {
@@ -84,17 +85,48 @@ const Leaderboard = () => {
         return [...players].sort(comparator);
     }, [players, order, orderBy]);
 
-    const currentUser = sortedPlayers.find(p => p.username === currentUsername);
-    const currentUserRank = sortedPlayers.findIndex(p => p.username === currentUsername);
-    const isCurrentUserTop3 = currentUserRank >= 0 && currentUserRank < 3;
+    const currentUserIndex = sortedPlayers.findIndex(p => p.username === currentUsername);
+    const currentUser = currentUserIndex >= 0 ? sortedPlayers[currentUserIndex] : null;
+    const isCurrentUserTop5 = currentUserIndex >= 0 && currentUserIndex < 5;
     
-    const paginatedPlayers = sortedPlayers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
-    useEffect(() => {
-        if (currentUserRef.current) {
-            currentUserRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // For the condensed view, show top 5 and user context if needed
+    const displayPlayers = React.useMemo(() => {
+        // Top 5 players
+        const topPlayers = sortedPlayers.slice(0, 5);
+        
+        // If user is in top 5, no need for additional context
+        if (isCurrentUserTop5) {
+            return topPlayers;
         }
-    }, [loading]);
+        
+        // User context - show one player above and one below
+        const userContext = [];
+        if (currentUserIndex > 0) {
+            userContext.push(sortedPlayers[currentUserIndex - 1]);
+        }
+        if (currentUser) {
+            userContext.push(currentUser);
+        }
+        if (currentUserIndex < sortedPlayers.length - 1) {
+            userContext.push(sortedPlayers[currentUserIndex + 1]);
+        }
+        
+        return topPlayers.concat(userContext);
+    }, [sortedPlayers, currentUser, currentUserIndex, isCurrentUserTop5]);
+
+    // Show full leaderboard component instead if expanded
+    if (showFullLeaderboard) {
+        return (
+            <FullLeaderboard 
+                players={sortedPlayers} 
+                currentUsername={currentUsername}
+                order={order}
+                orderBy={orderBy}
+                onRequestSort={handleRequestSort}
+                onCollapseView={() => setShowFullLeaderboard(false)}
+            />
+        );
+    }
 
     if (loading) return (
         <>
@@ -114,13 +146,6 @@ const Leaderboard = () => {
             </Box>
         </>
     );
-
-    const renderUserMedal = () => {
-        if (currentUserRank === 0) return ' 🥇';
-        if (currentUserRank === 1) return ' 🥈';
-        if (currentUserRank === 2) return ' 🥉';
-        return ` #${currentUserRank + 1}`;
-    };
 
     return (
         <>
@@ -143,6 +168,7 @@ const Leaderboard = () => {
                         <Table stickyHeader>
                             <TableHead>
                                 <TableRow>
+                                    <TableCell>Rank</TableCell>
                                     <TableCell>User</TableCell>
                                     {['totalScore', 'gamesPlayed', 'avgPointsPerGame', 'winRate'].map((key) => (
                                         <TableCell key={key} align="right">
@@ -163,25 +189,16 @@ const Leaderboard = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {paginatedPlayers.map((player, index) => {
-                                    const globalIndex = page * rowsPerPage + index;
+                                {/* Top 5 players */}
+                                {sortedPlayers.slice(0, 5).map((player, index) => {
                                     const playerRank = sortedPlayers.findIndex(p => p._id === player._id);
                                     const isCurrentUser = player.username === currentUsername;
                                     const isTop3 = playerRank < 3;
                                     
-                                    // Determine color logic based on rank
                                     let bgColor = 'inherit';
-                                    
-                                    // Current user highlight before
                                     if (isCurrentUser) {
                                         bgColor = 'rgba(33, 150, 243, 0.1)';
                                     }
-
-                                    //if user logged is 1-3 takes the medal color
-                                    if (isTop3 && order === 'desc') {
-                                        bgColor = medalColors[playerRank];
-                                    }
-                                    
 
                                     return (
                                         <TableRow
@@ -193,6 +210,12 @@ const Leaderboard = () => {
                                             }}
                                         >
                                             <TableCell>
+                                                {isTop3 && order === 'desc' ? 
+                                                    <Typography sx={{ fontSize: '1.2rem' }}>{medalEmojis[playerRank]}</Typography> : 
+                                                    <Typography>{playerRank + 1}.</Typography>
+                                                }
+                                            </TableCell>
+                                            <TableCell>
                                                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                     <Avatar sx={{
                                                         bgcolor: isCurrentUser ? '#2196F3' : 
@@ -202,11 +225,8 @@ const Leaderboard = () => {
                                                     }}>
                                                         {player.username[0]?.toUpperCase()}
                                                     </Avatar>
-                                                    <Typography>
+                                                    <Typography fontWeight={isCurrentUser ? 'bold' : 'normal'}>
                                                         {player.username}
-                                                        {order === 'desc' && playerRank === 0 && ' 🥇'}
-                                                        {order === 'desc' && playerRank === 1 && ' 🥈'}
-                                                        {order === 'desc' && playerRank === 2 && ' 🥉'}
                                                         {isCurrentUser && ' (You)'}
                                                     </Typography>
                                                 </Box>
@@ -218,20 +238,110 @@ const Leaderboard = () => {
                                         </TableRow>
                                     );
                                 })}
+
+                                {/* Three dots to expand */}
+                                <TableRow>
+                                    <TableCell colSpan={6} align="center" sx={{ py: 1, cursor: 'pointer' }} onClick={() => setShowFullLeaderboard(true)}>
+                                        <Typography sx={{ color: '#6A5ACD' }}>•••</Typography>
+                                    </TableCell>
+                                </TableRow>
+
+                                {/* User context if not in top 5 */}
+                                {!isCurrentUserTop5 && currentUser && (
+                                    <>
+                                        {/* Show player above if exists */}
+                                        {currentUserIndex > 0 && (
+                                            <TableRow
+                                                key={`above-${currentUserIndex}`}
+                                                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.02)' }}
+                                            >
+                                                <TableCell>
+                                                    <Typography>{currentUserIndex}.</Typography>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                        <Avatar sx={{
+                                                            bgcolor: '#6A5ACD',
+                                                            width: 32, height: 32, mr: 1, fontSize: '0.875rem'
+                                                        }}>
+                                                            {sortedPlayers[currentUserIndex - 1].username[0]?.toUpperCase()}
+                                                        </Avatar>
+                                                        <Typography>
+                                                            {sortedPlayers[currentUserIndex - 1].username}
+                                                        </Typography>
+                                                    </Box>
+                                                </TableCell>
+                                                <TableCell align="right">{sortedPlayers[currentUserIndex - 1].totalScore}</TableCell>
+                                                <TableCell align="right">{sortedPlayers[currentUserIndex - 1].gamesPlayed}</TableCell>
+                                                <TableCell align="right">{sortedPlayers[currentUserIndex - 1].avgPointsPerGame?.toFixed(2)}</TableCell>
+                                                <TableCell align="right"><WinRateBar winRate={sortedPlayers[currentUserIndex - 1].winRate} /></TableCell>
+                                            </TableRow>
+                                        )}
+
+                                        {/* Current user */}
+                                        <TableRow
+                                            key={`current-${currentUserIndex}`}
+                                            ref={currentUserRef}
+                                            sx={{ backgroundColor: 'rgba(33, 150, 243, 0.1)' }}
+                                        >
+                                            <TableCell>
+                                                <Typography>{currentUserIndex + 1}.</Typography>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                    <Avatar sx={{
+                                                        bgcolor: '#2196F3',
+                                                        width: 32, height: 32, mr: 1, fontSize: '0.875rem'
+                                                    }}>
+                                                        {currentUser.username[0]?.toUpperCase()}
+                                                    </Avatar>
+                                                    <Typography fontWeight="bold">
+                                                        {currentUser.username} (You)
+                                                    </Typography>
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell align="right">{currentUser.totalScore}</TableCell>
+                                            <TableCell align="right">{currentUser.gamesPlayed}</TableCell>
+                                            <TableCell align="right">{currentUser.avgPointsPerGame?.toFixed(2)}</TableCell>
+                                            <TableCell align="right"><WinRateBar winRate={currentUser.winRate} /></TableCell>
+                                        </TableRow>
+
+                                        {/* Show player below if exists */}
+                                        {currentUserIndex < sortedPlayers.length - 1 && (
+                                            <TableRow
+                                                key={`below-${currentUserIndex}`}
+                                                sx={{ backgroundColor: 'rgba(0, 0, 0, 0.02)' }}
+                                            >
+                                                <TableCell>
+                                                    <Typography>{currentUserIndex + 2}.</Typography>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                        <Avatar sx={{
+                                                            bgcolor: '#6A5ACD',
+                                                            width: 32, height: 32, mr: 1, fontSize: '0.875rem'
+                                                        }}>
+                                                            {sortedPlayers[currentUserIndex + 1].username[0]?.toUpperCase()}
+                                                        </Avatar>
+                                                        <Typography>
+                                                            {sortedPlayers[currentUserIndex + 1].username}
+                                                        </Typography>
+                                                    </Box>
+                                                </TableCell>
+                                                <TableCell align="right">{sortedPlayers[currentUserIndex + 1].totalScore}</TableCell>
+                                                <TableCell align="right">{sortedPlayers[currentUserIndex + 1].gamesPlayed}</TableCell>
+                                                <TableCell align="right">{sortedPlayers[currentUserIndex + 1].avgPointsPerGame?.toFixed(2)}</TableCell>
+                                                <TableCell align="right"><WinRateBar winRate={sortedPlayers[currentUserIndex + 1].winRate} /></TableCell>
+                                            </TableRow>
+                                        )}
+                                    </>
+                                )}
                             </TableBody>
                         </Table>
                     </TableContainer>
-
-                    <TablePagination
-                        rowsPerPageOptions={[10]}
-                        component="div"
-                        count={players.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={(e, newPage) => setPage(newPage)}
-                    />
                 </Paper>
                 
+                {/* Always show the current user's stats at the bottom */}
                 {currentUser && (
                     <Paper 
                         elevation={3}
@@ -244,34 +354,46 @@ const Leaderboard = () => {
                             borderRadius: 2
                         }}
                     >
-                        <TableRow sx={{ display: 'flex', alignItems: 'center' }}>
-                            <TableCell sx={{ flex: 2, border: 'none', padding: 1, color: 'white' }}>
-                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Avatar sx={{ bgcolor: '#2196F3', width: 32, height: 32, mr: 1 }}>
-                                        {currentUser.username[0]?.toUpperCase()}
-                                    </Avatar>
-                                    <Typography fontWeight="bold">
-                                        {currentUser.username} (You)
-                                        {isCurrentUserTop3 && order === 'desc' && renderUserMedal()}
-                                        {(!isCurrentUserTop3 || order !== 'desc') && ` #${currentUserRank + 1}`}
-                                    </Typography>
-                                </Box>
-                            </TableCell>
-                            <TableCell sx={{ flex: 1, border: 'none', padding: 1, color: 'white', textAlign: 'right' }}>
-                                {currentUser.totalScore}
-                            </TableCell>
-                            <TableCell sx={{ flex: 1, border: 'none', padding: 1, color: 'white', textAlign: 'right' }}>
-                                {currentUser.gamesPlayed}
-                            </TableCell>
-                            <TableCell sx={{ flex: 1, border: 'none', padding: 1, color: 'white', textAlign: 'right' }}>
-                                {currentUser.avgPointsPerGame?.toFixed(2)}
-                            </TableCell>
-                            <TableCell sx={{ flex: 2, border: 'none', padding: 1, color: 'white', textAlign: 'right' }}>
-                                <Box sx={{ '& .MuiTypography-root': { color: 'white' } }}>
-                                    <WinRateBar winRate={currentUser.winRate} />
-                                </Box>
-                            </TableCell>
-                        </TableRow>
+                        <Box sx={{ display: 'flex', alignItems: 'center', p: 1 }}>
+                            <Box sx={{ width: '50px', textAlign: 'center' }}>
+                                {currentUserIndex < 3 && order === 'desc' ? 
+                                    <Typography sx={{ fontSize: '1.2rem' }}>{medalEmojis[currentUserIndex]}</Typography> : 
+                                    <Typography>#{currentUserIndex + 1}</Typography>
+                                }
+                            </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', flex: 2 }}>
+                                <Avatar sx={{ bgcolor: '#2196F3', width: 32, height: 32, mr: 1 }}>
+                                    {currentUser.username[0]?.toUpperCase()}
+                                </Avatar>
+                                <Typography fontWeight="bold">
+                                    {currentUser.username} (You)
+                                </Typography>
+                            </Box>
+                            <Box sx={{ flex: 1, textAlign: 'right' }}>{currentUser.totalScore}</Box>
+                            <Box sx={{ flex: 1, textAlign: 'right' }}>{currentUser.gamesPlayed}</Box>
+                            <Box sx={{ flex: 1, textAlign: 'right' }}>{currentUser.avgPointsPerGame?.toFixed(2)}</Box>
+                            <Box sx={{ flex: 1.5, '& .MuiTypography-root': { color: 'white' } }}>
+                                <WinRateBar winRate={currentUser.winRate} />
+                            </Box>
+                        </Box>
+                        
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+                            <Button 
+                                variant="outlined" 
+                                size="small"
+                                onClick={() => setShowFullLeaderboard(true)}
+                                sx={{ 
+                                    color: 'white', 
+                                    borderColor: 'white',
+                                    '&:hover': { 
+                                        borderColor: '#e0e0e0',
+                                        bgcolor: 'rgba(255, 255, 255, 0.1)'
+                                    }
+                                }}
+                            >
+                                Show Full Leaderboard
+                            </Button>
+                        </Box>
                     </Paper>
                 )}
             </Box>
