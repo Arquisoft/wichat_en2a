@@ -32,6 +32,9 @@ const Game = () => {
 
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
+    //to show popup
+    const [pendingPath, setPendingPath] = useState(null);
+
     const questions = [
         {type: "flag",
           question: "What country is represented by the flag shown?"
@@ -129,7 +132,7 @@ const Game = () => {
 
     const handleConfirmLeave = () => {
         setOpenConfirmDialog(false);
-        navigate('/gamemodes');
+        navigate(pendingPath || '/gamemodes');
     };
 
     const handleCancelLeave = () => {
@@ -244,7 +247,10 @@ const Game = () => {
 
     return (
         <>
-            <Navbar />
+            <Navbar onNavigateRequest={(path) => {
+                setPendingPath(path); // save where to go
+                setOpenConfirmDialog(true); // show the popup
+            }} />
             <Container component="main" maxWidth="xl"
                        sx={{
                            minHeight: '100vh',
