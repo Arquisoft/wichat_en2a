@@ -42,8 +42,9 @@ const CustomGameMode = () => {
   const totalQuestions = Object.values(questionCounts).reduce((acc, val) => acc + val, 0);
 
   useEffect(() => {
-    setReadyEnabled(totalQuestions >= minTotal && totalQuestions <= maxTotal);
-  }, [questionCounts]);
+    const timeValid = timeLimit >= 10 && timeLimit <= 60;
+    setReadyEnabled(totalQuestions >= minTotal && totalQuestions <= maxTotal && timeValid);
+  }, [questionCounts, timeLimit]);
 
   const handleCheckboxChange = (type) => {
     setSelectedCategories(prev => {
@@ -79,6 +80,7 @@ const CustomGameMode = () => {
         })
       });
       localStorage.setItem('totalQuestions', totalQuestions);
+      localStorage.setItem('timeLimit', Math.max(10, Math.min(timeLimit, 60)));
       navigate('/game');
     } catch (error) {
       console.error('Failed to start custom game:', error);
@@ -118,7 +120,7 @@ const CustomGameMode = () => {
             type="number"
             value={timeLimit}
             onChange={(e) => setTimeLimit(Number(e.target.value))}
-            inputProps={{ min: 5, max: 60 }}
+            inputProps={{ min: 10, max: 60 }}
             size="small"
           />
           <Typography variant="body2" sx={{ ml: 1 }}>seconds</Typography>

@@ -28,6 +28,8 @@ const Game = () => {
     const [loadingMessage, setLoadingMessage] = useState(false);
     const [score, setScore] = useState(0);
 
+    const [questionTimer, setQuestionTimer] = useState(40);
+
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
     const questions = [
@@ -208,6 +210,10 @@ const Game = () => {
         if (stored) {
             setMaxQuestions(parseInt(stored));
         }
+        const storedLimit = parseInt(localStorage.getItem('timeLimit'));
+        if (!isNaN(storedLimit) && storedLimit >= 10 && storedLimit <= 60) {
+            setQuestionTimer(storedLimit);
+        }
         fetchQuestion();
         // This function is safe to be used as this, we can ignore the warning
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -276,7 +282,7 @@ const Game = () => {
                 <Typography variant="h6" sx={{color: COLORS.textOnColor}}>Score: {score} / {maxQuestions * 100}</Typography>
 
                 {/* Timer */}
-                <Timer key={timerKey} duration={40} onTimeUp={handleTimeUp} answerSelected={answerSelected} />
+                <Timer key={timerKey} duration={questionTimer} onTimeUp={handleTimeUp} answerSelected={answerSelected} />
 
                 <Box sx={{
                     display: 'flex',

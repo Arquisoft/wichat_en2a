@@ -33,6 +33,8 @@ const GameModes = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ questionType: type, numberOfQuestions: 10 }),
       });
+      localStorage.setItem('totalQuestions', 10);
+      localStorage.setItem('timeLimit', 40);
 
       navigate('/game');
     } catch (error) {

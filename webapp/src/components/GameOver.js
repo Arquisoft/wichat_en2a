@@ -35,6 +35,7 @@ const GameOver = () => {
                             sx={{ backgroundColor: '#FFD700', color: 'black' }}
                             onClick={() => {
                                 localStorage.removeItem('totalQuestions');
+                                localStorage.removeItem('timeLimit');
                                 navigate('/home')
                             }}>
                         Back to Home
@@ -43,6 +44,7 @@ const GameOver = () => {
                             sx={{ backgroundColor: '#FFD700', color: 'black' }}
                             onClick={() => {
                                 localStorage.removeItem('totalQuestions');
+                                localStorage.removeItem('timeLimit');
                                 navigate('/leaderboard')
                             }}>
                         See leaderboard
@@ -51,6 +53,7 @@ const GameOver = () => {
                             sx={{ backgroundColor: '#FFD700', color: 'black' }}
                             onClick={() => {
                                 localStorage.removeItem('totalQuestions');
+                                localStorage.removeItem('timeLimit');
                                 navigate('/scores');
                             }}>
                         See my scores
