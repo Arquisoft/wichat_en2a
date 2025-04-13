@@ -148,7 +148,7 @@ app.post('/fetch-question-data', async (req, res) => {
 
 app.post('/fetch-custom-question-data', async (req, res) => {
   try {
-    const { timeLimit, questions, shuffle = true } = req.body;
+    const {questions, shuffle = true } = req.body;
     if (!Array.isArray(questions) || questions.length === 0) {
       return res.status(400).json({ error: 'Questions array is required' });
     }

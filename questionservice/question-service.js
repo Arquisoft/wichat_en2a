@@ -2,7 +2,6 @@ const express = require('express');
 const axios = require('axios');
 const mongoose = require('mongoose');
 const Question = require('./question-model');
-const crypto = require('crypto');
 
 const app = express();
 const port = 8004;
@@ -75,12 +74,17 @@ mongoose.connect(mongoURI)
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch(err => console.error('❌ MongoDB connection error:', err));
 
+/**
+ * Uses Math.random() to shuffle the array.
+ * SonarQube Hotspot manually reviewed
+ */
 function secureShuffle(array) {
   let currentIndex = array.length;
-  let temporaryValue, randomIndex;
+  let randomIndex;
 
   while (currentIndex !== 0) {
-    randomIndex = crypto.randomInt(0, currentIndex);
+    // SonarQube reviewed: PRNG is acceptable for shuffling game questions
+    randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex--;
     [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
   }
@@ -88,9 +92,14 @@ function secureShuffle(array) {
   return array;
 }
 
+/**
+ * Picks a random element from the array using Math.random().
+ * SonarQube Hotspot manually reviewed
+ */
 function pickRandomSecure(array) {
   if (!Array.isArray(array) || array.length === 0) return null;
-  const index = crypto.randomInt(0, array.length);
+  // SonarQube reviewed: PRNG is acceptable for picking a random element
+  const index = Math.floor(Math.random() * array.length);
   return array[index];
 }
 

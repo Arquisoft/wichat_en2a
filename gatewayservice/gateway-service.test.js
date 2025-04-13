@@ -44,9 +44,7 @@ beforeEach(() => {
       return Promise.resolve({ data: { message: 'Questions cleared' } });
     }
 
-    return Promise.reject({
-      response: { status: 500, data: { error: 'Unexpected mock URL: ' + url } }
-    });
+    return Promise.reject(new Error('Unexpected mock URL: ' + url));
   });
 
   axios.get.mockImplementation(() => Promise.resolve({ data: {} }));
@@ -736,7 +734,6 @@ describe('Testing /fetch-custom-question-data', () => {
     const response = await request(app)
       .post('/fetch-custom-question-data')
       .send({
-        timeLimit: 40,
         shuffle: true,
         questions: [{ questionType: 'flag', numberOfQuestions: 1 }]
       });
@@ -749,7 +746,7 @@ describe('Testing /fetch-custom-question-data', () => {
     axios.get.mockReset();
     const response = await request(app)
       .post('/fetch-custom-question-data')
-      .send({ timeLimit: 40, questions: [] });
+      .send({ questions: [] });
 
     expect(response.statusCode).toBe(400);
     expect(response.body).toEqual({ error: 'Questions array is required' });
@@ -764,7 +761,6 @@ describe('Testing /fetch-custom-question-data', () => {
     const response = await request(app)
       .post('/fetch-custom-question-data')
       .send({
-        timeLimit: 40,
         questions: [{ questionType: 'flag', numberOfQuestions: 1 }],
         shuffle: true
       });

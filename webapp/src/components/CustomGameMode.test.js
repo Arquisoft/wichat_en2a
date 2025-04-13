@@ -271,7 +271,6 @@ describe('CustomGameMode component', () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    timeLimit: 15,
                     questions: [
                         { questionType: 'flag', numberOfQuestions: 3 },
                         { questionType: 'car', numberOfQuestions: 7 }
