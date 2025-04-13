@@ -313,7 +313,7 @@ describe('Gateway Service', () => {
     expect(response.body).toEqual(mockResponse.data);
   });
 
-   it('should forward fetch-flag-data to the question service', async () => {
+   it('should forward fetch-question-data to the question service', async () => {
     const mockResponse = [
       {
           type: 'flag',
@@ -331,7 +331,7 @@ describe('Gateway Service', () => {
 
   
 
-  // Mock response for the /fetch-flag-data endpoint
+  // Mock response for the /fetch-question-data endpoint
   axios.get.mockImplementation((url) => {
     if (url.includes('wikidata.org/sparql')) {
         return Promise.resolve({
@@ -375,11 +375,11 @@ describe('Gateway Service', () => {
       }
   });
 
-  // Mock the call to the question service's /fetch-flag-data endpoint
+  // Mock the call to the question service's /fetch-question-data endpoint
   axios.post.mockResolvedValueOnce({ data: mockResponse });
 
   const response = await request(app)
-      .post('/fetch-flag-data')
+      .post('/fetch-question-data')
       .send();
 
   expect(response.status).toBe(200);
@@ -508,7 +508,7 @@ describe('Gateway Service Error Handling', () => {
       },
     });
 
-    const response = await request(app).post('/fetch-flag-data');
+    const response = await request(app).post('/fetch-question-data');
     
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Internal Server Error' });
