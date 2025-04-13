@@ -84,7 +84,7 @@ function secureShuffle(array) {
 
   while (currentIndex !== 0) {
     // SonarQube reviewed: PRNG is acceptable for shuffling game questions
-    randomIndex = Math.floor(Math.random() * currentIndex);
+    randomIndex = Math.floor(Math.random() * currentIndex); //NOSONAR
     currentIndex--;
     [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
   }
@@ -99,7 +99,7 @@ function secureShuffle(array) {
 function pickRandomSecure(array) {
   if (!Array.isArray(array) || array.length === 0) return null;
   // SonarQube reviewed: PRNG is acceptable for picking a random element
-  const index = Math.floor(Math.random() * array.length);
+  const index = Math.floor(Math.random() * array.length); //NOSONAR
   return array[index];
 }
 
