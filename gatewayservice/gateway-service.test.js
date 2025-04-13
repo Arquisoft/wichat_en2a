@@ -8,6 +8,50 @@ jest.mock('axios');
 // Sign a mock token for testing
 const testToken = jwt.sign({ userId: 'mockID' }, 'your-secret-key', { expiresIn: '1h' });
 
+beforeEach(() => {
+  axios.post.mockReset();
+  axios.get.mockReset();
+
+  axios.post.mockImplementation((url, data) => {
+    if (url.endsWith('/login')) {
+      return Promise.resolve({ data: { token: 'mockedToken' } });
+    }
+    if (url.endsWith('/adduser')) {
+      return Promise.resolve({ data: { userId: 'mockedUserId' } });
+    }
+    if (url.endsWith('/ask')) {
+      return Promise.resolve({ data: { answer: 'llmanswer' } });
+    }
+    if (url.endsWith('/generateIncorrectOptions')) {
+      return Promise.resolve({
+        status: 200,
+        data: { options: ['option1', 'option2', 'option3'] }
+      });
+    }
+    if (url.endsWith('/fetch-custom-question-data')) {
+      return Promise.resolve({
+        data: [
+          {
+            type: 'flag',
+            imageUrl: 'https://example.com/img.png',
+            options: ['France'],
+            correctAnswer: 'France'
+          }
+        ]
+      });
+    }
+    if (url.endsWith('/clear-questions')) {
+      return Promise.resolve({ data: { message: 'Questions cleared' } });
+    }
+
+    return Promise.reject({
+      response: { status: 500, data: { error: 'Unexpected mock URL: ' + url } }
+    });
+  });
+
+  axios.get.mockImplementation(() => Promise.resolve({ data: {} }));
+});
+
 afterAll(async () => {
     app.close();
 });
@@ -27,21 +71,6 @@ const assertErrorResponse = (response, statusCode, errorMessage) => {
 };
 
 describe('Gateway Service', () => {
-  // Mock responses from external services
-  axios.post.mockImplementation((url) => {
-    if (url.endsWith('/login')) {
-      return Promise.resolve({ data: { token: 'mockedToken' } });
-    } else if (url.endsWith('/adduser')) {
-      return Promise.resolve({ data: { userId: 'mockedUserId' } });
-    } else if (url.endsWith('/ask')) {
-      return Promise.resolve({ data: { answer: 'llmanswer' } });
-    } else if (url.endsWith("/generateIncorrectOptions")) {
-      return Promise.resolve({
-          status: 200,
-          data: {options: ["option1", "option2", "option3"]},
-      });
-    }
-  });
 
   // Test /login endpoint
   it('should forward login request to auth service', async () => {
@@ -111,7 +140,7 @@ describe('Gateway Service', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual(mockUser);
-    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/users'));
+    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining(`/getUserById/${userId}`));
   });
 
   it('should return an error response on failure', async () => {
@@ -688,4 +717,81 @@ describe('Gateway Service Error Handling', () => {
     expect(response.body).toEqual({ error: 'Question Service Error' });
   });
   
+});
+
+describe('Testing /fetch-custom-question-data', () => {
+  it('should forward fetch-custom-question-data request with valid data', async () => {
+    axios.get.mockReset();
+    const mockResponse = [
+      {
+        type: 'flag',
+        imageUrl: 'https://example.com/img.png',
+        options: ['France'],
+        correctAnswer: 'France'
+      }
+    ];
+
+    axios.post.mockResolvedValueOnce({ data: mockResponse });
+
+    const response = await request(app)
+      .post('/fetch-custom-question-data')
+      .send({
+        timeLimit: 40,
+        shuffle: true,
+        questions: [{ questionType: 'flag', numberOfQuestions: 1 }]
+      });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+  });
+
+  it('should return 400 when fetch-custom-question-data receives empty array', async () => {
+    axios.get.mockReset();
+    const response = await request(app)
+      .post('/fetch-custom-question-data')
+      .send({ timeLimit: 40, questions: [] });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toEqual({ error: 'Questions array is required' });
+  });
+
+  it('should return 500 when question service fails at /fetch-custom-question-data', async () => {
+    axios.get.mockReset();
+    axios.post.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'Question Service Failure' } }
+    });
+
+    const response = await request(app)
+      .post('/fetch-custom-question-data')
+      .send({
+        timeLimit: 40,
+        questions: [{ questionType: 'flag', numberOfQuestions: 1 }],
+        shuffle: true
+      });
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toEqual({ error: 'Failed to load custom question data' });
+  });
+});
+
+describe('Testing /clear-questions', () => {
+it('should forward clear-questions to the question service', async () => {
+  axios.get.mockReset();
+  axios.post.mockResolvedValueOnce({ data: { message: 'Questions cleared' } });
+
+  const response = await request(app).post('/clear-questions');
+
+  expect(response.statusCode).toBe(200);
+  expect(response.body).toEqual({ message: 'Questions cleared' });
+});
+
+it('should return 500 when question service fails at /clear-questions', async () => {
+  axios.get.mockReset();
+  axios.post.mockRejectedValueOnce(new Error('Clear failed'));
+
+  const response = await request(app).post('/clear-questions');
+
+  expect(response.statusCode).toBe(500);
+  expect(response.body).toEqual({ error: 'Failed to clear questions' });
+});
 });
