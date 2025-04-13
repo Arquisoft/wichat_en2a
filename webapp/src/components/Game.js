@@ -76,7 +76,7 @@ const Game = () => {
             //if for some reason a problem occurred and the questions collection is empty, fetch
             if (!response.data || response.data.length === 0) {
                 console.log("No questions found, initializing database...");
-                await axios.post(`${apiEndpoint}/fetch-flag-data`);
+                await axios.post(`${apiEndpoint}/fetch-question-data`);
                 console.log("Database initialized. Fetching question again...");
                 response = await axios.get(`${apiEndpoint}/question`);
             }

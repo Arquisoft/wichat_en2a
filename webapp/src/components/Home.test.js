@@ -35,7 +35,7 @@ describe('Home component', () => {
             </MemoryRouter>
     );
     fireEvent.click(screen.getByRole('button', { name: /Play/i }));
-    expect(mockNavigate).toHaveBeenCalledWith('/game');
+    expect(mockNavigate).toHaveBeenCalledWith('/gamemodes');
     });
 
     it('renders all buttons', () => {
