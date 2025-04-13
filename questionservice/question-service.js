@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const mongoose = require('mongoose');
 const Question = require('./question-model');
+const crypto = require('crypto');
 
 const app = express();
 const port = 8004;
@@ -79,21 +80,17 @@ function secureShuffle(array) {
   let temporaryValue, randomIndex;
 
   while (currentIndex !== 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
+    randomIndex = crypto.randomInt(0, currentIndex);
     currentIndex--;
-
-    // Interchange the elements
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
+    [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
   }
 
   return array;
 }
 
-function pickRandom(array) {
+function pickRandomSecure(array) {
   if (!Array.isArray(array) || array.length === 0) return null;
-  const index = Math.floor(Math.random() * array.length);
+  const index = crypto.randomInt(0, array.length);
   return array[index];
 }
 
@@ -215,7 +212,7 @@ app.post('/fetch-custom-question-data', async (req, res) => {
           
           if (validTypes.length === 0) break;
       
-          const randomType = pickRandom(validTypes);
+          const randomType = pickRandomSecure(validTypes);
           await fetchQuestionData(1, randomType);
           counters[randomType].remaining--;
         }
