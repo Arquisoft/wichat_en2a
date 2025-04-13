@@ -242,7 +242,6 @@ describe('CustomGameMode component', () => {
     const carsSpinner = screen.getAllByRole('spinbutton')[2];
     const inputs = screen.getAllByRole('spinbutton');
     const timeInput = inputs[0];
-    const shuffleCheckbox = screen.getByLabelText(/Shuffle questions\?/i);
     const readyButton = screen.getByRole('button', { name: /Ready/i });
 
     fireEvent.change(timeInput, { target: { value: '15' } });

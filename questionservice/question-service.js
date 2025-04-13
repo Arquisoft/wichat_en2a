@@ -146,7 +146,7 @@ async function fetchQuestionData(numberOfQuestions, questionType) {
             console.log("Entry keys:", Object.keys(entry));
             console.log("Entry preview:", entry);
             const correctAnswer = entry[answerKey].value;
-            const imageUrl = entry[imageKey].value;
+            let imageUrl = entry[imageKey].value;
 
             if (
               imageUrl.includes("upload.wikimedia.org") &&
