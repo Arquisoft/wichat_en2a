@@ -19,24 +19,37 @@ function createMocks() {
   });
 
   axios.get.mockImplementation((url) => {
-    if (url.includes("wikidata")) {
-      // Get the number of questions to generate from the URL or default to 30
-      const decodedUrl = decodeURIComponent(url);
-      const match = /LIMIT (\d+)/.exec(decodedUrl);
+    const decodedUrl = decodeURIComponent(url);
+    const match = /LIMIT (\d+)/.exec(decodedUrl);
+    const numberOfQuestions = match ? parseInt(match[1], 10) : 30;
 
-      const numberOfQuestions = match ? parseInt(match[1], 10) : 30; // Default to 30 if not found
+    // Detect the type from the query content
+    let type = "flag";
+    if (decodedUrl.includes("carModel")) type = "car";
+    else if (decodedUrl.includes("person")) type = "famous-person";
+    else if (decodedUrl.includes("dino")) type = "dino";
+    else if (decodedUrl.includes("place")) type = "place";
 
-      return Promise.resolve({
-        data: {
-          results: {
-            bindings: Array.from({ length: numberOfQuestions }, (_, i) => ({
-              countryLabel: { value: `Country${i}` },
-              flag: { value: `https://example.com/flag${i}.png` },
-            })),
-          },
+    const labelKey = {
+      "flag": "countryLabel",
+      "car": "carModelLabel",
+      "famous-person": "personLabel",
+      "dino": "dinoLabel",
+      "place": "placeLabel"
+    }[type];
+
+    const imageKey = type === "flag" ? "flag" : "image";
+
+    return Promise.resolve({
+      data: {
+        results: {
+          bindings: Array.from({ length: numberOfQuestions }, (_, i) => ({
+            [labelKey]: { value: `${type}_label_${i}` },
+            [imageKey]: { value: `https://example.com/${type}_img${i}.png` },
+          })),
         },
-      });
-    }
+      },
+    });
   });
 }
 
@@ -288,56 +301,56 @@ describe("Question Generation parametrization", () => {
     const questions = await Question.find();
     expect(questions.length).toBe(30);
   });
+});
 
-  //ADDING TESTS FOR NEW FUNCTIONS AFTER GAMEMODES
-  
-  describe("Custom Question Data Handling", () => {
-    it("should fetch questions for multiple types and return shuffled data if requested", async () => {
-      const response = await request(app)
-        .post("/fetch-custom-question-data")
-        .send({
-          questions: [
-            { questionType: "flag", numberOfQuestions: 5 },
-            { questionType: "flag", numberOfQuestions: 3 }
-          ],
-          shuffle: true
-        });
-  
-      expect(response.statusCode).toBe(200);
-      expect(response.body).toBeInstanceOf(Array);
-      expect(response.body.length).toBe(8);
-  
-      // Ensure no repeated questions by imageUrl
-      const uniqueUrls = [...new Set(response.body.map(q => q.imageUrl))];
-      expect(uniqueUrls.length).toBe(8);
-    });
-  
-    it("should return 400 if questions is not an array", async () => {
-      const response = await request(app)
-        .post("/fetch-custom-question-data")
-        .send({ questions: "not-an-array" });
-  
-      expect(response.statusCode).toBe(400);
-      expect(response.body).toHaveProperty("error", "Invalid format for questions");
-    });
+//ADDING TESTS FOR NEW FUNCTIONS AFTER GAMEMODES
+
+describe("Custom Question Data Handling", () => {
+  it("should fetch questions for multiple types and return shuffled data if requested", async () => {
+    const response = await request(app)
+      .post("/fetch-custom-question-data")
+      .send({
+        questions: [
+          { questionType: "flag", numberOfQuestions: 5 },
+          { questionType: "car", numberOfQuestions: 1 }
+        ],
+        shuffle: true
+      });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toBeInstanceOf(Array);
+    expect(response.body.length).toBe(6);
+
+    // Ensure no repeated questions by imageUrl
+    const uniqueUrls = [...new Set(response.body.map(q => q.imageUrl))];
+    expect(uniqueUrls.length).toBe(6);
   });
-  
-  describe("Question Clearing", () => {
-    it("should clear all questions from the database", async () => {
-      // Fill DB
-      await request(app).post("/fetch-question-data").send({ questionType: "flag", numberOfQuestions: 3 });
-  
-      let questions = await Question.find();
-      expect(questions.length).toBe(3);
-  
-      // Clear
-      const response = await request(app).post("/clear-questions");
-  
-      expect(response.statusCode).toBe(200);
-      expect(response.body).toEqual({ message: "Questions cleared" });
-  
-      questions = await Question.find();
-      expect(questions.length).toBe(0);
-    });
+
+  it("should return 400 if questions is not an array", async () => {
+    const response = await request(app)
+      .post("/fetch-custom-question-data")
+      .send({ questions: "not-an-array" });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty("error", "Invalid format for questions");
+  });
+});
+
+describe("Question Clearing", () => {
+  it("should clear all questions from the database", async () => {
+    // Fill DB
+    await request(app).post("/fetch-question-data").send({ questionType: "flag", numberOfQuestions: 3 });
+
+    let questions = await Question.find();
+    expect(questions.length).toBe(3);
+
+    // Clear
+    const response = await request(app).post("/clear-questions");
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({ message: "Questions cleared" });
+
+    questions = await Question.find();
+    expect(questions.length).toBe(0);
   });
 });
