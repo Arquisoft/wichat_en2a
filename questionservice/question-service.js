@@ -74,6 +74,23 @@ mongoose.connect(mongoURI)
     .then(() => console.log('✅ Connected to MongoDB'))
     .catch(err => console.error('❌ MongoDB connection error:', err));
 
+function secureShuffle(array) {
+  let currentIndex = array.length;
+  let temporaryValue, randomIndex;
+
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // Interchange the elements
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
 // Fetch flag data from Wikidata
 async function fetchQuestionData(numberOfQuestions, questionType) {
     console.time('fetchQuestionData');
@@ -110,12 +127,12 @@ async function fetchQuestionData(numberOfQuestions, questionType) {
         });
 
         // Randomizing results
-        const shuffle = response.data.results.bindings.sort(() => Math.random() - 0.5);
-        const limitedByNum = shuffle.slice(0, numberOfQuestions);
+        const shuffled = secureShuffle(response.data.results.bindings);
+        const limitedByNum = shuffled.slice(0, numberOfQuestions);
 
         const results = await Promise.all(limitedByNum.map(async (entry) => {
-            console.log("🔎 Entry keys:", Object.keys(entry));
-            console.log("📦 Entry preview:", entry);
+            console.log("Entry keys:", Object.keys(entry));
+            console.log("Entry preview:", entry);
             const correctAnswer = entry[answerKey].value;
             const imageUrl = entry[imageKey].value;
 
