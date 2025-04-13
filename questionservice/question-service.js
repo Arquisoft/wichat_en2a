@@ -91,6 +91,12 @@ function secureShuffle(array) {
   return array;
 }
 
+function pickRandom(array) {
+  if (!Array.isArray(array) || array.length === 0) return null;
+  const index = Math.floor(Math.random() * array.length);
+  return array[index];
+}
+
 // Fetch flag data from Wikidata
 async function fetchQuestionData(numberOfQuestions, questionType) {
     console.time('fetchQuestionData');
@@ -160,8 +166,7 @@ async function fetchQuestionData(numberOfQuestions, questionType) {
                 throw new Error("Not enough incorrect options generated");
             }
       
-            const options = [correctAnswer, ...incorrectOptions];
-            options.sort(() => Math.random() - 0.5);
+            const options = secureShuffle([correctAnswer, ...incorrectOptions]);
       
             return {
                 type: questionType,
@@ -210,7 +215,7 @@ app.post('/fetch-custom-question-data', async (req, res) => {
           
           if (validTypes.length === 0) break;
       
-          const randomType = validTypes[Math.floor(Math.random() * validTypes.length)];
+          const randomType = pickRandom(validTypes);
           await fetchQuestionData(1, randomType);
           counters[randomType].remaining--;
         }
@@ -219,7 +224,7 @@ app.post('/fetch-custom-question-data', async (req, res) => {
     let allQuestions = await getAllUnshownQuestions();
 
     if (shuffle) {
-      allQuestions = allQuestions.sort(() => Math.random() - 0.5);
+      allQuestions = secureShuffle(allQuestions);
     }
 
     res.json(allQuestions);
