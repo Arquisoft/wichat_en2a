@@ -1,5 +1,6 @@
 import {AppBar, Toolbar, Button, Box, Container} from "@mui/material";
 import {useNavigate} from "react-router-dom";
+import PropTypes from "prop-types";
 
 const navButtonStyle = {
     backgroundColor: "#f5f5f5", // Blanco grisáceo
@@ -38,6 +39,10 @@ const Navbar = ({ onNavigateRequest }) => {
             </Container>
         </AppBar>
     );
+};
+
+Navbar.propTypes = {
+    onNavigateRequest: PropTypes.func // no required as it has fallback with navigate()
 };
 
 export default Navbar;
