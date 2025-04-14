@@ -132,13 +132,45 @@ app.post('/check-answer', async (req, res) => {
   }
 });
 
-app.post('/fetch-flag-data', async (req, res) => {
+app.post('/fetch-question-data', async (req, res) => {
   try {
-    // Forward fetch flag data request to the question service
-    const fetchFlagDataResponse = await axios.post(`${questionServiceUrl}/fetch-flag-data`);
-    res.json(fetchFlagDataResponse.data);
+    const { questionType, numberOfQuestions } = req.body;
+    // Forward fetch question data request to the question service
+    const fetchQuestionDataResponse = await axios.post(`${questionServiceUrl}/fetch-question-data`, {
+      questionType,
+      numberOfQuestions
+    });
+    res.json(fetchQuestionDataResponse.data);
   } catch (error) {
       res.status(error.response.status).json({ error: error.response.data.error });
+  }
+});
+
+app.post('/fetch-custom-question-data', async (req, res) => {
+  try {
+    const {questions, shuffle = true } = req.body;
+    if (!Array.isArray(questions) || questions.length === 0) {
+      return res.status(400).json({ error: 'Questions array is required' });
+    }
+    const response = await axios.post(`${questionServiceUrl}/fetch-custom-question-data`, {
+      questions,
+      shuffle
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error when fetching custom question data", error);
+    res.status(error.response?.status || 500).json({ error: "Failed to load custom question data"});
+  }
+});
+
+//Clears the questions from the database. To be used before loading more
+app.post('/clear-questions', async (req, res) => {
+  try {
+    const response = await axios.post(`${questionServiceUrl}/clear-questions`);
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error clearing questions via gateway:", error);
+    res.status(500).json({ error: "Failed to clear questions" });
   }
 });
 

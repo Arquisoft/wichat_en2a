@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {Container, Typography, Button, Box, CircularProgress, TextField, Paper,Dialog, DialogTitle, DialogContent, DialogActions} from '@mui/material';
 import Navbar from './Navbar';
-import './game-styles.css';
 import {useNavigate} from 'react-router-dom';
 import Timer from './Timer';
 
@@ -20,16 +19,39 @@ const Game = () => {
 
     const [timerKey, setTimerKey] = useState(0);
 
-    const MAX_QUESTIONS = 10;
+    const [maxQuestions, setMaxQuestions] = useState(10);
     const [questionCount, setQuestionCount] = useState(0);
+    const [questionText, setQuestionText] = useState('');
   
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [loadingMessage, setLoadingMessage] = useState(false);
     const [score, setScore] = useState(0);
 
+    const [questionTimer, setQuestionTimer] = useState(40);
+
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
+    //to show popup
+    const [pendingPath, setPendingPath] = useState(null);
+
+    const questions = [
+        {type: "flag",
+          question: "What country is represented by the flag shown?"
+        },
+        {type: "car",
+          question: "Which is the car in the picture?"
+        },
+        {type: "famous-person",
+          question: "Who's this famous person?"
+        },
+        {type: "dino",
+          question: "Which dinosaur or prehistorical being is shown in the picture?"
+        },
+        {type: "place",
+          question: "Which famous place is shown in the image?"
+        }
+    ];
     const COLORS = {
         primary: '#f5f5dc', // beige claro para botones no seleccionados
         success: '#4CAF50', // verde correcto
@@ -44,7 +66,7 @@ const Game = () => {
     const navigate = useNavigate();
     // Fetch question from the API
     const fetchQuestion = async () => {
-        if (questionCount >= MAX_QUESTIONS) {
+        if (questionCount >= maxQuestions) { //Need to change the max questions as it is a param in custom
             return endGame();
         }
 
@@ -54,11 +76,13 @@ const Game = () => {
             //if for some reason a problem occurred and the questions collection is empty, fetch
             if (!response.data || response.data.length === 0) {
                 console.log("No questions found, initializing database...");
-                await axios.post(`${apiEndpoint}/fetch-flag-data`);
+                await axios.post(`${apiEndpoint}/fetch-question-data`);
                 console.log("Database initialized. Fetching question again...");
                 response = await axios.get(`${apiEndpoint}/question`);
             }
             setQuestion(response.data);
+            const text = await getQuestionByType(response.data.type);
+            setQuestionText(text);
             setTimerKey((prevKey) => prevKey + 1); //to reload timer
             setQuestionCount((prevCount) => prevCount + 1);
         } catch (error) {
@@ -108,7 +132,7 @@ const Game = () => {
 
     const handleConfirmLeave = () => {
         setOpenConfirmDialog(false);
-        navigate('/home');
+        navigate(pendingPath || '/gamemodes');
     };
 
     const handleCancelLeave = () => {
@@ -125,7 +149,7 @@ const Game = () => {
 
         try {
             const response = await axios.post(`${apiEndpoint}/askllm`, {
-                question: "Which country is this flag from?", //hardcoded for now until we get more question types
+                question: questionText,
                 userMessage: inputOld,
                 model: "gemini",
                 correctAnswer: question.correctAnswer
@@ -137,6 +161,14 @@ const Game = () => {
             setLoadingMessage(false);
         }
     };
+
+    const getQuestionByType = async (type) => {
+        const match = questions.find(q => q.type === type);
+        if (!match) {
+          throw new Error(`No question found for type: ${type}`);
+        }
+        return match.question;
+    }
 
     const checkAnswer = async (answer) => {
         try {
@@ -177,6 +209,14 @@ const Game = () => {
     };
 
     useEffect(() => {
+        const stored = localStorage.getItem('totalQuestions');
+        if (stored) {
+            setMaxQuestions(parseInt(stored));
+        }
+        const storedLimit = parseInt(localStorage.getItem('timeLimit'));
+        if (!isNaN(storedLimit) && storedLimit >= 10 && storedLimit <= 60) {
+            setQuestionTimer(storedLimit);
+        }
         fetchQuestion();
         // This function is safe to be used as this, we can ignore the warning
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -207,16 +247,22 @@ const Game = () => {
 
     return (
         <>
-            <Navbar />
+            <Navbar onNavigateRequest={(path) => {
+                setPendingPath(path); // save where to go
+                setOpenConfirmDialog(true); // show the popup
+            }} />
             <Container component="main" maxWidth="xl"
                        sx={{
+                           minHeight: '100vh',
+                           display: 'flex',
+                           flexDirection: 'column',
+                           justifyContent: 'flex-start',
+                           alignItems: 'stretch',
                            textAlign: 'center',
-                           mt: '0.5rem',
-                           minHeight: '85vh',
-                           width: '100%',
                            px: '1rem',
-                           bgColor: COLORS.background,
-                           paddingBottom: '2rem'
+                           pt: '4rem',
+                           backgroundColor: COLORS.background,
+                           overflow: 'auto',
                        }}>
                 <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: '1rem' }}>
                     <Button
@@ -239,10 +285,10 @@ const Game = () => {
                 <Typography component="h1" variant="h4" sx={{mb: '1rem', color: COLORS.textOnColor}}>
                     Quiz Game!
                 </Typography>
-                <Typography variant="h6" sx={{color: COLORS.textOnColor}}>Score: {score} / {MAX_QUESTIONS * 100}</Typography>
+                <Typography variant="h6" sx={{color: COLORS.textOnColor}}>Score: {score} / {maxQuestions * 100}</Typography>
 
                 {/* Timer */}
-                <Timer key={timerKey} duration={40} onTimeUp={handleTimeUp} answerSelected={answerSelected} />
+                <Timer key={timerKey} duration={questionTimer} onTimeUp={handleTimeUp} answerSelected={answerSelected} />
 
                 <Box sx={{
                     display: 'flex',
@@ -261,9 +307,9 @@ const Game = () => {
                         gap: '1rem'
                     }}>
                         <Typography variant="h6" sx={{mb: '0.5rem', color: COLORS.textOnColor}}>
-                            Which country is this flag from?</Typography>
+                        {questionText}</Typography>
 
-                        {/* Flag image */}
+                        {/* Question image */}
                         <Box sx={{
                             width: '100%',
                             maxWidth: '500px',

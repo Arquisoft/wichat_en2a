@@ -80,7 +80,7 @@ const Home = () => {
                             borderRadius: '30px',
                             '&:hover': { backgroundColor: '#FFC107' }
                         }}
-                        onClick={() => navigate("/game")}
+                        onClick={() => navigate('/gamemodes')}
                     >
                         PLAY
                     </Button>

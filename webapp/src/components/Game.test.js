@@ -14,7 +14,8 @@ const mockQuestion = {
     _id: '1',
     correctAnswer: 'Spain',
     imageUrl: 'https://via.placeholder.com/300',
-    options: ['Spain', 'France', 'Germany', 'Italy']
+    options: ['Spain', 'France', 'Germany', 'Italy'],
+    type: 'flag'
 };
 
 jest.useFakeTimers();
@@ -56,7 +57,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         mockQuestion.options.forEach(option => {
@@ -118,7 +119,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         fireEvent.change(screen.getByPlaceholderText(/Type a message.../i), {
@@ -149,7 +150,8 @@ describe('Game Component', () => {
             _id: '2',
             imageUrl: 'https://example.com/flag2.png',
             correctAnswer: 'Germany',
-            options: ['Spain', 'France', 'Germany', 'Italy']
+            options: ['Spain', 'France', 'Germany', 'Italy'],
+            type: 'flag'
         };
 
         const getSpy = jest.spyOn(axios, 'get');
@@ -164,7 +166,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         const answerButton = screen.getByRole('button', { name: 'Spain' });
@@ -205,7 +207,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         const answerButton = screen.getByRole('button', { name: 'Spain' });
@@ -223,7 +225,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         const wrongAnswerButton = screen.getByRole('button', { name: 'France' });
@@ -246,7 +248,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         const correctAnswerButton = screen.getByRole('button', { name: 'Spain' });
@@ -263,7 +265,7 @@ describe('Game Component', () => {
 
         await waitFor(() => {
             expect(mockAxios.history.post.length).toBe(1); // It should have called the POST request once
-            expect(mockAxios.history.post[0].url).toBe(`${apiEndpoint}/fetch-flag-data`);
+            expect(mockAxios.history.post[0].url).toBe(`${apiEndpoint}/fetch-question-data`);
             expect(mockAxios.history.get.length).toBe(1); // It should have called the get request once
             expect(mockAxios.history.get[0].url).toBe(`${apiEndpoint}/question`);
         });
@@ -274,7 +276,7 @@ describe('Game Component', () => {
 
         // After initializing the database, the question should be fetched and displayed
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
     });
 
@@ -285,7 +287,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         const scoreElement = screen.getByText(/Score: 0/i);
@@ -306,7 +308,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         const scoreElement = screen.getByText(/Score: 0/i);
@@ -328,7 +330,7 @@ describe('Game Component', () => {
 
         for (let i = 0; i <= MAX_QUESTIONS; i++){
             await waitFor(() => {
-                expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+                expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
             });
             const answerButton = screen.getByRole('button', { name: 'Spain' });
             fireEvent.click(answerButton);
@@ -350,7 +352,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         act(() => {

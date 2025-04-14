@@ -48,6 +48,7 @@ describe("/generateIncorrectOptions endpoint with empathy", () => {
     const response = await request(app).post("/generateIncorrectOptions").send({
       model: "empathy",
       correctAnswer: "Cote D'Ivoire",
+      type: "flag"
     });
 
     expect(response.statusCode).toBe(200);
