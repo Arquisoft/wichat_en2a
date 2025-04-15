@@ -79,6 +79,8 @@ describe("Error handling", () => {
   });
 
   it("should log full error object if error.message is missing", async () => {
+    const consoleCheck = jest.spyOn(console, "error").mockImplementation(() => {});
+
     const err = { unexpectedEvent: true }; //no message included
     axios.post.mockImplementation(() => { throw err });
   
@@ -94,5 +96,8 @@ describe("Error handling", () => {
   
     expect(response.status).toBe(400);
     expect(response.body.error).toBe("The LLM did not return a valid response.");
+
+    expect(consoleCheck).toHaveBeenCalledWith("Error sending question:", {"unexpectedEvent": true});
+    consoleCheck.mockRestore();
   });
 });
