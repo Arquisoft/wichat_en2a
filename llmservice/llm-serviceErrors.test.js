@@ -50,11 +50,16 @@ describe("Error handling", () => {
     expect(response.statusCode).toBe(400);
   });
 
-  it("should fail if the model is not supported when asking a question", async () => {
+  it("should fail if the type is not supported when generating incorrect options", async () => {
     const response = await request(app)
-      .post("/ask")
-      .send({ question: "a question", model: "openai" });
-
+      .post("/generateIncorrectOptions")
+      .send({
+        model: "empathy",
+        correctAnswer: "Paris",
+        type: "invalid",
+      });
+  
     expect(response.statusCode).toBe(400);
+    expect(response.body.error).toBe("No question found for type: invalid");
   });
 });
