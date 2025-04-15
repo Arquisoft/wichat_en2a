@@ -104,7 +104,7 @@ async function sendQuestionToGemini(question) {
     return result;
 
   } catch (error) {
-    console.error(`Error sending question to ${model}:`, error.message || error)
+    console.error(`Error sending question:`, error.message || error)
     return null;
   }
 
