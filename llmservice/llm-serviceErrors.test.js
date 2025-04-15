@@ -77,4 +77,22 @@ describe("Error handling", () => {
     expect(response.statusCode).toBe(400);
     expect(response.body.error).toBe('Model "openai" is not supported.');
   });
+
+  it("should log full error object if error.message is missing", async () => {
+    const err = { unexpectedEvent: true }; //no message included
+    axios.post.mockImplementation(() => { throw err });
+  
+    const response = await request(app)
+      .post("/ask")
+      .send({
+        question: "a question",
+        model: "empathy",
+        userMessage: "a message",
+        type: "flag",
+        correctAnswer: "an answer"
+      });
+  
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe("The LLM did not return a valid response.");
+  });
 });
