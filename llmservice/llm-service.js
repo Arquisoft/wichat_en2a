@@ -88,7 +88,7 @@ async function sendQuestionToLLM(question) {
     return config.transformResponse(response);
 
   } catch (error) {
-    console.error(`Error sending question to ${empathy}:`, error.message || error);
+    console.error(`Error sending question:`, error.message || error);
     return null;
   }
 }

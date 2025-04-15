@@ -59,4 +59,23 @@ describe("/generateIncorrectOptions endpoint with empathy", () => {
       "Niger",
     ]);
   });
+
+  it("should handle LLM error in empathy model gracefully", async () => {
+    axios.post.mockImplementation(() => {
+      throw new Error("Network failure");
+    });
+  
+    const response = await request(app)
+      .post("/ask")
+      .send({
+        question: "What's this flag?",
+        userMessage: "Can you help?",
+        model: "empathy",
+        correctAnswer: "Spain",
+        type: "flag"
+      });
+  
+    expect(response.statusCode).toBe(400);
+    expect(response.body.error).toBe("The LLM did not return a valid response.");
+  });
 });
