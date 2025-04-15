@@ -12,16 +12,20 @@ import Leaderboard from './components/Leaderboard';
 import GameOver from "./components/GameOver";
 import GameModes from './components/GameModes';
 import CustomGameMode from './components/CustomGameMode';
+import {useAuth} from "./components/AuthContext";
 
 function App() {
     const navigate = useNavigate(); // Hook for routes
     const [error] = useState(null); // state of error messages
+    const user = useAuth();
 
     useEffect(() => {
-        navigate('/login');
-        // This function is safe to be used as this, we can ignore the warning
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, []);
+        if (!user) {
+            navigate('/login');
+        } else {
+            navigate('/home');
+        }
+    }, [user]);
     
     return (
         <Box sx={{ width: "100vw", height: "100vh", overflowX: "hidden" }}>
