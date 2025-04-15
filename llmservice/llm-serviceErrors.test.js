@@ -49,4 +49,12 @@ describe("Error handling", () => {
 
     expect(response.statusCode).toBe(400);
   });
+
+  it("should fail if the model is not supported when asking a question", async () => {
+    const response = await request(app)
+      .post("/ask")
+      .send({ question: "a question", model: "openai" });
+
+    expect(response.statusCode).toBe(400);
+  });
 });
