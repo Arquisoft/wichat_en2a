@@ -62,4 +62,19 @@ describe("Error handling", () => {
     expect(response.statusCode).toBe(400);
     expect(response.body.error).toBe("No question found for type: invalid");
   });
+
+  it("should fail if the model is not supported when asking a question", async () => {
+    const response = await request(app)
+      .post("/ask")
+      .send({ 
+        question: "a question",
+        model: "openai",
+        userMessage: "a message",
+        type: "flag",
+        correctAnswer: "an answer"
+      });
+  
+    expect(response.statusCode).toBe(400);
+    expect(response.body.error).toBe('Model "openai" is not supported.');
+  });
 });
