@@ -9,19 +9,18 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Leaderboard from './components/Leaderboard';
-import axios from 'axios';
 import GameOver from "./components/GameOver";
 import GameModes from './components/GameModes';
 import CustomGameMode from './components/CustomGameMode';
 
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
-
 function App() {
     const navigate = useNavigate(); // Hook for routes
-    const [error, setError] = useState(null); // state of error messages
+    const [error] = useState(null); // state of error messages
 
     useEffect(() => {
         navigate('/login');
+        // This function is safe to be used as this, we can ignore the warning
+        // eslint-disable-next-line react-hooks/exhaustive-deps
       }, []);
     
     return (

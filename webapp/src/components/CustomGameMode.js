@@ -44,7 +44,7 @@ const CustomGameMode = () => {
   useEffect(() => {
     const timeValid = timeLimit >= 10 && timeLimit <= 60;
     setReadyEnabled(totalQuestions >= minTotal && totalQuestions <= maxTotal && timeValid);
-  }, [questionCounts, timeLimit]);
+  }, [questionCounts, timeLimit, totalQuestions]);
 
   const handleCheckboxChange = (type) => {
     setSelectedCategories(prev => {
