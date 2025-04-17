@@ -1,4 +1,5 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useMemo } from 'react';
+import PropTypes from "prop-types";
 
 const AuthContext = createContext(null);
 
@@ -28,11 +29,22 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    //For optimization, if the user is already created, it won't be created again
+    const contextValue = useMemo(() => ({
+        user,
+        login,
+        logout,
+    }), [user])
+
     return (
-        <AuthContext.Provider value={{ user, login, logout}}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );
+};
+
+AuthProvider.propTypes = {
+    children: PropTypes.node.isRequired
 };
 
 export const useAuth = () => useContext(AuthContext);
