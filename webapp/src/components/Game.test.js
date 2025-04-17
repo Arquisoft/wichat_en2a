@@ -6,6 +6,7 @@ import Home from './Home';
 import Game from './Game';
 import GameOver from './GameOver';
 import { MemoryRouter } from 'react-router-dom';
+import { AuthProvider } from './AuthContext';
 
 const mockAxios = new MockAdapter(axios);
 const apiEndpoint = 'http://localhost:8000';
@@ -36,9 +37,11 @@ describe('Game Component', () => {
     // Render component
     const renderGameComponent = () => {
         render(
-            <MemoryRouter>
-                <Game onNavigate={mockOnNavigate} />
-            </MemoryRouter>
+            <AuthProvider>
+                <MemoryRouter>
+                    <Game />
+                </MemoryRouter>
+            </AuthProvider>
         );
     };
 
@@ -92,9 +95,11 @@ describe('Game Component', () => {
         fireEvent.click(screen.getByRole('button', { name: /Leave/i }));
 
         render(
-            <MemoryRouter>
-                <Home onNavigate={mockOnNavigate} />
-            </MemoryRouter>
+            <AuthProvider>
+                <MemoryRouter>
+                    <Home onNavigate={mockOnNavigate} />
+                </MemoryRouter>
+            </AuthProvider>
         );
         await waitFor(() => {
             expect(screen.getByText(/Welcome back/i)).toBeInTheDocument();
@@ -337,9 +342,11 @@ describe('Game Component', () => {
         }
 
         render(
-            <MemoryRouter>
-                <GameOver onNavigate={mockOnNavigate} />
-            </MemoryRouter>
+            <AuthProvider>
+                <MemoryRouter>
+                    <GameOver onNavigate={mockOnNavigate} />
+                </MemoryRouter>
+            </AuthProvider>
         );
 
         await waitFor(() => {

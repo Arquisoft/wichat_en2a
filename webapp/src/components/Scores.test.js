@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import Scores from "./Scores";
 import { MemoryRouter } from "react-router-dom";
+import {AuthProvider} from "./AuthContext";
 
 // Mock fetch
 global.fetch = jest.fn();
@@ -17,13 +18,19 @@ describe("Scores Component", () => {
         fetch.mockClear();
     });
 
+    const renderScoresComponent = () => {
+        render(
+            <AuthProvider>
+                <MemoryRouter>
+                    <Scores />
+                </MemoryRouter>
+            </AuthProvider>
+        );
+    };
+
     test("displays loading spinner initially", () => {
         fetch.mockImplementation(() => new Promise(() => {}));
-        render(
-            <MemoryRouter>
-                <Scores />
-            </MemoryRouter>
-        );
+        renderScoresComponent();
         expect(screen.getByRole("progressbar")).toBeInTheDocument();
     });
 
@@ -33,11 +40,7 @@ describe("Scores Component", () => {
             json: async () => mockScores,
         });
 
-        render(
-            <MemoryRouter>
-                <Scores />
-            </MemoryRouter>
-        );
+        renderScoresComponent();
 
         await waitFor(() => {
             expect(screen.getByText("Your Scores")).toBeInTheDocument();
@@ -51,11 +54,7 @@ describe("Scores Component", () => {
     test("displays an error message if fetch fails", async () => {
         fetch.mockRejectedValueOnce(new Error("Failed to fetch"));
 
-        render(
-            <MemoryRouter>
-                <Scores />
-            </MemoryRouter>
-        );
+        renderScoresComponent();
 
         await waitFor(() => {
             expect(screen.getByText("Failed to fetch")).toBeInTheDocument();
@@ -68,11 +67,7 @@ describe("Scores Component", () => {
             json: async () => [],
         });
 
-        render(
-            <MemoryRouter>
-                <Scores />
-            </MemoryRouter>
-        );
+        renderScoresComponent();
 
         await waitFor(() => {
             expect(screen.getByText("No scores available")).toBeInTheDocument();
@@ -81,11 +76,8 @@ describe("Scores Component", () => {
 
     test("displays error when no token is found", async () => {
         localStorage.removeItem("token");
-        render(
-            <MemoryRouter>
-                <Scores />
-            </MemoryRouter>
-        );
+
+        renderScoresComponent();
 
         await waitFor(() => {
             expect(screen.getByText("No token found. Please log in.")).toBeInTheDocument();

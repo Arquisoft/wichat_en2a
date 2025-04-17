@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import GameOver from "./GameOver";
+import {AuthProvider} from "./AuthContext";
 
 const mockNavigate = jest.fn();
 
@@ -14,9 +15,11 @@ jest.mock("react-router-dom", () => ({
 describe("GameOver Screen", () => {
     const renderGameOverScreen = () => {
         render(
-            <MemoryRouter>
-                <GameOver />
-            </MemoryRouter>
+            <AuthProvider>
+                <MemoryRouter>
+                    <GameOver />
+                </MemoryRouter>
+            </AuthProvider>
         );
     };
 

@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Leaderboard from './Leaderboard';
 import { MemoryRouter } from 'react-router-dom';
+import {AuthProvider} from "./AuthContext";
 
 global.fetch = jest.fn();
 
@@ -11,15 +12,21 @@ describe('Leaderboard component', () => {
     jest.clearAllMocks();
   });
 
+  const renderLeaderboardComponent = () => {
+    render(
+        <AuthProvider>
+          <MemoryRouter>
+            <Leaderboard />
+          </MemoryRouter>
+        </AuthProvider>
+    );
+  };
+
   it('should display loading state initially', () => {
     // Simulate pending fetch
     global.fetch.mockImplementationOnce(() => new Promise(() => {}));
-    
-    render(
-        <MemoryRouter>
-          <Leaderboard />
-        </MemoryRouter>
-    );
+
+    renderLeaderboardComponent();
     
     // Check if progessbar is displayed
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
@@ -28,12 +35,8 @@ describe('Leaderboard component', () => {
   it('should display error message when fetch fails', async () => {
     // Mock fetch to return an error
     global.fetch.mockRejectedValueOnce(new Error('Network error'));
-    
-    render(
-        <MemoryRouter>
-          <Leaderboard />
-        </MemoryRouter>
-    );
+
+    renderLeaderboardComponent();
     
     // Wait for the error message to appear
     await waitFor(() => {
@@ -47,12 +50,8 @@ describe('Leaderboard component', () => {
       ok: false,
       status: 500
     });
-    
-    render(
-        <MemoryRouter>
-          <Leaderboard />
-        </MemoryRouter>
-    );
+
+    renderLeaderboardComponent();
     
     // Wait for the error message to appear
     await waitFor(() => {
@@ -66,13 +65,9 @@ describe('Leaderboard component', () => {
       ok: true,
       json: async () => []
     });
-    
-    render(
-        <MemoryRouter>
-          <Leaderboard />
-        </MemoryRouter>
-    );
-    
+
+    renderLeaderboardComponent();
+
     // Wait for the table to load and check for the empty message
     await waitFor(() => {
       expect(screen.getByText(/No player data available/i)).toBeInTheDocument();
@@ -110,13 +105,9 @@ describe('Leaderboard component', () => {
       ok: true,
       json: async () => mockPlayers
     });
-    
-    render(
-        <MemoryRouter>
-          <Leaderboard />
-        </MemoryRouter>
-    );
-    
+
+    renderLeaderboardComponent();
+
     // Wait for the table to load with data
     await waitFor(() => {
       // Check for player usernames
@@ -160,13 +151,9 @@ describe('Leaderboard component', () => {
       ok: true,
       json: async () => mockPlayers
     });
-    
-    render(
-        <MemoryRouter>
-          <Leaderboard />
-        </MemoryRouter>
-    );
-    
+
+    renderLeaderboardComponent();
+
     // Wait loading data
     await waitFor(() => {
       expect(screen.getByText('playerWithMissingData')).toBeInTheDocument();
@@ -181,13 +168,9 @@ describe('Leaderboard component', () => {
       ok: true,
       json: async () => []
     });
-    
-    render(
-        <MemoryRouter>
-          <Leaderboard />
-        </MemoryRouter>
-    );
-    
+
+    renderLeaderboardComponent();
+
     // Verify the correct URL, maybe 3000, pendant of change if fail
     // UPDATE: ofc use gateway 8000 and /leaderboard
     expect(global.fetch).toHaveBeenCalledWith("http://localhost:8000/leaderboard");
