@@ -1,19 +1,20 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-
-    useEffect(() => {
+    //Every time the application is refreshed, this is executed, so we can keep the user
+    const [user, setUser] = useState(() => {
         const token = localStorage.getItem('token');
         const userId = localStorage.getItem('userId');
         const username = localStorage.getItem('username');
 
         if (token && userId && username) {
-            setUser({ token, userId, username });
+            return { token, userId, username };
         }
-    }, []);
+
+        return null;
+    })
 
     const login = (userData) => {
         localStorage.setItem('token', userData.token);
@@ -28,7 +29,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ user, login, logout}}>
             {children}
         </AuthContext.Provider>
     );

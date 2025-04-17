@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Routes, Route, useNavigate} from 'react-router-dom';
+import {Routes, Route, useNavigate, useLocation} from 'react-router-dom';
 import AddUser from './components/AddUser';
 import Login from './components/Login';
 import Home from './components/Home';
@@ -16,16 +16,23 @@ import {useAuth} from "./components/AuthContext";
 
 function App() {
     const navigate = useNavigate(); // Hook for routes
+    const location = useLocation();
     const [error] = useState(null); // state of error messages
     const user = useAuth();
 
     useEffect(() => {
-        if (!user) {
+        if (!user.user && location.pathname !== '/register') {
             navigate('/login');
-        } else {
-            navigate('/home');
         }
-    }, [user]);
+        else {
+            if(location.pathname === '/') {
+                navigate('/home')
+            }
+            else{
+                navigate(location.pathname);
+            }
+        }
+    }, [user, navigate, location.pathname]);
     
     return (
         <Box sx={{ width: "100vw", height: "100vh", overflowX: "hidden" }}>
@@ -55,6 +62,5 @@ function App() {
         </Box>
     );
 }
-
 
 export default App;

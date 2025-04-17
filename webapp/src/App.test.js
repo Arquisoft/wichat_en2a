@@ -4,6 +4,7 @@ import App from './App';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import {MemoryRouter} from "react-router-dom";
+import { AuthProvider } from './components/AuthContext';
 
 const mockAxios = new MockAdapter(axios);
 
@@ -26,29 +27,35 @@ describe('App component', () => {
 
   it('renders Login component by default', () => {
     render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <AuthProvider>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </AuthProvider>
     );
     expect(screen.getByRole('button', { name: /Login/i })).toBeInTheDocument();
   });
 
   it('navigates to register view when "Don\'t have an account?" is clicked', () => {
     render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <AuthProvider>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </AuthProvider>
     );
     fireEvent.click(screen.getByRole('button', { name: /Don't have an account?/i }));
     expect(screen.getByRole('heading', { name: /Register/i })).toBeInTheDocument();
   });
 
   it('navigates to login view when "Already have an account?" is clicked', () => {
-    
+
     render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <AuthProvider>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </AuthProvider>
     );
     fireEvent.click(screen.getByRole('button', { name: /Don't have an account?/i })); // Go to registration page
     fireEvent.click(screen.getByRole('button', { name: /Already have an account?/i })); // Go to login page
@@ -59,9 +66,11 @@ describe('App component', () => {
     mockAxios.onPost('http://localhost:8000/login').reply(200, { success: true }); // Mock a successful login
 
     render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <AuthProvider>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </AuthProvider>
     );
 
     await fillLoginFormAndSubmit(screen.getByRole('button', {name: /Login/i}));
@@ -75,9 +84,11 @@ describe('App component', () => {
     mockAxios.onPost('http://localhost:8000/adduser').reply(200, { success: true }); // Mock a successful registration
 
     render(
-        <MemoryRouter>
-          <App />
-        </MemoryRouter>
+        <AuthProvider>
+          <MemoryRouter>
+            <App />
+          </MemoryRouter>
+        </AuthProvider>
     );
     fireEvent.click(screen.getByRole('button', { name: /Don't have an account?/i })); // Go to registration page
 
@@ -85,6 +96,24 @@ describe('App component', () => {
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /Login 🧠/i })).toBeInTheDocument();
+    });
+  });
+
+  it('redirects to /login when user is not authenticated and tries to access a protected route', async () => {
+    // Asegúrate de que localStorage esté vacío
+    localStorage.clear();
+
+    render(
+        <AuthProvider>
+          <MemoryRouter initialEntries={['/home']}>
+            <App />
+          </MemoryRouter>
+        </AuthProvider>
+    );
+
+    // Espera a que se redirija al login
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /Login/i })).toBeInTheDocument();
     });
   });
 });
