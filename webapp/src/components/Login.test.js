@@ -4,6 +4,7 @@ import Login from './Login';
 import { MemoryRouter } from 'react-router-dom';
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
+import {AuthProvider} from "./AuthContext";
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -36,14 +37,20 @@ describe('Login component', () => {
     mockAxios.reset();
   });
 
+  const renderLoginComponent = () => {
+    render(
+        <AuthProvider>
+          <MemoryRouter>
+            <Login />
+          </MemoryRouter>
+        </AuthProvider>
+    );
+  };
+
   it('Renders all components', async () => {
     mockAxios.onPost('http://localhost:8000/login').reply(200, {createdAt: '2024-01-01T12:34:56Z'});
 
-    render(
-        <MemoryRouter>
-          <Login/>
-        </MemoryRouter>
-    );
+    renderLoginComponent();
     expect(await screen.findByText('Challenge your knowledge!')).toBeInTheDocument();
     expect(await screen.getByText(/Login 🧠/i)).toBeInTheDocument();
     expect(await screen.getByLabelText(/Username/i)).toBeInTheDocument();
@@ -55,11 +62,7 @@ describe('Login component', () => {
   it('should log in successfully', async () => {
     mockAxios.onPost('http://localhost:8000/login').reply(200, { createdAt: '2024-01-01T12:34:56Z' });
 
-    render(
-        <MemoryRouter>
-        <Login />
-        </MemoryRouter>
-    );
+    renderLoginComponent();
 
     await fillLoginFormAndSubmit();
 
@@ -71,11 +74,7 @@ describe('Login component', () => {
   it('should apply the spinning animation to the image', async () => {
     mockAxios.onPost('http://localhost:8000/login').reply(200, {createdAt: '2024-01-01T12:34:56Z'});
 
-    render(
-        <MemoryRouter>
-          <Login/>
-        </MemoryRouter>
-    );
+    renderLoginComponent();
 
     const image = screen.getByAltText(/Question Mark/i);
     const style = window.getComputedStyle(image);
@@ -87,11 +86,7 @@ describe('Login component', () => {
       userId: '123', username: 'testUser', token: 'abc', createdAt: '2024-01-01T12:34:56Z'
     });
 
-    render(
-        <MemoryRouter>
-          <Login />
-        </MemoryRouter>
-    );
+    renderLoginComponent();
 
     await fillLoginFormAndSubmit();
 
@@ -107,11 +102,7 @@ describe('Login component', () => {
     // Simulate error response without "error" field
     mockAxios.onPost('http://localhost:8000/login').reply(500, {});
 
-    render(
-        <MemoryRouter>
-          <Login />
-        </MemoryRouter>
-    );
+    renderLoginComponent();
 
     await fillLoginFormAndSubmit();
 
@@ -121,11 +112,7 @@ describe('Login component', () => {
   it('should display and close the error Snackbar when an error occurs', async () => {
     mockAxios.onPost('http://localhost:8000/login').reply(500, { error: 'Invalid credentials' });
 
-    render(
-        <MemoryRouter>
-          <Login />
-        </MemoryRouter>
-    );
+    renderLoginComponent();
 
     await fillLoginFormAndSubmit();
 
