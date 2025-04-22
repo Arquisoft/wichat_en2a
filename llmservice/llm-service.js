@@ -32,6 +32,30 @@ const llmConfigs = {
   },
 };
 
+const questions = [
+  {
+    type: "flag",
+    question: "What country is represented by the flag shown?"
+  },
+  {
+    type: "car",
+    question: "Which is the car in the picture?"
+  },
+  {
+    type: "famous-person",
+    question: "Who's this famous person?"
+  },
+  {
+    type: "dino",
+    question: "Which dinosaur or prehistorical being is shown in the picture?"
+  },
+  {
+    type: "place",
+    question: "Which famous place is shown in the image?"
+  }
+];
+
+
 // Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
   for (const field of requiredFields) {
@@ -64,7 +88,7 @@ async function sendQuestionToLLM(question) {
     return config.transformResponse(response);
 
   } catch (error) {
-    console.error(`Error sending question to ${empathy}:`, error.message || error);
+    console.error(`Error sending question:`, error.message || error);
     return null;
   }
 }
@@ -80,7 +104,7 @@ async function sendQuestionToGemini(question) {
     return result;
 
   } catch (error) {
-    console.error(`Error sending question to ${model}:`, error.message || error)
+    console.error(`Error sending question:`, error.message || error)
     return null;
   }
 
@@ -166,13 +190,13 @@ function getConversation() {
 
 app.post("/generateIncorrectOptions", async (req, res) => {
   try {
-    validateRequiredFields(req, ["model", "correctAnswer"]);
+    validateRequiredFields(req, ["model", "correctAnswer", "type"]);
 
-    const { correctAnswer } = req.body;
+    const { correctAnswer, type } = req.body;
     let question =
-      "I need to generate incorrect options for a multiple choice question. The question is: What country is represented by the flag shown? The correct answer to this question is:" +
+      "I need to generate incorrect options for a multiple choice question. The question is: " + getQuestionByType(type) + " The correct answer to this question is:" +
       correctAnswer +
-      ". I need you to generate exactly 3 incorrect options for that question that could be used as distractors. They should be plausible but different from the correct one. Provide them as 3 comma-separated values, nothing more. The response should look exactly like: \"country1,country2,country3\"";
+      ". I need you to generate exactly 3 incorrect options for that question that could be used as distractors. They should be plausible options but different from the correct one. Provide them as 3 comma-separated values, AND DO NOT WRITE ANYTHING MORE THAN THOSE VALUES. The response should look exactly like: answer1,answer2,answer3";
 
     const answer = await sendQuestionToLLM(question);
 
@@ -182,6 +206,14 @@ app.post("/generateIncorrectOptions", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+function getQuestionByType(type) {
+  const match = questions.find(q => q.type === type);
+  if (!match) {
+    throw new Error(`No question found for type: ${type}`);
+  }
+  return match.question;
+}
 
 // Start the service
 const server = app.listen(port, () => {

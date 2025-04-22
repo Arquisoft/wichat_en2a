@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Routes, Route, useNavigate} from 'react-router-dom';
+import {Routes, Route, useNavigate, useLocation} from 'react-router-dom';
 import AddUser from './components/AddUser';
 import Login from './components/Login';
 import Home from './components/Home';
@@ -10,35 +10,31 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Leaderboard from './components/Leaderboard';
-import axios from 'axios';
 import GameOver from "./components/GameOver";
-
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+import GameModes from './components/GameModes';
+import CustomGameMode from './components/CustomGameMode';
+import {useAuth} from "./components/AuthContext";
 
 function App() {
     const navigate = useNavigate(); // Hook for routes
-    const [error, setError] = useState(null); // state of error messages
+    const location = useLocation();
+    const [error] = useState(null); // state of error messages
+    const user = useAuth();
 
-    //Load question from wikidata just when deploying the application
     useEffect(() => {
-        const initializeQuestions = async () => {
-            try {
-                console.log("Checking and initializing question data...");
-                await axios.post(`${apiEndpoint}/fetch-flag-data`);
-                console.log('Database initialized successfully');
-            } catch (error) {
-                setError(error.response?.data?.error || 'Error initializing database');
-                console.error('Error during initialization:', error);
+        if (!user.user && location.pathname !== '/register') {
+            navigate('/login');
+        }
+        else {
+            if(location.pathname === '/') {
+                navigate('/home')
             }
-        };
-        navigate('/login');
-
-        initializeQuestions(); // Llama al inicializador
-
-        /// This is only executed once, so it is not necessary to add it to the dependencies array (otherwise CI fails)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
+            else{
+                navigate(location.pathname);
+            }
+        }
+    }, [user, navigate, location.pathname]);
+    
     return (
         <Box sx={{ width: "100vw", height: "100vh", overflowX: "hidden" }}>
             <CssBaseline/>
@@ -61,10 +57,12 @@ function App() {
                 <Route path="/scores" element={<Scores/>}/>
                 <Route path="/allScores" element={<TopScores/>}/>
                 <Route path="/game-over" element={<GameOver/>} />
+                <Route path="/gamemodes" element={<GameModes />} />
+                <Route path="/gamemodes/custom" element={<CustomGameMode/>}/>
+
             </Routes>
         </Box>
     );
 }
-
 
 export default App;

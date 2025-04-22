@@ -37,7 +37,7 @@ defineFeature(feature, test => {
     when('I fill the data in the form and press submit', async () => {
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
-      await expect(page).toClick('button', { text: 'Add User' })
+      await expect(page).toClick('button', { text: 'Register' })
     });
 
     then('The user is added', async () => {
@@ -60,7 +60,7 @@ defineFeature(feature, test => {
     when('I fill the data in the form and press submit', async () => {
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
-      await expect(page).toClick('button', { text: 'Add User' })
+      await expect(page).toClick('button', { text: 'Register' })
     });
 
     then('an error message appears', async () => {

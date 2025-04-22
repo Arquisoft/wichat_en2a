@@ -1,19 +1,22 @@
 import React from 'react';
-import {render, screen, fireEvent, waitFor} from '@testing-library/react';
+import {render, screen, fireEvent, waitFor, act} from '@testing-library/react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Home from './Home';
 import Game from './Game';
 import GameOver from './GameOver';
 import { MemoryRouter } from 'react-router-dom';
+import { AuthProvider } from './AuthContext';
 
 const mockAxios = new MockAdapter(axios);
 const apiEndpoint = 'http://localhost:8000';
 
 const mockQuestion = {
+    _id: '1',
     correctAnswer: 'Spain',
     imageUrl: 'https://via.placeholder.com/300',
-    options: ['Spain', 'France', 'Germany', 'Italy']
+    options: ['Spain', 'France', 'Germany', 'Italy'],
+    type: 'flag'
 };
 
 jest.useFakeTimers();
@@ -26,12 +29,19 @@ describe('Game Component', () => {
         mockAxios.reset();
     });
 
+    afterEach(() => {
+        jest.clearAllMocks();
+        jest.restoreAllMocks();
+    });
+
     // Render component
     const renderGameComponent = () => {
         render(
-            <MemoryRouter>
-                <Game onNavigate={mockOnNavigate} />
-            </MemoryRouter>
+            <AuthProvider>
+                <MemoryRouter>
+                    <Game />
+                </MemoryRouter>
+            </AuthProvider>
         );
     };
 
@@ -50,7 +60,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         mockQuestion.options.forEach(option => {
@@ -64,13 +74,32 @@ describe('Game Component', () => {
         setupMockApiResponse('question', mockQuestion);
         renderGameComponent();
         await waitFor(() => {
-            const backButton = screen.getByRole('button', { name: /Back/i});
+            const backButton = screen.getByRole('button', { name: /Exit/i});
             fireEvent.click(backButton);
         })
+
+        // test dialog
+        expect(screen.getByText(/Leave Game\?/i)).toBeInTheDocument();
+        expect(screen.getByText(/If you leave now, your progress will be lost/i)).toBeInTheDocument();
+
+        // 3. Click en Cancel → debería cerrar el diálogo
+        fireEvent.click(screen.getByRole('button', { name: /Cancel/i }));
+        await waitFor(() => {
+            expect(screen.queryByText(/Leave Game\?/i)).not.toBeInTheDocument();
+        });
+
+        // 4. Volver a hacer click en Exit para abrir el diálogo otra vez
+        fireEvent.click(screen.getByRole('button', { name: /Exit/i }));
+
+        // 5. Click en Leave → debe navegar a /home
+        fireEvent.click(screen.getByRole('button', { name: /Leave/i }));
+
         render(
-            <MemoryRouter>
-                <Home onNavigate={mockOnNavigate} />
-            </MemoryRouter>
+            <AuthProvider>
+                <MemoryRouter>
+                    <Home onNavigate={mockOnNavigate} />
+                </MemoryRouter>
+            </AuthProvider>
         );
         await waitFor(() => {
             expect(screen.getByText(/Welcome back/i)).toBeInTheDocument();
@@ -95,7 +124,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         fireEvent.change(screen.getByPlaceholderText(/Type a message.../i), {
@@ -118,27 +147,72 @@ describe('Game Component', () => {
 
     });
 
-    test('allows selecting an answer and enables "Next Question" button', async () => {
+    test('next question will be shown 3 seconds after selecting an option', async () => {
+        jest.useFakeTimers(); // Usamos timers fake para avanzar tiempo
+
         setupMockApiResponse('question', mockQuestion);
+        const mockQuestion2 = {
+            _id: '2',
+            imageUrl: 'https://example.com/flag2.png',
+            correctAnswer: 'Germany',
+            options: ['Spain', 'France', 'Germany', 'Italy'],
+            type: 'flag'
+        };
+
+        const getSpy = jest.spyOn(axios, 'get');
+        const postSpy = jest.spyOn(axios, 'post');
+
+        getSpy
+            .mockResolvedValueOnce({ data: mockQuestion })   // Pregunta 1
+            .mockResolvedValueOnce({ data: mockQuestion2 }); // Pregunta 2
+
+        postSpy.mockResolvedValue({ data: { isCorrect: true } });
+
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         const answerButton = screen.getByRole('button', { name: 'Spain' });
         fireEvent.click(answerButton);
 
-        const nextQuestionButton = screen.getByRole('button', { name: /Next Question/i });
-        expect(nextQuestionButton).toBeEnabled();
+        // Avanza 3s para que se dispare skipNextQuestion
+        act(() => {
+            jest.advanceTimersByTime(3000);
+        });
+
+        await waitFor(() => {
+            expect(screen.getByRole('button', { name: 'Germany' })).toBeInTheDocument();
+        });
+
+        // Comprobamos que los botones están habilitados (answerSelected = false)
+        const allOptionButtons = mockQuestion2.options.map(option =>
+            screen.getByRole('button', { name: option })
+        );
+        allOptionButtons.forEach(btn => {
+            expect(btn).toBeDisabled();
+        });
+
+        // Comprobamos que el input del chat esté vacío (input === "")
+        expect(screen.getByPlaceholderText(/Type a message.../i)).toHaveValue('');
+
+        // Comprobamos que el chat esté vacío (messages === [])
+        // Podés usar algún testId si los mensajes están en una lista
+        const chatMessages = screen.queryAllByTestId('chat-message');
+        expect(chatMessages.length).toBe(0);
+
+        getSpy.mockRestore();
+        postSpy.mockRestore();
     });
+
 
     test('disables all buttons after selecting an answer', async () => {
         setupMockApiResponse('question', mockQuestion);
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         const answerButton = screen.getByRole('button', { name: 'Spain' });
@@ -156,7 +230,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         const wrongAnswerButton = screen.getByRole('button', { name: 'France' });
@@ -179,7 +253,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         const correctAnswerButton = screen.getByRole('button', { name: 'Spain' });
@@ -196,7 +270,9 @@ describe('Game Component', () => {
 
         await waitFor(() => {
             expect(mockAxios.history.post.length).toBe(1); // It should have called the POST request once
-            expect(mockAxios.history.post[0].url).toBe(`${apiEndpoint}/fetch-flag-data`);
+            expect(mockAxios.history.post[0].url).toBe(`${apiEndpoint}/fetch-question-data`);
+            expect(mockAxios.history.get.length).toBe(1); // It should have called the get request once
+            expect(mockAxios.history.get[0].url).toBe(`${apiEndpoint}/question`);
         });
 
         // Simulate the successful fetch of the question after database initialization
@@ -205,7 +281,7 @@ describe('Game Component', () => {
 
         // After initializing the database, the question should be fetched and displayed
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
     });
 
@@ -216,7 +292,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         const scoreElement = screen.getByText(/Score: 0/i);
@@ -237,7 +313,7 @@ describe('Game Component', () => {
         renderGameComponent();
 
         await waitFor(() => {
-            expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
         });
 
         const scoreElement = screen.getByText(/Score: 0/i);
@@ -259,20 +335,43 @@ describe('Game Component', () => {
 
         for (let i = 0; i <= MAX_QUESTIONS; i++){
             await waitFor(() => {
-                expect(screen.getByText(/Which country is this flag from?/i)).toBeInTheDocument();
+                expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
             });
             const answerButton = screen.getByRole('button', { name: 'Spain' });
             fireEvent.click(answerButton);
         }
 
         render(
-            <MemoryRouter>
-                <GameOver onNavigate={mockOnNavigate} />
-            </MemoryRouter>
+            <AuthProvider>
+                <MemoryRouter>
+                    <GameOver onNavigate={mockOnNavigate} />
+                </MemoryRouter>
+            </AuthProvider>
         );
 
         await waitFor(() => {
             expect(screen.getByText(/Game Over!/i)).toBeInTheDocument();
         });
     });
+
+    test('function handleTimeUp() is called after timer ends', async () => {
+        setupMockApiResponse('question', mockQuestion);
+        renderGameComponent();
+
+        await waitFor(() => {
+            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
+        });
+
+        act(() => {
+            jest.advanceTimersByTime(40000); // Simula 3 segundos
+        });
+
+        const correctAnswerButton = screen.getByRole('button', { name: 'Spain' });
+        await waitFor(() => {
+            expect(correctAnswerButton).toHaveStyle('background-color: #F44336');
+        });
+
+    });
+
+
 });

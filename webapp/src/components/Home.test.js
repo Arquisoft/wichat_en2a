@@ -3,6 +3,7 @@ import {render, fireEvent, screen} from '@testing-library/react';
 import Home from './Home';
 import { MemoryRouter } from 'react-router-dom';
 import axios from "axios";
+import {AuthProvider} from "./AuthContext";
 
 //useNavigate Mock
 jest.mock('react-router-dom', () => ({
@@ -19,31 +20,29 @@ describe('Home component', () => {
         jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(mockNavigate);
     });
 
-    it('renders the Home title', () => {
+    const renderHomeComponent = () => {
         render(
-            <MemoryRouter>
-              <Home onNavigate={mockNavigate} />
-            </MemoryRouter>
+            <AuthProvider>
+                <MemoryRouter>
+                    <Home onNavigate={mockNavigate} />
+                </MemoryRouter>
+            </AuthProvider>
         );
+    };
+
+    it('renders the Home title', () => {
+        renderHomeComponent();
         expect(screen.getByText(/Welcome back/i)).toBeInTheDocument();
     });
 
     it('navigates to "game" when "Play" button is clicked', () => {
-        render(
-            <MemoryRouter>
-              <Home />
-            </MemoryRouter>
-    );
-    fireEvent.click(screen.getByRole('button', { name: /Play/i }));
-    expect(mockNavigate).toHaveBeenCalledWith('/game');
+        renderHomeComponent();
+        fireEvent.click(screen.getByRole('button', { name: /Play/i }));
+        expect(mockNavigate).toHaveBeenCalledWith('/gamemodes');
     });
 
     it('renders all buttons', () => {
-        render(
-            <MemoryRouter>
-              <Home />
-            </MemoryRouter>
-        );
+        renderHomeComponent();
         expect(screen.getByRole('button', { name: /Play/i })).toBeInTheDocument();
     });
 
@@ -51,11 +50,7 @@ describe('Home component', () => {
         const mockUsername = 'JohnDoe';
         Storage.prototype.getItem = jest.fn(() => mockUsername);
 
-        render(
-            <MemoryRouter>
-                <Home />
-            </MemoryRouter>
-        );
+        renderHomeComponent();
 
         // Check if the username is displayed
         expect(screen.getByText((content) => content.includes('Welcome back, JohnDoe'))).toBeInTheDocument();
@@ -65,11 +60,7 @@ describe('Home component', () => {
     it('If something went wrong and username is not stored, welcomes the user displaying guest', () => {
         Storage.prototype.getItem = jest.fn(() => null);
 
-        render(
-            <MemoryRouter>
-                <Home />
-            </MemoryRouter>
-        );
+        renderHomeComponent();
 
         // Check if 'Guest' is displayed when no username is found
         expect(screen.getByText((content) => content.includes('Welcome back, Guest'))).toBeInTheDocument();
@@ -96,11 +87,7 @@ describe('Home component', () => {
                 json: async () => ({ username: 'Charlie' })
             });
 
-        render(
-            <MemoryRouter>
-                <Home />
-            </MemoryRouter>
-        );
+        renderHomeComponent();
 
         expect(await screen.findByText('🥇Alice - 300 pts')).toBeInTheDocument();
         expect(await screen.findByText('🥈Bob - 250 pts')).toBeInTheDocument();

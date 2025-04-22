@@ -10,6 +10,12 @@ COPY package*.json ./
 # Install app dependencies
 RUN npm install
 
+# Pass the environment variables to the container
+ARG GEMINI_KEY
+ARG EMPATHY_KEY
+ENV GEMINI_KEY=$GEMINI_KEY
+ENV EMPATHY_KEY=$EMPATHY_KEY
+
 # Copy the app source code to the working directory
 COPY . .
 
