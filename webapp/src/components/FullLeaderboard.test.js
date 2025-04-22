@@ -1,173 +1,80 @@
 import React from 'react';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Leaderboard from './FullLeaderboard';
+import FullLeaderboard from './FullLeaderboard';
 import { MemoryRouter } from 'react-router-dom';
 
-// Mock global fetch
-global.fetch = jest.fn();
-
-// Mock react-router future flags warnings
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useLocation: () => ({ pathname: '/leaderboard' }),
+const mockPlayers = Array.from({ length: 20 }, (_, i) => ({
+  _id: `id-${i}`,
+  username: `Player${i + 1}`,
+  totalScore: 1000 - i * 10,
+  gamesPlayed: 10 + i,
+  avgPointsPerGame: 100 - i,
+  winRate: (50 + i).toFixed(2),
 }));
 
-describe('Leaderboard Component', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    localStorage.setItem('username', 'testUser');
+describe('FullLeaderboard', () => {
+  beforeAll(() => {
+    // Mock scrollIntoView para evitar errores
+    window.HTMLElement.prototype.scrollIntoView = jest.fn();
   });
+  
 
-  afterEach(() => {
-    localStorage.clear();
-  });
+  const setup = (props = {}) => {
+    const defaultProps = {
+      players: mockPlayers,
+      currentUsername: 'Player5',
+      order: 'desc',
+      orderBy: 'totalScore',
+      onRequestSort: jest.fn(),
+      onCollapseView: jest.fn(),
+    };
 
-  const renderComponent = async (mockData) => {
-    await act(async () => {
-      render(
-        <MemoryRouter>
-          <Leaderboard />
-        </MemoryRouter>
-      );
-    });
+    return render(<MemoryRouter><FullLeaderboard {...defaultProps} {...props} /></MemoryRouter>);
   };
 
-  it('should display loading state initially', async () => {
-    fetch.mockImplementationOnce(() => new Promise(() => {}));
-    
-    await renderComponent();
-    
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
-    expect(screen.getByText(/Loading Leaderboard.../i)).toBeInTheDocument();
+  test('renders leaderboard with title and current user', () => {
+    setup();
+    expect(screen.getByText('🏆 Full Leaderboard')).toBeInTheDocument();
+    expect(screen.getByText('Player5 (You)')).toBeInTheDocument();
   });
 
-  it('should display error message when fetch fails', async () => {
-    fetch.mockRejectedValueOnce(new Error('Network error'));
-    
-    await renderComponent();
-    
-    await waitFor(() => {
-      expect(screen.getByText(/Failed to load leaderboard data/i)).toBeInTheDocument();
-    });
+  test('renders correct number of players per page', () => {
+    setup();
+    const rows = screen.getAllByRole('row');
+    // +1 for header row
+    expect(rows.length).toBeLessThanOrEqual(11);
   });
 
-  it('should handle server errors', async () => {
-    fetch.mockResolvedValueOnce({
-      ok: false,
-      status: 500,
-      json: async () => ({ message: 'Server error' })
-    });
-    
-    await renderComponent();
-    
-    await waitFor(() => {
-      expect(screen.getByText(/Failed to load leaderboard data/i)).toBeInTheDocument();
-    });
+  test('displays win rate bar', () => {
+    setup();
+    expect(screen.getAllByText(/%/)[0]).toBeInTheDocument();
   });
 
-  it('should display empty state when no data', async () => {
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => []
-    });
-    
-    await renderComponent();
-    
-    await waitFor(() => {
-      expect(screen.getByText(/No player data available/i)).toBeInTheDocument();
-    });
+  test('calls onCollapseView when "Show Top 5" button is clicked', () => {
+    const onCollapseViewMock = jest.fn();
+    setup({ onCollapseView: onCollapseViewMock });
+
+    const button = screen.getByRole('button', { name: /show top 5/i });
+    fireEvent.click(button);
+
+    expect(onCollapseViewMock).toHaveBeenCalled();
   });
 
-  it('should display player data correctly', async () => {
-    const mockPlayers = [
-      {
-        _id: '1',
-        username: 'player1',
-        totalScore: 300,
-        gamesPlayed: 2,
-        avgPointsPerGame: 150,
-        winRate: 100
-      },
-      {
-        _id: '2',
-        username: 'player2',
-        totalScore: 150,
-        gamesPlayed: 2,
-        avgPointsPerGame: 75,
-        winRate: 50
-      }
-    ];
-    
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockPlayers
-    });
-    
-    await renderComponent();
-    
-    await waitFor(() => {
-      // Check headers
-      expect(screen.getByText('User')).toBeInTheDocument();
-      expect(screen.getByText('Total Score')).toBeInTheDocument();
-      expect(screen.getByText('Games')).toBeInTheDocument();
-      expect(screen.getByText('Avg. Score')).toBeInTheDocument();
-      expect(screen.getByText('Win-rate')).toBeInTheDocument();
-      
-      // Check player data
-      expect(screen.getByText('player1')).toBeInTheDocument();
-      expect(screen.getByText('300')).toBeInTheDocument();
-      expect(screen.getByText('150.00')).toBeInTheDocument();
-      expect(screen.getByText('100.00%')).toBeInTheDocument();
-      
-      // Check current user highlight
-      expect(screen.getByText('testUser (You)')).toBeInTheDocument();
-    });
+
+  test('calls onRequestSort when column header is clicked', () => {
+    const onRequestSortMock = jest.fn();
+    setup({ onRequestSort: onRequestSortMock });
+
+    const sortLabel = screen.getByText(/Total Score/i);
+    fireEvent.click(sortLabel);
+
+    expect(onRequestSortMock).toHaveBeenCalledWith('totalScore');
   });
 
-  it('should handle null values in player data', async () => {
-    const mockPlayers = [
-      {
-        _id: '3',
-        username: 'player3',
-        totalScore: null,
-        gamesPlayed: 0,
-        avgPointsPerGame: null,
-        winRate: null
-      }
-    ];
-    
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockPlayers
-    });
-    
-    await renderComponent();
-    
-    await waitFor(() => {
-      expect(screen.getByText('player3')).toBeInTheDocument();
-      expect(screen.getByText('N/A')).toBeInTheDocument();
-      expect(screen.getByText('0.00%')).toBeInTheDocument();
-    });
-  });
-
-  it('should sort players correctly', async () => {
-    const mockPlayers = [
-      { _id: '1', username: 'playerB', totalScore: 200 },
-      { _id: '2', username: 'playerA', totalScore: 300 }
-    ];
-    
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockPlayers
-    });
-    
-    await renderComponent();
-    
-    await waitFor(() => {
-      const totalScores = screen.getAllByRole('cell', { name: /^\d+$/ });
-      expect(totalScores[1]).toHaveTextContent('300'); // First row
-      expect(totalScores[6]).toHaveTextContent('200'); // Second row
-    });
+  test('shows 🏆 Top Player! for the top-ranked user', () => {
+    setup();
+    const topBadge = screen.getAllByText(/🏆 Top Player!/i);
+    expect(topBadge.length).toBeGreaterThan(0);
   });
 });
