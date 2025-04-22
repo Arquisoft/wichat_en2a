@@ -832,3 +832,5 @@ describe('GET /allScores', () => {
     expect(response.body).toEqual({ error: 'Not Found' });
   });
 });
+
+
