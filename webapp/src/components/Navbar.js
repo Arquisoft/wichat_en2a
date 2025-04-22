@@ -32,7 +32,13 @@ const Navbar = ({ onNavigateRequest }) => {
     return (
         <AppBar position="fixed" sx={{top: 0, left: 0, width: "100%", zIndex: 1100, backgroundColor: "#FFD700"}}>
             <Container maxWidth="xl">
-                <Toolbar sx={{display: "flex", justifyContent: "space-between"}}>
+                <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+
+                    {/* Logo */}
+                    <Box sx={{ display: "flex", alignItems: "center", mr: 2, cursor: "pointer" }} onClick={() => handleNavigation("/home")}>
+                        <img src="/questionMark.webp" alt="App Logo" style={{ height: 40, marginRight: 8 }} />
+                    </Box>
+
                     <Box sx={{display: "flex", gap: 2}}>
                         <Button sx={navButtonStyle} onClick={() => handleNavigation("/home")}>Home</Button>
                         <Button sx={navButtonStyle} onClick={() => handleNavigation("/gamemodes")}>Game</Button>
@@ -40,6 +46,7 @@ const Navbar = ({ onNavigateRequest }) => {
                         <Button sx={navButtonStyle} onClick={() => handleNavigation("/leaderboard")}>Leaderboards</Button>
                     </Box>
                     <Box sx={{display: "flex", ml: "auto"}}>
+                        <Button>  </Button>
                         <Button sx={navButtonStyle} onClick={() => handleLogout()}>Log Out</Button>
                     </Box>
                 </Toolbar>

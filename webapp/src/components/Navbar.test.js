@@ -65,4 +65,11 @@ describe('Navbar component', () => {
         fireEvent.click(screen.getByRole('button', {name: /Game/i}));
         expect(mockNavigate).toHaveBeenCalledWith('/gamemodes');
     });
+
+    it('navigates to "Home" when the logo is clicked', () => {
+        renderNavbarComponent();
+        fireEvent.click(screen.getByAltText('App Logo'));
+        expect(mockNavigate).toHaveBeenCalledWith('/home');
+    });
+
 });
