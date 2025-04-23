@@ -43,6 +43,7 @@ export const StickyPlayerHeader = ({ player, rank, pointsToLevelUp, navbarHeight
                 zIndex: 200, // 
                 width: '100%',
                 mb: 8, // Margen inferior para evitar que tape el contenido
+                //con 6 queda pegaco, con 8 pequeño margen 
             }}
         >
             <Box 
