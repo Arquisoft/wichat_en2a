@@ -8,6 +8,48 @@ jest.mock('axios');
 // Sign a mock token for testing
 const testToken = jwt.sign({ userId: 'mockID' }, 'your-secret-key', { expiresIn: '1h' });
 
+beforeEach(() => {
+  axios.post.mockReset();
+  axios.get.mockReset();
+
+  axios.post.mockImplementation((url, data) => {
+    if (url.endsWith('/login')) {
+      return Promise.resolve({ data: { token: 'mockedToken' } });
+    }
+    if (url.endsWith('/adduser')) {
+      return Promise.resolve({ data: { userId: 'mockedUserId' } });
+    }
+    if (url.endsWith('/ask')) {
+      return Promise.resolve({ data: { answer: 'llmanswer' } });
+    }
+    if (url.endsWith('/generateIncorrectOptions')) {
+      return Promise.resolve({
+        status: 200,
+        data: { options: ['option1', 'option2', 'option3'] }
+      });
+    }
+    if (url.endsWith('/fetch-custom-question-data')) {
+      return Promise.resolve({
+        data: [
+          {
+            type: 'flag',
+            imageUrl: 'https://example.com/img.png',
+            options: ['France'],
+            correctAnswer: 'France'
+          }
+        ]
+      });
+    }
+    if (url.endsWith('/clear-questions')) {
+      return Promise.resolve({ data: { message: 'Questions cleared' } });
+    }
+
+    return Promise.reject(new Error('Unexpected mock URL: ' + url));
+  });
+
+  axios.get.mockImplementation(() => Promise.resolve({ data: {} }));
+});
+
 afterAll(async () => {
     app.close();
 });
@@ -27,21 +69,6 @@ const assertErrorResponse = (response, statusCode, errorMessage) => {
 };
 
 describe('Gateway Service', () => {
-  // Mock responses from external services
-  axios.post.mockImplementation((url) => {
-    if (url.endsWith('/login')) {
-      return Promise.resolve({ data: { token: 'mockedToken' } });
-    } else if (url.endsWith('/adduser')) {
-      return Promise.resolve({ data: { userId: 'mockedUserId' } });
-    } else if (url.endsWith('/ask')) {
-      return Promise.resolve({ data: { answer: 'llmanswer' } });
-    } else if (url.endsWith("/generateIncorrectOptions")) {
-      return Promise.resolve({
-          status: 200,
-          data: {options: ["option1", "option2", "option3"]},
-      });
-    }
-  });
 
   // Test /login endpoint
   it('should forward login request to auth service', async () => {
@@ -111,7 +138,7 @@ describe('Gateway Service', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toEqual(mockUser);
-    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/users'));
+    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining(`/getUserById/${userId}`));
   });
 
   it('should return an error response on failure', async () => {
@@ -313,7 +340,7 @@ describe('Gateway Service', () => {
     expect(response.body).toEqual(mockResponse.data);
   });
 
-   it('should forward fetch-flag-data to the question service', async () => {
+   it('should forward fetch-question-data to the question service', async () => {
     const mockResponse = [
       {
           type: 'flag',
@@ -331,7 +358,7 @@ describe('Gateway Service', () => {
 
   
 
-  // Mock response for the /fetch-flag-data endpoint
+  // Mock response for the /fetch-question-data endpoint
   axios.get.mockImplementation((url) => {
     if (url.includes('wikidata.org/sparql')) {
         return Promise.resolve({
@@ -375,11 +402,11 @@ describe('Gateway Service', () => {
       }
   });
 
-  // Mock the call to the question service's /fetch-flag-data endpoint
+  // Mock the call to the question service's /fetch-question-data endpoint
   axios.post.mockResolvedValueOnce({ data: mockResponse });
 
   const response = await request(app)
-      .post('/fetch-flag-data')
+      .post('/fetch-question-data')
       .send();
 
   expect(response.status).toBe(200);
@@ -508,7 +535,7 @@ describe('Gateway Service Error Handling', () => {
       },
     });
 
-    const response = await request(app).post('/fetch-flag-data');
+    const response = await request(app).post('/fetch-question-data');
     
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Internal Server Error' });
@@ -689,3 +716,121 @@ describe('Gateway Service Error Handling', () => {
   });
   
 });
+
+describe('Testing /fetch-custom-question-data', () => {
+  it('should forward fetch-custom-question-data request with valid data', async () => {
+    axios.get.mockReset();
+    const mockResponse = [
+      {
+        type: 'flag',
+        imageUrl: 'https://example.com/img.png',
+        options: ['France'],
+        correctAnswer: 'France'
+      }
+    ];
+
+    axios.post.mockResolvedValueOnce({ data: mockResponse });
+
+    const response = await request(app)
+      .post('/fetch-custom-question-data')
+      .send({
+        shuffle: true,
+        questions: [{ questionType: 'flag', numberOfQuestions: 1 }]
+      });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+  });
+
+  it('should return 400 when fetch-custom-question-data receives empty array', async () => {
+    axios.get.mockReset();
+    const response = await request(app)
+      .post('/fetch-custom-question-data')
+      .send({ questions: [] });
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toEqual({ error: 'Questions array is required' });
+  });
+
+  it('should return 500 when question service fails at /fetch-custom-question-data', async () => {
+    axios.get.mockReset();
+    axios.post.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'Question Service Failure' } }
+    });
+
+    const response = await request(app)
+      .post('/fetch-custom-question-data')
+      .send({
+        questions: [{ questionType: 'flag', numberOfQuestions: 1 }],
+        shuffle: true
+      });
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toEqual({ error: 'Failed to load custom question data' });
+  });
+});
+
+describe('Testing /clear-questions', () => {
+it('should forward clear-questions to the question service', async () => {
+  axios.get.mockReset();
+  axios.post.mockResolvedValueOnce({ data: { message: 'Questions cleared' } });
+
+  const response = await request(app).post('/clear-questions');
+
+  expect(response.statusCode).toBe(200);
+  expect(response.body).toEqual({ message: 'Questions cleared' });
+});
+
+it('should return 500 when question service fails at /clear-questions', async () => {
+  axios.get.mockReset();
+  axios.post.mockRejectedValueOnce(new Error('Clear failed'));
+
+  const response = await request(app).post('/clear-questions');
+
+  expect(response.statusCode).toBe(500);
+  expect(response.body).toEqual({ error: 'Failed to clear questions' });
+});
+});
+
+describe('GET /allScores', () => {
+  const mockGameData = [
+    { userId: '1', score: 100, createdAt: '2023-01-01', isVictory: true },
+    { userId: '2', score: 90, createdAt: '2023-01-02', isVictory: false }
+  ];
+
+  const mockUsernames = {
+    '1': 'Alice',
+    '2': 'Bob'
+  };
+
+  it('should fetch scores and merge with usernames', async () => {
+    axios.get.mockResolvedValueOnce({ data: mockGameData }); // gameService
+    axios.post.mockResolvedValueOnce({ data: mockUsernames }); // userService
+
+    const response = await request(app).get('/allScores');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([
+      { userId: '1', score: 100, createdAt: '2023-01-01', isVictory: true, username: 'Alice' },
+      { userId: '2', score: 90, createdAt: '2023-01-02', isVictory: false, username: 'Bob' }
+    ]);
+
+    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/allScores'), { params: {} });
+    expect(axios.post).toHaveBeenCalledWith(expect.stringContaining('/getAllUsernamesWithIds'), {
+      userIds: ['1', '2']
+    });
+  });
+
+  it('should handle errors gracefully', async () => {
+    axios.get.mockRejectedValueOnce({
+      response: { status: 404, data: { error: 'Not Found' } }
+    });
+
+    const response = await request(app).get('/allScores');
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'Not Found' });
+  });
+});
+
+

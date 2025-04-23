@@ -5,6 +5,7 @@ import Navbar from "./Navbar";
 
 const GameOver = () => {
     const navigate = useNavigate();
+    const totalQuestions = localStorage.getItem('totalQuestions') || 10;
 
     return (
         <>
@@ -26,23 +27,35 @@ const GameOver = () => {
                 </Typography>
 
                 <Typography variant="h4" sx={{ color: 'white', mb: 2 }}>
-                    You answered 10 questions.
+                    You answered {totalQuestions} questions.
                 </Typography>
 
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <Button variant="contained"
                             sx={{ backgroundColor: '#FFD700', color: 'black' }}
-                            onClick={() => navigate('/home')}>
+                            onClick={() => {
+                                localStorage.removeItem('totalQuestions');
+                                localStorage.removeItem('timeLimit');
+                                navigate('/home')
+                            }}>
                         Back to Home
                     </Button>
                     <Button variant="contained"
                             sx={{ backgroundColor: '#FFD700', color: 'black' }}
-                            onClick={() => navigate('/leaderboard')}>
+                            onClick={() => {
+                                localStorage.removeItem('totalQuestions');
+                                localStorage.removeItem('timeLimit');
+                                navigate('/leaderboard')
+                            }}>
                         See leaderboard
                     </Button>
                     <Button variant="contained"
                             sx={{ backgroundColor: '#FFD700', color: 'black' }}
-                            onClick={() => navigate('/scores')}>
+                            onClick={() => {
+                                localStorage.removeItem('totalQuestions');
+                                localStorage.removeItem('timeLimit');
+                                navigate('/scores');
+                            }}>
                         See my scores
                     </Button>
                 </Box>
