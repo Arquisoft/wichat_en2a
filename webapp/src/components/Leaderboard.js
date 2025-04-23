@@ -6,114 +6,9 @@ import {
 } from '@mui/material';
 import Navbar from './Navbar';
 import FullLeaderboard from './FullLeaderboard';
+import { WinRateBar, medalEmojis, medalColors, StickyPlayerHeader, calculatePointsToLevelUp } from './LeaderboardComponents';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
-
-// Component for the win-rate bar showing % graphically
-const WinRateBar = ({ winRate }) => {
-    const rate = parseFloat(winRate) || 0;
-    return (
-        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-            <Box sx={{ width: '100%', mr: 1, position: 'relative' }}>
-                <Box sx={{ width: '100%', height: 8, borderRadius: 5, backgroundColor: '#ef5350' }} />
-                <Box sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: `${rate}%`,
-                    height: 8,
-                    borderRadius: 5,
-                    backgroundColor: '#66bb6a'
-                }} />
-            </Box>
-            <Box sx={{ minWidth: 35 }}>
-                <Typography variant="body2" color="text.secondary">
-                    {`${rate.toFixed(2)}%`}
-                </Typography>
-            </Box>
-        </Box>
-    );
-};
-
-const medalEmojis = ['🥇', '🥈', '🥉'];
-const medalColors = ['#FFD700', '#C0C0C0', '#CD7F32']; // gold, silver, bronze
-
-// New component for the sticky player stats header
-const StickyPlayerHeader = ({ player, rank, pointsToLevelUp }) => {
-    const isTop3 = rank < 3;
-    const bgColor = isTop3 ? medalColors[rank] : '#6A5ACD';
-    
-    return (
-        <Paper 
-            elevation={4}
-            sx={{
-                position: 'sticky',
-                top: 0,
-                zIndex: 1100,
-                width: '100%',
-                bgcolor: bgColor,
-                color: 'white',
-                borderRadius: '0 0 8px 8px',
-                mb: 2,
-                boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
-            }}
-        >
-            <Box sx={{ 
-                p: 2, 
-                display: 'flex', 
-                alignItems: 'center',
-                justifyContent: 'space-between'
-            }}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Avatar 
-                        sx={{
-                            bgcolor: '#fff',
-                            color: bgColor,
-                            width: 40, 
-                            height: 40, 
-                            mr: 2,
-                            fontWeight: 'bold',
-                            boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
-                        }}
-                    >
-                        {player.username[0]?.toUpperCase()}
-                    </Avatar>
-                    <Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Typography variant="h6" fontWeight="bold" sx={{ mr: 1 }}>
-                                {player.username}
-                            </Typography>
-                            <Typography variant="subtitle1">
-                                {isTop3 ? medalEmojis[rank] : `#${rank + 1}`}
-                            </Typography>
-                        </Box>
-                        <Typography variant="body2">
-                            Score: {player.totalScore} • Games: {player.gamesPlayed} • Avg: {player.avgPointsPerGame?.toFixed(2)}
-                        </Typography>
-                    </Box>
-                </Box>
-                
-                {pointsToLevelUp !== null && (
-                    <Box sx={{ 
-                        bgcolor: 'rgba(0,0,0,0.2)', 
-                        p: 1, 
-                        borderRadius: 2,
-                        minWidth: 180,
-                        textAlign: 'center'
-                    }}>
-                        <Typography variant="body2">
-                            {rank === 0 ? (
-                                <span>🏆 Top Player!</span>
-                            ) : (
-                                <span>Points to level up: <strong>{pointsToLevelUp}</strong></span>
-                            )}
-                        </Typography>
-                    </Box>
-                )}
-            </Box>
-        </Paper>
-    );
-};
 
 const Leaderboard = () => {
     const [players, setPlayers] = useState([]);
@@ -124,10 +19,20 @@ const Leaderboard = () => {
     const [currentUsername, setCurrentUsername] = useState(null);
     const [showFullLeaderboard, setShowFullLeaderboard] = useState(false);
     const currentUserRef = useRef(null);
+    
+    // Add a ref to get the Navbar height
+    const navbarRef = useRef(null);
+    const [navbarHeight, setNavbarHeight] = useState(64); // Default height
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username');
         setCurrentUsername(storedUsername || 'Guest');
+
+        // Get the actual navbar height after component mounts
+        if (navbarRef.current) {
+            const height = navbarRef.current.getBoundingClientRect().height;
+            setNavbarHeight(height);
+        }
 
         async function fetchLeaderboard() {
             try {
@@ -167,47 +72,21 @@ const Leaderboard = () => {
     const isCurrentUserTop5 = currentUserIndex >= 0 && currentUserIndex < 5;
     
     // Calculate points needed to level up
-    const pointsToLevelUp = React.useMemo(() => {
-        if (!currentUser || currentUserIndex === 0) return null;
-        
-        const playerAbove = sortedPlayers[currentUserIndex - 1];
-        return playerAbove.totalScore - currentUser.totalScore + 1;
-    }, [sortedPlayers, currentUserIndex, currentUser]);
-
-    // For the condensed view, show top 5 and user context if needed
-    const displayPlayers = React.useMemo(() => {
-        // Top 5 players
-        const topPlayers = sortedPlayers.slice(0, 5);
-        
-        // If user is in top 5, no need for additional context
-        if (isCurrentUserTop5) {
-            return topPlayers;
-        }
-        
-        // User context - show one player above and one below
-        const userContext = [];
-        if (currentUserIndex > 0) {
-            userContext.push(sortedPlayers[currentUserIndex - 1]);
-        }
-        if (currentUser) {
-            userContext.push(currentUser);
-        }
-        if (currentUserIndex < sortedPlayers.length - 1) {
-            userContext.push(sortedPlayers[currentUserIndex + 1]);
-        }
-        
-        return topPlayers.concat(userContext);
-    }, [sortedPlayers, currentUser, currentUserIndex, isCurrentUserTop5]);
+    const pointsToLevelUp = React.useMemo(() => 
+        calculatePointsToLevelUp(sortedPlayers, currentUserIndex, currentUser),
+    [sortedPlayers, currentUserIndex, currentUser]);
 
     // Show full leaderboard component instead if expanded
     if (showFullLeaderboard) {
         return (
             <>
+                <Navbar ref={navbarRef} />
                 {currentUser && (
                     <StickyPlayerHeader 
                         player={currentUser} 
                         rank={currentUserIndex}
                         pointsToLevelUp={pointsToLevelUp}
+                        navbarHeight={navbarHeight}
                     />
                 )}
                 <FullLeaderboard 
@@ -217,6 +96,7 @@ const Leaderboard = () => {
                     orderBy={orderBy}
                     onRequestSort={handleRequestSort}
                     onCollapseView={() => setShowFullLeaderboard(false)}
+                    navbarHeight={navbarHeight}
                 />
             </>
         );
@@ -224,7 +104,7 @@ const Leaderboard = () => {
 
     if (loading) return (
         <>
-            <Navbar />
+            <Navbar ref={navbarRef} />
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '50vh', mt: 8 }}>
                 <CircularProgress size={60} thickness={4} sx={{ color: '#6A5ACD' }} />
                 <Typography variant="h6" sx={{ mt: 2, color: '#6A5ACD' }}>Loading Leaderboard...</Typography>
@@ -234,7 +114,7 @@ const Leaderboard = () => {
 
     if (error) return (
         <>
-            <Navbar />
+            <Navbar ref={navbarRef} />
             <Box sx={{ my: 4, textAlign: 'center', mt: 8 }}>
                 <Typography variant="h6" color="error">{error}</Typography>
             </Box>
@@ -243,12 +123,13 @@ const Leaderboard = () => {
 
     return (
         <>
-            <Navbar />
+            <Navbar ref={navbarRef} />
             {currentUser && (
                 <StickyPlayerHeader 
                     player={currentUser} 
                     rank={currentUserIndex}
                     pointsToLevelUp={pointsToLevelUp}
+                    navbarHeight={navbarHeight}
                 />
             )}
             <Box sx={{ maxWidth: 1200, mx: 'auto', p: 2, pt: 2 }}>
