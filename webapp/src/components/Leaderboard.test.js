@@ -134,3 +134,4 @@ describe('Leaderboard Component', () => {
     });
   });
 });
+
