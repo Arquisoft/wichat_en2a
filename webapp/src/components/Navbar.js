@@ -2,6 +2,7 @@ import {AppBar, Toolbar, Button, Box, Container} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import { useAuth } from './AuthContext';
 import PropTypes from "prop-types";
+import { Avatar, IconButton } from "@mui/material"; // Añadimos Avatar e IconButton
 
 const navButtonStyle = {
     backgroundColor: "#f5f5f5", // Blanco grisáceo
@@ -14,7 +15,7 @@ const navButtonStyle = {
 
 const Navbar = ({ onNavigateRequest }) => {
     const navigate = useNavigate();
-    const { logout } = useAuth();
+    const { logout, user } = useAuth();
 
     const handleNavigation = (path) => {
         if (onNavigateRequest) {
@@ -45,10 +46,17 @@ const Navbar = ({ onNavigateRequest }) => {
                         <Button sx={navButtonStyle} onClick={() => handleNavigation("/scores")}>User Scores</Button>
                         <Button sx={navButtonStyle} onClick={() => handleNavigation("/leaderboard")}>Leaderboards</Button>
                     </Box>
-                    <Box sx={{display: "flex", ml: "auto"}}>
-                        <Button>  </Button>
+                    <Box sx={{display: "flex", ml: "auto", alignItems: "center", gap: 2}}>
+                        <IconButton onClick={() => handleNavigation("/editUserPage")}>
+                            <Avatar
+                                alt={"UserPic"}
+                                src={user?.profilePicture || "/avatars/default.jpg"}
+                                sx={{ width: 40, height: 40 }}
+                            />
+                        </IconButton>
                         <Button sx={navButtonStyle} onClick={() => handleLogout()}>Log Out</Button>
                     </Box>
+
                 </Toolbar>
             </Container>
         </AppBar>

@@ -45,6 +45,7 @@ app.post('/login',  [
 
     // Check if the user exists and verify the password
     if (user && await bcrypt.compare(password, user.password)) {
+
       // Generate a JWT token
       const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
       // Respond with the token, user ID and user information
@@ -52,7 +53,8 @@ app.post('/login',  [
         token: token, 
         userId: user._id, // Add user ID to response to use on GAME-SERVICE
         username: username, 
-        createdAt: user.createdAt || new Date().toISOString()
+        createdAt: user.createdAt || new Date().toISOString(),
+        profilePicture: user.profilePicture || null
         });
     } else {
       res.status(401).json({ error: 'Invalid credentials' });

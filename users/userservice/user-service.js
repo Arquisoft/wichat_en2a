@@ -60,11 +60,15 @@ app.post('/adduser', async (req, res) => {
             return res.status(409).json({ error: 'Username already exists' });
         }
 
+        const randomIndex = Math.floor(Math.random() * 12) + 1;
+        const avatarPath = `/avatars/avatar${randomIndex}.jpg`;
+
         // Encrypt the password before saving it
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const newUser = new User({
             username: username,
             password: hashedPassword,
+            profilePicture: avatarPath
         });
         await newUser.save();
         res.status(201).json(newUser); //201 means created, not just 200 OK, clearer this way

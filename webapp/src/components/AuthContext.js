@@ -9,9 +9,10 @@ export const AuthProvider = ({ children }) => {
         const token = localStorage.getItem('token');
         const userId = localStorage.getItem('userId');
         const username = localStorage.getItem('username');
+        const profilePic = localStorage.getItem('profilePic');
 
         if (token && userId && username) {
-            return { token, userId, username };
+            return { token, userId, username, profilePic };
         }
 
         return null;
@@ -21,6 +22,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('token', userData.token);
         localStorage.setItem('userId', userData.userId);
         localStorage.setItem('username', userData.username);
+        localStorage.setItem('profilePic', userData.profilePicture);
         setUser(userData);
     };
 

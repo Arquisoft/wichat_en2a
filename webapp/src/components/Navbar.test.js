@@ -72,4 +72,10 @@ describe('Navbar component', () => {
         expect(mockNavigate).toHaveBeenCalledWith('/home');
     });
 
+    it('navigates to "EditUser" when the logo is clicked', () => {
+        renderNavbarComponent();
+        fireEvent.click(screen.getByAltText('UserPic'));
+        expect(mockNavigate).toHaveBeenCalledWith('/editUserPage');
+    });
+
 });
