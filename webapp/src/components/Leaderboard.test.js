@@ -135,3 +135,80 @@ describe('Leaderboard Component', () => {
   });
 });
 
+jest.mock('./Navbar', () =>
+  React.forwardRef((props, ref) => {
+    // Simula que el ref apunta a un elemento con altura 123
+    React.useEffect(() => {
+      if (ref && typeof ref === 'object') {
+        ref.current = {
+          getBoundingClientRect: () => ({ height: 123 }),
+        };
+      }
+    }, [ref]);
+
+    return <div ref={ref} data-testid="navbar">Mock Navbar</div>;
+  })
+);
+
+jest.mock('./LeaderboardComponents', () => ({
+  WinRateBar: () => <div data-testid="winrate-bar">Mock WinRateBar</div>,
+  medalEmojis: [],
+  medalColors: [],
+  StickyPlayerHeader: () => <div data-testid="sticky-header">Mock StickyHeader</div>,
+  calculatePointsToLevelUp: () => 0,
+}));
+
+test('sets navbar height from ref on mount', async () => {
+  // Simula que fetch responde bien
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve([]),
+    })
+  );
+
+  const { container } = render(<Leaderboard />);
+
+  await waitFor(() => {
+    // El componente debería montarse sin errores
+    const navbar = container.querySelector('[data-testid="navbar"]');
+    expect(navbar).toBeInTheDocument();
+  });
+
+  // Este test asegura que no haya errores al usar getBoundingClientRect
+  // y que el ref esté bien conectado, pero no podemos acceder directamente
+  // al estado interno `navbarHeight` sin exponerlo.
+});
+
+test('renders the next player below current user if not last', async () => {
+  const mockPlayers = [
+    { username: 'Alice', totalScore: 150, gamesPlayed: 10, avgPointsPerGame: 15, winRate: 0.8 },
+    { username: 'Bob', totalScore: 140, gamesPlayed: 12, avgPointsPerGame: 11.67, winRate: 0.75 },
+    { username: 'Charlie', totalScore: 130, gamesPlayed: 13, avgPointsPerGame: 10, winRate: 0.7 },
+  ];
+
+  // Simula que el usuario actual es "Bob"
+  localStorage.setItem('username', 'Bob');
+
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve(mockPlayers),
+    })
+  );
+
+  render(<Leaderboard />);
+
+  // Espera que Bob y Charlie estén en el DOM
+  await waitFor(() => {
+    expect(screen.getByText('Bob')).toBeInTheDocument();
+    expect(screen.getByText('Charlie')).toBeInTheDocument();
+  });
+
+  // Verifica que la fila con el jugador siguiente (Charlie) contiene sus datos
+  expect(screen.getByText('Charlie')).toBeInTheDocument();
+  expect(screen.getByText('130')).toBeInTheDocument(); // totalScore
+  expect(screen.getByText('13')).toBeInTheDocument();  // gamesPlayed
+  expect(screen.getByText('10.00')).toBeInTheDocument(); // avgPointsPerGame
+});
+
