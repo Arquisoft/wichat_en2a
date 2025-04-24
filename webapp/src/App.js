@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Home from './components/Home';
 import Game from './components/Game';
 import Scores from './components/Scores';
+import TopScores from './components/TopScores';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -54,6 +55,7 @@ function App() {
                 <Route path="/game" element={<Game/>}/>
                 <Route path="/leaderboard" element={<Leaderboard/>}/>
                 <Route path="/scores" element={<Scores/>}/>
+                <Route path="/allScores" element={<TopScores/>}/>
                 <Route path="/game-over" element={<GameOver/>} />
                 <Route path="/gamemodes" element={<GameModes />} />
                 <Route path="/gamemodes/custom" element={<CustomGameMode/>}/>
