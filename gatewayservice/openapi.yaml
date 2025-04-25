@@ -381,14 +381,17 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              description: List of user IDs.
-              items:
-                type: string
-              example:
-                - "userId1"
-                - "userId2"
-                - "userId3"
+              type: object
+              properties:
+                userIds:
+                  type: array
+                  description: List of user IDs.
+                  items:
+                    type: string
+                  example:
+                    - "userId1"
+                    - "userId2"
+                    - "userId3"
       responses:
         "200":
           description: Succesfully retrieved the list of usernames with IDs.
@@ -493,7 +496,7 @@ paths:
                   type: string
                   description: The ID of the question.
                   example: "questionId1"
-                userAnswer:
+                selectedAnswer:
                   type: string
                   description: The user's answer.
                   example: "Spain"
@@ -679,23 +682,25 @@ paths:
                   details:
                     type: string
                     description: Additional details.
-  /getUserById:
+  /getUserById/{userId}:
     get:
-      summary: Get user information by ID.
+      summary: Get user information by ID
+      description: Retrieves a user's details by their MongoDB ObjectId (passed as query parameter)
       operationId: getUserById
       tags:
         - User
       parameters:
         - name: userId
-          in: query
+          in: path
           required: true
-          description: The ID of the user to retrieve.
+          description: The MongoDB ObjectId of the user to retrieve
           schema:
             type: string
-            example: "userId1"
+            format: objectid
+            example: "507f1f77bcf86cd799439011"
       responses:
-        "200":
-          description: Successfully retrieved user information.
+        '200':
+          description: Successfully retrieved user information
           content:
             application/json:
               schema:
@@ -703,19 +708,20 @@ paths:
                 properties:
                   _id:
                     type: string
-                    description: User ID.
-                    example: "userId1"
+                    format: objectid
+                    description: User's MongoDB ObjectId
+                    example: "507f1f77bcf86cd799439011"
                   username:
                     type: string
-                    description: Username.
-                    example: "username"
+                    description: User's unique username
+                    example: "john_doe"
                   createdAt:
                     type: string
                     format: date-time
-                    description: Creation date.
+                    description: Timestamp when user was created
                     example: "2024-03-17T20:47:23.935Z"
-        "400":
-          description: Bad request.
+        '400':
+          description: Invalid user ID format
           content:
             application/json:
               schema:
@@ -723,10 +729,9 @@ paths:
                 properties:
                   error:
                     type: string
-                    description: Error information.
-                    example: Invalid user ID provided.
-        "500":
-          description: Internal server error.
+                    example: "Invalid user ID format"
+        '404':
+          description: User not found
           content:
             application/json:
               schema:
@@ -734,5 +739,14 @@ paths:
                 properties:
                   error:
                     type: string
-                    description: Error information.
-                    example: Internal Server Error
+                    example: "User not found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Database connection failed"
