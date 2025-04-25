@@ -87,6 +87,6 @@ describe('Navbar component', () => {
             </MemoryRouter>
         );
         fireEvent.click(screen.getByRole('button', { name: /Game/i }));
-        expect(mockNavigate).toHaveBeenCalledWith('/game');
+        expect(mockNavigate).toHaveBeenCalledWith('/gamemodes');
     });
 });
