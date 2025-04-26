@@ -304,16 +304,34 @@ async function saveQuestionsToDB(questions) {
 
 // Fetch a question from the database
 async function getQuestion(type) {
+  const questionsCount = await Question.countDocuments({ type: type });
+
+  if (questionsCount == 0 ) {
     try {
-      const questions = await Question.aggregate([
-        { $match: { type: type } },
-        { $sample: { size: 1 } }
-      ]);
-      return questions[0] || null;
+      await fetchQuestionData(5, type); // Fetch a few questions if none are available
     } catch (error) {
-        console.error('Error fetching question:', error);
-        return null;
+      console.error("Error while fetching new questions");
     }
+  }
+
+  if (questionsCount < 200) {
+    try{
+      fetchQuestionData(5, type); // Fetch a new question if less than 200 are available
+    } catch (error) {
+      console.error("Error while fetching new questions");
+    }
+  }
+  
+  try {
+    const questions = await Question.aggregate([
+      { $match: { type: type } },
+      { $sample: { size: 1 } }
+    ]);
+    return questions[0] || null;
+  } catch (error) {
+      console.error('Error fetching question:', error);
+      return null;
+  }
 }
 
 // Check if the selected answer is correct
