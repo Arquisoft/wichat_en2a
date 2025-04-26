@@ -72,6 +72,11 @@ services:
   gatewayservice:
     container_name: gatewayservice-wichat_en2a
     image: ghcr.io/arquisoft/wichat_en2a/gatewayservice:latest
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
     profiles: ["dev", "prod"]
     build: ./gatewayservice
     depends_on:
@@ -115,9 +120,12 @@ services:
     profiles: ["dev", "prod"]
     build: ./schedulingservice
     depends_on:
-      - mongodb
-      - gatewayservice
-      - questionservice
+      gatewayservice:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      questionservice:
+        condition: service_started
     networks:
       - mynetwork
     environment:

@@ -2,7 +2,7 @@ const axios = require("axios");
 
 const gatewayServiceUrl =
   process.env.GATEWAY_SERVICE_URL || "http://localhost:8000";
-const numberOfQuestions = 500; // Number of questions to fetch for each type
+const numberOfQuestions = 200; // Number of questions to fetch for each type
 let initialLoad = true; // Flag to indicate if it's the first load
 
 async function updateQuestions() {
@@ -23,12 +23,12 @@ async function updateQuestions() {
           questions: [
             { questionType: "flag", numberOfQuestions: numberOfQuestions },
             { questionType: "car", numberOfQuestions: numberOfQuestions },
+            { questionType: "dino", numberOfQuestions: numberOfQuestions },
+            { questionType: "place", numberOfQuestions: numberOfQuestions },
             {
               questionType: "famous-person",
               numberOfQuestions: numberOfQuestions,
             },
-            { questionType: "dino", numberOfQuestions: numberOfQuestions },
-            { questionType: "place", numberOfQuestions: numberOfQuestions },
           ],
           shuffle: false,
         },
@@ -36,7 +36,7 @@ async function updateQuestions() {
           headers: { "Content-Type": "application/json" }, // Correct placement of headers
         }
       );
-      
+
       const duration = Date.now() - fetchStart;
       console.log(`Fetched questions in ${duration}ms`);
       console.log(`Total update completed in ${Date.now() - cleanStart}ms`);
