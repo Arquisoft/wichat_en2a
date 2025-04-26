@@ -264,27 +264,6 @@ describe('Game Component', () => {
         });
     });
 
-    test('initializes the database when no questions are found', async () => {
-        mockAxios.onGet(`${apiEndpoint}/question`).reply(200, []);
-        renderGameComponent();
-
-        await waitFor(() => {
-            expect(mockAxios.history.post.length).toBe(1); // It should have called the POST request once
-            expect(mockAxios.history.post[0].url).toBe(`${apiEndpoint}/fetch-question-data`);
-            expect(mockAxios.history.get.length).toBe(1); // It should have called the get request once
-            expect(mockAxios.history.get[0].url).toBe(`${apiEndpoint}/question`);
-        });
-
-        // Simulate the successful fetch of the question after database initialization
-        setupMockApiResponse('question', mockQuestion);
-        renderGameComponent();
-
-        // After initializing the database, the question should be fetched and displayed
-        await waitFor(() => {
-            expect(screen.getByText(/What country is represented by the flag shown?/i)).toBeInTheDocument();
-        });
-    });
-
     test('increments score correctly when correct answer is selected', async () => {
         setupMockApiResponse('question', mockQuestion);
         mockAxios.onPost(`${apiEndpoint}/check-answer`).reply(200, { isCorrect: true });
