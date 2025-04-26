@@ -152,6 +152,11 @@ app.put('/users/:userId', verifyAdmin, async (req, res) => {
           }
           updateData.password = await bcrypt.hash(req.body.password, 10);
       }
+
+      // isAdmin update
+      if (req.body.isAdmin !== undefined) {
+        updateData.isAdmin = !!req.body.isAdmin; // Ensure boolean
+      } 
       
       // profile picture update - empty string or null to remove profile picture
       if (req.body.profilePicture !== undefined) {
