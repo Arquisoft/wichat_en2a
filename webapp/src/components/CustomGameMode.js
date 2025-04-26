@@ -69,15 +69,6 @@ const CustomGameMode = () => {
 
     try {
       setLoadingReady(true);
-      await fetch(`${apiEndpoint}/clear-questions`, { method: 'POST' });
-      await fetch(`${apiEndpoint}/fetch-custom-question-data`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          questions: selected,
-          shuffle
-        })
-      });
       localStorage.setItem('totalQuestions', totalQuestions);
       localStorage.setItem('timeLimit', Math.max(10, Math.min(timeLimit, 60)));
       navigate('/game');
