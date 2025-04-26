@@ -4,6 +4,7 @@ const gatewayServiceUrl =
   process.env.GATEWAY_SERVICE_URL || "http://localhost:8000";
 const numberOfQuestions = 100; // Number of questions to fetch for each type
 let initialLoad = true; // Flag to indicate if it's the first load
+const types = ["flag", "car", "famous-person", "dino", "place"]; // List of question types
 
 async function updateQuestions() {
   const date = new Date();
@@ -16,34 +17,42 @@ async function updateQuestions() {
 
     console.log("Fetching new questions...");
     const fetchStart = Date.now();
-    try {
-      await axios.post(
-        `${gatewayServiceUrl}/fetch-custom-question-data`,
-        {
-          questions: [
-            { questionType: "flag", numberOfQuestions: numberOfQuestions },
-            { questionType: "car", numberOfQuestions: numberOfQuestions },
-            { questionType: "dino", numberOfQuestions: numberOfQuestions },
-            { questionType: "place", numberOfQuestions: numberOfQuestions },
+
+    let attempts = 0;
+    let success; // Flag to track if the fetch was successful
+
+    for (const type of types) {
+      success = false; // Reset success for each type
+      while (attempts < 3 && !success) {
+        try {
+          await axios.post(
+            `${gatewayServiceUrl}/fetch-question-data`,
             {
-              questionType: "famous-person",
+              questionType: type,
               numberOfQuestions: numberOfQuestions,
             },
-          ],
-          shuffle: false,
-        },
-        {
-          headers: { "Content-Type": "application/json" }, // Correct placement of headers
+            {
+              headers: { "Content-Type": "application/json" }, // Correct placement of headers
+            }
+          );
+          success = true; // Set success to true if the fetch was successful
+          console.log(
+            `Fetched ${numberOfQuestions} for ${type} questions successfully.`
+          );
+        } catch (error) {
+          attempts++;
         }
-      );
-
-      const duration = Date.now() - fetchStart;
-      console.log(`Fetched questions in ${duration}ms`);
-      console.log(`Total update completed in ${Date.now() - cleanStart}ms`);
-    } catch (error) {
-      const duration = Date.now() - fetchStart;
-      console.error(`Fetch failed after ${duration}ms:`, error.message);
+        if (attempts == 3) {
+          console.log(
+            `Fetch for ${type} has failed, questions will be added while the game is executing...`
+          );
+          
+        }
+      }
+      attempts = 0; // Reset attempts for the next type
     }
+    console.log(`New questions fetched in ${Date.now() - fetchStart} ms`);
+    console.log(`Database cleaned and updated in ${Date.now() - cleanStart} ms`);
   }
 }
 

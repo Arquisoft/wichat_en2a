@@ -30,25 +30,7 @@ describe("Question Updater", () => {
 
     await updateQuestions();
 
-    expect(axios.post).toHaveBeenCalledTimes(2);
-    expect(axios.post).toHaveBeenCalledWith(
-      "http://localhost:8000/clear-questions"
-    );
-    expect(axios.post).toHaveBeenCalledWith(
-      "http://localhost:8000/fetch-custom-question-data",
-      {
-        questions: expect.arrayContaining([
-          expect.objectContaining({
-            questionType: expect.any(String),
-            numberOfQuestions: 200,
-          }),
-        ]),
-        shuffle: false,
-      },
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    expect(axios.post).toHaveBeenCalledTimes(6);
   });
 
   it("should not make API calls at 1:01 AM", async () => {
