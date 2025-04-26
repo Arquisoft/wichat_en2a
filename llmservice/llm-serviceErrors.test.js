@@ -1,10 +1,10 @@
 const request = require("supertest");
 const axios = require("axios");
-const app = require("./llm-service");
+const { app, server, getSelectedModel } = require("./llm-service");
 const { generateTemplateMocks } = require("./__mocks__/testUtils");
 
 afterAll(async () => {
-  app.close();
+  await new Promise(resolve => server.close(resolve));
 });
 
 jest.mock("axios");
@@ -100,4 +100,25 @@ describe("Error handling", () => {
     expect(consoleCheck).toHaveBeenCalledWith("Error sending question:", {"unexpectedEvent": true});
     consoleCheck.mockRestore();
   });
+
+  
+  it("should switch empathy models when a 5XX error occurs", async () => {
+    axios.post.mockImplementationOnce(() => {
+      return Promise.reject({  status: 500  });
+    });
+
+    let originalModel = getSelectedModel();
+
+    const response = await request(app).post("/generateIncorrectOptions").send({
+      model: "empathy",
+      correctAnswer: "Cote D'Ivoire",
+      type: "flag"
+    });
+
+    const { selectedModel: currentModel } = require("./llm-service");
+
+    expect(response.statusCode).toBe(400);
+    expect(getSelectedModel()).not.toBe(originalModel); // Check if the model has switched
+  });
+
 });

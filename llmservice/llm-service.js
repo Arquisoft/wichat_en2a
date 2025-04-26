@@ -9,6 +9,8 @@ const port = 8003;
 let conversation = [];
 let currentQuestion = "";
 let currentCorrectAnswer = "";
+const empathyModels = ["mistralai/Mistral-7B-Instruct-v0.3", "qwen/Qwen2.5-Coder-7B-Instruct"];
+let selectedModel = empathyModels[0]; // Default model
 
 // Middleware to parse JSON in request body
 app.use(express.json());
@@ -18,7 +20,7 @@ const llmConfigs = {
     url: () => "https://empathyai.prod.empathy.co/v1/chat/completions",
     transformRequest: (question) => ({
       // model: "qwen/Qwen2.5-Coder-7B-Instruct",
-      model: "mistralai/Mistral-7B-Instruct-v0.3",
+      model: selectedModel,
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: question },
@@ -89,6 +91,10 @@ async function sendQuestionToLLM(question) {
 
   } catch (error) {
     console.error(`Error sending question:`, error.message || error);
+    if (error.status >= 500 && error.status < 600) {
+      // It is a server error, next try with the other model
+      selectedModel = selectedModel === empathyModels[0] ? empathyModels[1] : empathyModels[0];
+    }
     return null;
   }
 }
@@ -221,3 +227,11 @@ const server = app.listen(port, () => {
 });
 
 module.exports = server;
+
+if (process.env.NODE_ENV === "test") {
+  module.exports ={
+    app,
+    server,
+    getSelectedModel: () => selectedModel
+  };
+}
