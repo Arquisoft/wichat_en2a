@@ -11,11 +11,13 @@ async function updateQuestions() {
   if ((date.getHours() === 1 && date.getMinutes() === 0) || initialLoad) {
     // Update the questions at 1 AM
     console.log("Cleaning the database...");
+    const cleanStart = Date.now();
     await axios.post(`${gatewayServiceUrl}/clear-questions`);
 
     console.log("Fetching new questions...");
+    const fetchStart = Date.now();
     try {
-      axios.post(
+      await axios.post(
         `${gatewayServiceUrl}/fetch-custom-question-data`,
         {
           questions: [
@@ -34,9 +36,13 @@ async function updateQuestions() {
           headers: { "Content-Type": "application/json" }, // Correct placement of headers
         }
       );
-      console.log("New questions fetched and database updated.");
+      
+      const duration = Date.now() - fetchStart;
+      console.log(`Fetched questions in ${duration}ms`);
+      console.log(`Total update completed in ${Date.now() - cleanStart}ms`);
     } catch (error) {
-      console.error("Error fetching new questions:", error.message);
+      const duration = Date.now() - fetchStart;
+      console.error(`Fetch failed after ${duration}ms:`, error.message);
     }
   }
 }

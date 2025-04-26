@@ -115,6 +115,8 @@ services:
     profiles: ["dev", "prod"]
     build: ./schedulingservice
     depends_on:
+      - mongodb
+      - gatewayservice
       - questionservice
     networks:
       - mynetwork
