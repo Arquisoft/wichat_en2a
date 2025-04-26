@@ -109,6 +109,18 @@ services:
       MONGODB_URI: mongodb://mongodb:27017/mongo-db-wichat_en2a
       GATEWAY_SERVICE_URL: http://gatewayservice:8000
 
+  schedulingservice:
+    container_name: schedulingservice-wichat_en2a
+    image: ghcr.io/arquisoft/wichat_en2a/schedulingservice:latest
+    profiles: ["dev", "prod"]
+    build: ./schedulingservice
+    depends_on:
+      - questionservice
+    networks:
+      - mynetwork
+    environment:
+      GATEWAY_SERVICE_URL: http://gatewayservice:8000
+
   webapp:
     container_name: webapp-wichat_en2a
     image: ghcr.io/arquisoft/wichat_en2a/webapp:latest
