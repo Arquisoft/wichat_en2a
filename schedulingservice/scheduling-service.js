@@ -4,18 +4,16 @@ const gatewatServiceUrl =
   process.env.GATEWAY_SERVICE_URL || "http://localhost:8000";
 const numberOfQuestions = 500; // Number of questions to fetch for each type
 
-let date;
-let questionsUpdated = false;
+async function updateQuestions() {
+  const date = new Date();
 
-while (true) {
-  date = new Date();
-  if (date.getHours() === 1 && date.getMinutes() === 0 && !questionsUpdated) {
+  if (date.getHours() === 1 && date.getMinutes() === 0) {
     // Update the questions at 1 AM
     console.log("Cleaning the database...");
     await axios.post(`${gatewatServiceUrl}/clear-questions`);
 
     console.log("Fetching new questions...");
-    axios.post(`${gatewatServiceUrl}/`, {
+    axios.post(`${gatewatServiceUrl}/fetch-custom-question-data`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -33,11 +31,23 @@ while (true) {
         shuffle: false,
       },
     });
-    questionsUpdated = true;
   }
+}
 
-  if (date.getHours() === 2 && date.getMinutes() === 0) {
-    // Reset the flag at 2:00 AM
-    questionsUpdated = false;
+// FUNCTIONS TO START AND STOP THE SCHEDULER (MAINLY FOR TESTING PURPOSES)
+function startScheduler() {
+  updateInterval = setInterval(updateQuestions, 60000);
+}
+
+function stopScheduler() {
+  if (updateInterval) {
+    clearInterval(updateInterval);
   }
+}
+
+startScheduler(); // Start the scheduler when the module is loaded
+
+// Export the function for testing purposes
+if (process.env.NODE_ENV === "test") {
+  module.exports = { updateQuestions, startScheduler, stopScheduler };
 }
