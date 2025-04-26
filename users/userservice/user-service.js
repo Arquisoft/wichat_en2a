@@ -42,6 +42,23 @@ const verifyToken = (req, res, next) => {
     }
   };
 
+// Admin and token verification middleware
+const verifyAdmin = async (req, res, next) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+    try {
+        const decoded = jwt.verify(token, 'your-secret-key');
+        const user = await User.findById(decoded.userId);
+        if (!user || user.isAdmin !== true) {
+          return res.status(403).json({ error: 'Admin only' });
+        }
+        req.user = user;
+        next();
+    } catch {
+        return res.status(401).json({ error: 'Invalid token' });
+    }
+};
+
 //add user endpoint
 app.post('/adduser', async (req, res) => {
     try {
@@ -75,7 +92,7 @@ app.post('/adduser', async (req, res) => {
 
 
 // delete user endpoint
-app.delete('/users/:userId', async (req, res) => {
+app.delete('/users/:userId', verifyAdmin, async (req, res) => {
   try {
       const userId = req.params.userId;
       
@@ -100,7 +117,7 @@ app.delete('/users/:userId', async (req, res) => {
 });
 
 // update user endpoint
-app.put('/users/:userId', async (req, res) => {
+app.put('/users/:userId', verifyAdmin, async (req, res) => {
   try {
       const userId = req.params.userId;
       const updateData = {};
