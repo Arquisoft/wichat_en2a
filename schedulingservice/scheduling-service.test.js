@@ -36,9 +36,18 @@ describe("Question Updater", () => {
     );
     expect(axios.post).toHaveBeenCalledWith(
       "http://localhost:8000/fetch-custom-question-data",
-      expect.objectContaining({
-        payload: expect.any(Object),
-      })
+      {
+        questions: expect.arrayContaining([
+          expect.objectContaining({
+            questionType: expect.any(String),
+            numberOfQuestions: 200,
+          }),
+        ]),
+        shuffle: false,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+      }
     );
   });
 
