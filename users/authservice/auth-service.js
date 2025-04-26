@@ -14,6 +14,18 @@ app.use(express.json());
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/userdb';
 mongoose.connect(mongoUri);
 
+const checkAdminUser = async () => {
+  const admin = await User.findOne({ isAdmin: true });
+  if (!admin) {
+      const bcrypt = require('bcrypt');
+      const passwordHash = await bcrypt.hash('admin123', 10);
+      await User.create({ username: 'admin', password: passwordHash, isAdmin: true });
+      console.log('Admin user created with username: admin & password: admin123. PLEASE change the password after first login.');
+  }
+};
+checkAdminUser();
+
+
 // Function to validate required fields in the request body
 function validateRequiredFields(req, requiredFields) {
     for (const field of requiredFields) {
@@ -52,7 +64,8 @@ app.post('/login',  [
         token: token, 
         userId: user._id, // Add user ID to response to use on GAME-SERVICE
         username: username, 
-        createdAt: user.createdAt || new Date().toISOString()
+        createdAt: user.createdAt || new Date().toISOString(),
+        isAdmin: user.isAdmin || false
         });
     } else {
       res.status(401).json({ error: 'Invalid credentials' });
