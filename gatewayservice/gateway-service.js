@@ -255,6 +255,33 @@ app.get('/scores', verifyToken, async (req, res) => {
   }
 });
 
+// Delete user (admin only)
+app.delete('/users/:userId', async (req, res) => {
+  try {
+    // Forward the request and headers (for admin token)
+    const response = await axios.delete(`${userServiceUrl}/users/${req.params.userId}`, {
+      headers: { Authorization: req.header('Authorization') }
+    });
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal Server Error' });
+  }
+});
+
+// Update user (admin only)
+app.put('/users/:userId', async (req, res) => {
+  try {
+    // Forward the request and headers (for admin token)
+    const response = await axios.put(`${userServiceUrl}/users/${req.params.userId}`, req.body, {
+      headers: { Authorization: req.header('Authorization') }
+    });
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal Server Error' });
+  }
+});
+
+
 app.get('/allScores', async (req, res) => {
   try {
     // Fetch Top Scores from the game service
@@ -342,6 +369,7 @@ app.post('/generateIncorrectOptions', async (req, res) => {
       res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
+
 
 // Read the OpenAPI YAML file synchronously
 const openapiPath='./openapi.yaml'
