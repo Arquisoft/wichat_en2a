@@ -35,6 +35,7 @@ async function updateQuestions() {
 }
 
 // FUNCTIONS TO START AND STOP THE SCHEDULER (MAINLY FOR TESTING PURPOSES)
+let updateInterval = null; 
 function startScheduler() {
   updateInterval = setInterval(updateQuestions, 60000);
 }
