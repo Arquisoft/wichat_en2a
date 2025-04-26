@@ -303,13 +303,13 @@ async function saveQuestionsToDB(questions) {
 }
 
 // Fetch a question from the database
-async function getQuestion() {
+async function getQuestion(type) {
     try {
-        return await Question.findOneAndUpdate(
-            {alreadyShown: false},
-            {alreadyShown: true},
-            {new: true}
-        );
+      const questions = await Question.aggregate([
+        { $match: { type: type } },
+        { $sample: { size: 1 } }
+      ]);
+      return questions[0] || null;
     } catch (error) {
         console.error('Error fetching question:', error);
         return null;
@@ -332,9 +332,9 @@ async function checkAnswer(questionId, selectedAnswer) {
 }
 
 // Endpoint to fetch a question
-app.get('/question', async (req, res) => {
+app.get('/question/:questionType', async (req, res) => {
     try {
-        const question = await getQuestion();
+        const question = await getQuestion(req.params.questionType);
         if (!question) {
             return res.status(404).json({ error: 'No questions available' });
         }

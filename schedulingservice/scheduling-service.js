@@ -2,7 +2,7 @@ const axios = require("axios");
 
 const gatewayServiceUrl =
   process.env.GATEWAY_SERVICE_URL || "http://localhost:8000";
-const numberOfQuestions = 200; // Number of questions to fetch for each type
+const numberOfQuestions = 100; // Number of questions to fetch for each type
 let initialLoad = true; // Flag to indicate if it's the first load
 
 async function updateQuestions() {

@@ -112,10 +112,10 @@ app.post('/askllm', async (req, res) => {
   }
 });
 
-app.get('/question', async (req, res) => {
+app.get('/question/:questionType', async (req, res) => {
   try {
     // Forward fetch question request to the question service
-    const questionResponse = await axios.get(`${questionServiceUrl}/question`);
+    const questionResponse = await axios.get(`${questionServiceUrl}/question/${req.params.questionType}`);
     res.json(questionResponse.data);
   } catch (error) {
       res.status(error.response.status).json({ error: error.response.data.error });

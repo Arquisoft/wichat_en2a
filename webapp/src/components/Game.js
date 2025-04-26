@@ -72,7 +72,11 @@ const Game = () => {
 
         try {
             console.log("Fetching question...");
-            let response = await axios.get(`${apiEndpoint}/question`);
+            let gameMode = localStorage.getItem('gameMode');
+            let response;
+            if (gameMode)
+                response = await axios.get(`${apiEndpoint}/question/${gameMode}`);
+            // Add else for custom game mode
             setQuestion(response.data);
             const text = await getQuestionByType(response.data.type);
             setQuestionText(text);
