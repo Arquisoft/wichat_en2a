@@ -257,7 +257,7 @@ function getQueryByType(type, numberOfQuestions) {
     if (!match) {
       throw new Error(`No query found for type: ${type}`);
     }
-    return match.query + ` LIMIT ${Math.max(100, numberOfQuestions * 3)}`;
+    return match.query + ` ORDER BY RAND()` + ` LIMIT ${Math.max(100, numberOfQuestions * 3)}`;
 }
 
 function capitalize(str) {
