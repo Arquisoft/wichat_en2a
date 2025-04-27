@@ -306,11 +306,12 @@ async function saveQuestionsToDB(questions) {
 async function getQuestion(type) {
   const questionsCount = await Question.countDocuments({ type: type });
 
-  if (questionsCount == 0 ) {
+  if (questionsCount === 0 ) {
     try {
       await fetchQuestionData(5, type); // Fetch a few questions if none are available
     } catch (error) {
       console.error("Error while fetching new questions under critical conditions (no questions available)");
+      return null;
     }
   }
 

@@ -91,9 +91,10 @@ async function sendQuestionToLLM(question) {
 
   } catch (error) {
     console.error(`Error sending question:`, error.message || error);
-    if (error.status >= 500 && error.status < 600) {
+    if (error.response?.status >= 500 && error.response?.status < 600) {
       // It is a server error, next try with the other model
       selectedModel = selectedModel === empathyModels[0] ? empathyModels[1] : empathyModels[0];
+      console.log(`Switched to ${selectedModel} due to server error`);
     }
     return null;
   }
