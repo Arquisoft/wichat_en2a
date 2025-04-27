@@ -129,7 +129,7 @@ describe('User Service', () => {
   });
 
   it('should update password correctly and hash it after', async () => {
-    const updateData = { password: 'newpassword' };
+    const updateData = { password: 'newpassword' }; //NOSONAR
 
     await request(app)
       .put(`/users/${testUserId}`)
@@ -313,7 +313,7 @@ describe('User Service', () => {
   });
 
   it('should return 409 when adding a user with an existing username', async () => {
-    const newUser = { username: 'testuser', password: 'anotherpassword' };
+    const newUser = { username: 'testuser', password: 'anotherpassword' }; //NOSONAR
     const response = await request(app).post('/adduser').send(newUser);
     expect(response.status).toBe(409);
     expect(response.body).toHaveProperty('error');
@@ -397,7 +397,7 @@ describe('User Model', () => {
   it('should create a valid user', async () => {
     const userData = {
       username: 'testuser',
-      password: 'password123',
+      password: 'password123', //NOSONAR
     };
 
     const user = new User(userData);
@@ -413,7 +413,7 @@ describe('User Model', () => {
   it('should set the default value of profilePicture to null', async () => {
     const userData = {
       username: 'testuser',
-      password: 'password123',
+      password: 'password123', //NOSONAR
     };
 
     const user = new User(userData);
@@ -425,7 +425,7 @@ describe('User Model', () => {
   it('should create a user with a default createdAt date', async () => {
     const userData = {
       username: 'testuser',
-      password: 'password123',
+      password: 'password123', //NOSONAR
     };
 
     const user = new User(userData);
