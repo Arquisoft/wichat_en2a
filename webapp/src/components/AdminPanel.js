@@ -117,7 +117,7 @@ const AdminPanel = () => {
                                     <TableRow key={user._id} sx={{ backgroundColor: user.isAdmin ? '#FFFDE7' : 'white' }}>
                                         <TableCell>{user.username}</TableCell>
                                         <TableCell>
-                                            {user.isAdmin === true ? (
+                                            {Boolean(user.isAdmin) ? (
                                                 <span style={{ color: "#388e3c", fontWeight: "bold" }}>Yes</span>
                                             ) : (
                                                 <span style={{ color: "#d32f2f", fontWeight: "bold" }}>No</span>
@@ -143,14 +143,14 @@ const AdminPanel = () => {
                                 label="Username"
                                 value={editUsername}
                                 onChange={e => setEditUsername(e.target.value)}
-                                fullWidth sx={{ mb: 2, minWidth: 320 }}
+                                fullWidth sx={{ mb: 2, mt: 1}}
                             />
                             <TextField
                                 label="New Password"
                                 type="password"
                                 value={editPassword}
                                 onChange={e => setEditPassword(e.target.value)}
-                                fullWidth sx={{ mb: 2, minWidth: 320 }}
+                                fullWidth sx={{ mb: 2}}
                             />
                             <FormControlLabel
                                 control={
