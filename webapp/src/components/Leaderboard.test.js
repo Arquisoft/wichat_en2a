@@ -3,6 +3,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import Leaderboard from './Leaderboard';
 import * as components from './LeaderboardComponents';
 import { MemoryRouter } from 'react-router-dom';
+import {AuthProvider} from "./AuthContext";
 
 global.fetch = jest.fn();
 
@@ -14,10 +15,20 @@ beforeEach(() => {
   components.StickyPlayerHeader = () => <div>StickyHeader</div>;
 });
 
+const renderLeaderboardComponent = () => {
+  render(
+      <AuthProvider>
+        <MemoryRouter>
+          <Leaderboard/>
+        </MemoryRouter>
+      </AuthProvider>
+  );
+};
+
 test('muestra loader mientras se carga', async () => {
   fetch.mockResolvedValueOnce({ ok: true, json: async () => [] });
 
-  render(<MemoryRouter><Leaderboard /></MemoryRouter>);
+  renderLeaderboardComponent();
   expect(screen.getByText(/loading leaderboard/i)).toBeInTheDocument();
   await waitFor(() => expect(fetch).toHaveBeenCalled());
 });
@@ -25,7 +36,7 @@ test('muestra loader mientras se carga', async () => {
 test('muestra error si la API falla', async () => {
   fetch.mockResolvedValueOnce({ ok: false, status: 500 });
 
-  render(<MemoryRouter><Leaderboard /></MemoryRouter>);
+  renderLeaderboardComponent();
   await waitFor(() => expect(screen.getByText(/failed to load/i)).toBeInTheDocument());
 });
 
@@ -39,7 +50,7 @@ test('renderiza correctamente jugadores y muestra top 5 por defecto', async () =
     ],
   });
 
-  render(<MemoryRouter><Leaderboard /></MemoryRouter>);
+  renderLeaderboardComponent();
   await waitFor(() => screen.getByText(/Alice/));
   expect(screen.getByText('Alice')).toBeInTheDocument();
   expect(screen.getByText('Bob')).toBeInTheDocument();
@@ -55,7 +66,7 @@ test('cambia orden al hacer click en columna', async () => {
     ],
   });
 
-  render(<MemoryRouter><Leaderboard /></MemoryRouter>);
+  renderLeaderboardComponent();
   await waitFor(() => screen.getByText('Zoe'));
 
   const scoreHeader = screen.getByText('Total Score');
@@ -78,7 +89,7 @@ test('cambia a vista completa al hacer click en botón', async () => {
     })),
   });
 
-  render(<MemoryRouter><Leaderboard /></MemoryRouter>);
+  renderLeaderboardComponent();
   await waitFor(() => screen.getByText(/Player1/));
   fireEvent.click(screen.getByText(/Show Full Leaderboard/i));
   expect(await screen.findByText(/Points To Level Up/)).toBeInTheDocument();
