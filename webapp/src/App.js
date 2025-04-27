@@ -12,6 +12,7 @@ import Leaderboard from './components/Leaderboard';
 import GameOver from "./components/GameOver";
 import GameModes from './components/GameModes';
 import CustomGameMode from './components/CustomGameMode';
+import EditUser from './components/EditUser';
 import {useAuth} from "./components/AuthContext";
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
                 <Route path="/game-over" element={<GameOver/>} />
                 <Route path="/gamemodes" element={<GameModes />} />
                 <Route path="/gamemodes/custom" element={<CustomGameMode/>}/>
+                <Route path="/editUser" element={<EditUser/>}/>
 
             </Routes>
         </Box>

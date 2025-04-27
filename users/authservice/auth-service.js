@@ -2,7 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('./auth-model')
+const User = require('./auth-model');
+const NewUser = require('../userservice/user-model');
 const { check, matchedData, validationResult } = require('express-validator');
 const app = express();
 const port = 8002; 
@@ -39,9 +40,12 @@ app.post('/login',  [
   }
     let username =req.body.username.toString();
     let password =req.body.password.toString();
+
+    const userNotAuth = await NewUser.findOne({username});
+    let profilePic = userNotAuth.profilePicture;
+
     // Find the user by username in the database
     const user = await User.findOne({ username });
-    
 
     // Check if the user exists and verify the password
     if (user && await bcrypt.compare(password, user.password)) {
@@ -54,8 +58,9 @@ app.post('/login',  [
         userId: user._id, // Add user ID to response to use on GAME-SERVICE
         username: username, 
         createdAt: user.createdAt || new Date().toISOString(),
-        profilePicture: user.profilePicture || null
-        });
+        profilePicture: profilePic ||"/avatars/default.jpg"
+      });
+
     } else {
       res.status(401).json({ error: 'Invalid credentials' });
     }

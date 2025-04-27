@@ -2,7 +2,9 @@ import {AppBar, Toolbar, Button, Box, Container} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import { useAuth } from './AuthContext';
 import PropTypes from "prop-types";
-import { Avatar, IconButton } from "@mui/material"; // Añadimos Avatar e IconButton
+import { Avatar, IconButton } from "@mui/material";
+import {useEffect, useState} from "react";
+import axios from "axios"; // Añadimos Avatar e IconButton
 
 const navButtonStyle = {
     backgroundColor: "#f5f5f5", // Blanco grisáceo
@@ -13,9 +15,38 @@ const navButtonStyle = {
     '&:hover': { backgroundColor: "#e0e0e0" } // Un tono más oscuro al pasar el mouse
 };
 
+
+
 const Navbar = ({ onNavigateRequest }) => {
     const navigate = useNavigate();
     const { logout, user } = useAuth();
+
+    // 1 forma
+    const storedProfilePic = localStorage.getItem('profilePic');
+    console.log(storedProfilePic);
+
+    // 2 forma
+    const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
+
+    const getUser = async (userId) => {
+        try{
+            await axios.post(`${apiEndpoint}/getUserById/${userId}`);
+        } catch(error){
+            throw new Error (error.response?.data?.error || 'Error getting user');
+        }
+    };
+
+    // 3 forma
+    const [username, setUsername] = useState('');
+    const [profilePicture, setProfilePicture] = useState(null);
+
+    useEffect(() => {
+        const storedUsername = localStorage.getItem('username') || 'Guest';
+        const storedProfilePicture = localStorage.getItem('profilePicture');
+
+        setUsername(storedUsername);
+        setProfilePicture(storedProfilePicture); // Esto puede ser null si no hay foto
+    }, []);
 
     const handleNavigation = (path) => {
         if (onNavigateRequest) {
@@ -47,12 +78,14 @@ const Navbar = ({ onNavigateRequest }) => {
                         <Button sx={navButtonStyle} onClick={() => handleNavigation("/leaderboard")}>Leaderboards</Button>
                     </Box>
                     <Box sx={{display: "flex", ml: "auto", alignItems: "center", gap: 2}}>
-                        <IconButton onClick={() => handleNavigation("/editUserPage")}>
+                        <IconButton onClick={() => handleNavigation("/editUser")}>
                             <Avatar
-                                alt={"UserPic"}
                                 src={user?.profilePicture || "/avatars/default.jpg"}
-                                sx={{ width: 40, height: 40 }}
-                            />
+                                alt="Profile Picture"
+                                sx={{ bgcolor: '#FFD700', color: 'black' }}
+                            >
+                                {!profilePicture && username.charAt(0)}
+                            </Avatar>
                         </IconButton>
                         <Button sx={navButtonStyle} onClick={() => handleLogout()}>Log Out</Button>
                     </Box>

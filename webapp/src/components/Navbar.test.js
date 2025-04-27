@@ -75,7 +75,7 @@ describe('Navbar component', () => {
     it('navigates to "EditUser" when the logo is clicked', () => {
         renderNavbarComponent();
         fireEvent.click(screen.getByAltText('UserPic'));
-        expect(mockNavigate).toHaveBeenCalledWith('/editUserPage');
+        expect(mockNavigate).toHaveBeenCalledWith('/editUser');
     });
 
 });
