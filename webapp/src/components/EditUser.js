@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Avatar, Button, TextField } from '@mui/material';
+import { Box, Avatar, Button, TextField } from '@mui/material';
 import Navbar from './Navbar';
 import axios from 'axios';
-import { useAuth } from './AuthContext';
+import {useNavigate} from "react-router-dom";
+
 
 const EditUser = () => {
-    const { user } = useAuth();
+    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [profilePicture, setProfilePicture] = useState("/avatars/default.jpg");
     const [newPassword, setNewPassword] = useState('');
@@ -15,7 +16,7 @@ const EditUser = () => {
 
     useEffect(() => {
         const storedUsername = localStorage.getItem('username') || '';
-        const storedProfilePicture = localStorage.getItem('profilePicture') || null;
+        const storedProfilePicture = localStorage.getItem('profilePic') || null;
 
         setUsername(storedUsername);
         setProfilePicture(storedProfilePicture);
@@ -33,6 +34,8 @@ const EditUser = () => {
     const handleSaveChanges = async () => {
         try {
             const userId = localStorage.getItem('userId');
+            console.log('Id I am trying to update: ', userId);
+
             if (!userId) {
                 console.error('User ID not found');
                 return;
@@ -46,6 +49,7 @@ const EditUser = () => {
             if (newPassword) {
                 updateData.password = newPassword;
             }
+
             const response = await axios.put(`${apiEndpoint}/users/${userId}`, updateData);
 
             console.log('User updated:', response.data);
@@ -55,8 +59,11 @@ const EditUser = () => {
                 localStorage.setItem('username', updateData.username);
             }
             if (updateData.profilePicture) {
-                localStorage.setItem('profilePicture', updateData.profilePicture);
+                localStorage.setItem('profilePic', updateData.profilePicture);
             }
+
+            window.location.reload(); // re-load whole app
+            navigate('/home');
         } catch (error) {
             console.error('Error updating user:', error);
             alert('Failed to save changes.');

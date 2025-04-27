@@ -100,7 +100,20 @@ app.get('/getUserById/:userId', async (req, res) => {
     } catch (error) {
         res.status(error.response.status).json({error: error.response.data.error});
     }
-})
+});
+
+app.put('/users/:userId', async (req, res) => {
+    try {
+        const response = await axios.put(`${userServiceUrl}/users/${req.params.userId}`, req.body);
+        res.json(response.data);
+    } catch (error) {
+        if (error.response) {
+            res.status(error.response.status).json({ error: error.response.data.error });
+        } else {
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+});
 
 app.post('/askllm', async (req, res) => {
   try {
@@ -212,7 +225,6 @@ app.post('/saveActiveUserScore', verifyToken, async (req, res) => {
 });
 
 
-// En tu archivo de gateway
 app.get('/scoresByUser/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;

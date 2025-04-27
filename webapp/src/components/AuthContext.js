@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
         const profilePic = localStorage.getItem('profilePic');
 
         if (token && userId && username) {
-            return { token, userId, username, profilePic };
+            return { token, userId, username };
         }
 
         return null;

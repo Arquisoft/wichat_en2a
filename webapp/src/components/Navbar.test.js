@@ -1,6 +1,7 @@
 import { render, fireEvent, screen } from '@testing-library/react';
 import Navbar from './Navbar';
 import { MemoryRouter } from 'react-router-dom';
+import {AuthProvider} from "./AuthContext";
 
 //useNavigate Mock
 jest.mock('react-router-dom', () => ({
@@ -18,9 +19,11 @@ describe('Navbar component', () => {
 
   it('renders all navigation buttons', () => {
     render(
-        <MemoryRouter>
-          <Navbar />
-        </MemoryRouter>
+        <AuthProvider>
+            <MemoryRouter>
+                <Navbar />
+            </MemoryRouter>
+        </AuthProvider>
     );
     expect(screen.getByRole('button', { name: /Home/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Game/i })).toBeInTheDocument();
@@ -32,9 +35,11 @@ describe('Navbar component', () => {
 
   it('navigates to "Home" when the Home button is clicked', () => {
     render(
-        <MemoryRouter>
-          <Navbar />
-        </MemoryRouter>
+        <AuthProvider>
+            <MemoryRouter>
+                <Navbar />
+            </MemoryRouter>
+        </AuthProvider>
     );
     fireEvent.click(screen.getByRole('button', { name: /Home/i }));
     expect(mockNavigate).toHaveBeenCalledWith('/home');
@@ -42,9 +47,11 @@ describe('Navbar component', () => {
 
   it('navigates to "User Scores" when the User Scores button is clicked', () => {
     render(
-        <MemoryRouter>
-          <Navbar />
-        </MemoryRouter>
+        <AuthProvider>
+            <MemoryRouter>
+                <Navbar />
+            </MemoryRouter>
+        </AuthProvider>
     );
     fireEvent.click(screen.getByRole('button', { name: /My Scores/i }));
     expect(mockNavigate).toHaveBeenCalledWith('/scores');
@@ -52,9 +59,11 @@ describe('Navbar component', () => {
 
   it('navigates to "Top Scores" when the User Scores button is clicked', () => {
     render(
-        <MemoryRouter>
-          <Navbar />
-        </MemoryRouter>
+        <AuthProvider>
+            <MemoryRouter>
+                <Navbar />
+            </MemoryRouter>
+        </AuthProvider>
     );
     fireEvent.click(screen.getByRole('button', { name: /Top Scores/i }));
     expect(mockNavigate).toHaveBeenCalledWith('/allScores');
@@ -62,9 +71,11 @@ describe('Navbar component', () => {
 
   it('navigates to "Leaderboard" when the Leaderboard button is clicked', () => {
     render(
-        <MemoryRouter>
-          <Navbar />
-        </MemoryRouter>
+        <AuthProvider>
+            <MemoryRouter>
+                <Navbar />
+            </MemoryRouter>
+        </AuthProvider>
     );
     fireEvent.click(screen.getByRole('button', { name: /Leaderboards/i }));
     expect(mockNavigate).toHaveBeenCalledWith('/leaderboard');
@@ -72,9 +83,11 @@ describe('Navbar component', () => {
 
   it('navigates to "Login" when the Logout button is clicked', () => {
     render(
-        <MemoryRouter>
-          <Navbar onNavigate={mockNavigate} />
-        </MemoryRouter>
+        <AuthProvider>
+            <MemoryRouter>
+                <Navbar onNavigate={mockNavigate} />
+            </MemoryRouter>
+        </AuthProvider>
     );
     fireEvent.click(screen.getByRole('button', { name: /Log Out/i }));
     expect(mockNavigate).toHaveBeenCalledWith('/login');
@@ -82,22 +95,36 @@ describe('Navbar component', () => {
 
     it('navigates to "Game" when the Game button is clicked', () => {
         render(
-            <MemoryRouter>
-                <Navbar onNavigate={mockNavigate} />
-            </MemoryRouter>
+            <AuthProvider>
+                <MemoryRouter>
+                    <Navbar onNavigate={mockNavigate} />
+                </MemoryRouter>
+            </AuthProvider>
         );
         fireEvent.click(screen.getByRole('button', { name: /Game/i }));
         expect(mockNavigate).toHaveBeenCalledWith('/gamemodes');
     });
 
     it('navigates to "Home" when the logo is clicked', () => {
-        renderNavbarComponent();
+        render(
+            <AuthProvider>
+                <MemoryRouter>
+                    <Navbar onNavigate={mockNavigate} />
+                </MemoryRouter>
+            </AuthProvider>
+        );
         fireEvent.click(screen.getByAltText('App Logo'));
         expect(mockNavigate).toHaveBeenCalledWith('/home');
     });
 
     it('navigates to "EditUser" when the logo is clicked', () => {
-        renderNavbarComponent();
+        render(
+            <AuthProvider>
+                <MemoryRouter>
+                    <Navbar onNavigate={mockNavigate} />
+                </MemoryRouter>
+            </AuthProvider>
+        );
         fireEvent.click(screen.getByAltText('UserPic'));
         expect(mockNavigate).toHaveBeenCalledWith('/editUser');
     });
