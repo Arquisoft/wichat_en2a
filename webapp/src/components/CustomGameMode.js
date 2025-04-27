@@ -79,7 +79,7 @@ const CustomGameMode = () => {
       if(shuffle == null)
         setShuffle(false); //if shuffle is not selected, set it to false
 
-      localStorage.removeItem('gameMode'); // Remove any existing game mode from localStorage
+      localStorage.setItem('gameMode', 'custom');
       localStorage.setItem('shuffle', shuffle);
       localStorage.setItem('totalQuestions', totalQuestions);
       localStorage.setItem('timeLimit', Math.max(10, Math.min(timeLimit, 60)));
