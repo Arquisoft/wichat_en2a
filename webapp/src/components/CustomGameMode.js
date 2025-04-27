@@ -69,6 +69,18 @@ const CustomGameMode = () => {
 
     try {
       setLoadingReady(true);
+      for (const { questionType, numberOfQuestions } of selected) {
+        // Remove any existing questions of this type from localStorage
+        localStorage.removeItem(`${questionType}Questions`); 
+        // Store the number of questions of each type in localStorage
+        localStorage.setItem(`${questionType}Questions`, numberOfQuestions);
+      }
+
+      if(shuffle == null)
+        shuffle = false; //if shuffle is not selected, set it to false
+
+      localStorage.removeItem('gameMode'); // Remove any existing game mode from localStorage
+      localStorage.setItem('shuffle', shuffle);
       localStorage.setItem('totalQuestions', totalQuestions);
       localStorage.setItem('timeLimit', Math.max(10, Math.min(timeLimit, 60)));
       navigate('/game');
