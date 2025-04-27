@@ -16,7 +16,8 @@ const Login = () => {
                 userId: response.data.userId || '',
                 username: response.data.username || '',
                 token: response.data.token || '',
-                isAdmin: response.data.isAdmin || false
+                isAdmin: response.data.isAdmin || false,
+                profilePicture: response.data.profilePicture
             });
             // Redirect based on admin status
             if (response.data.isAdmin) {

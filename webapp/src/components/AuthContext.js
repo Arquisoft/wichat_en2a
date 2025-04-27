@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
         const userId = localStorage.getItem('userId');
         const username = localStorage.getItem('username');
         const isAdmin = localStorage.getItem('isAdmin') === 'true';
+        const profilePic = localStorage.getItem('profilePic');
 
         if (token && userId && username) {
             return { token, userId, username, isAdmin };
@@ -23,6 +24,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem('userId', userData.userId);
         localStorage.setItem('username', userData.username);
         localStorage.setItem('isAdmin', userData.isAdmin ? 'true' : 'false');
+        localStorage.setItem('profilePic', userData.profilePicture);
 
         setUser(userData);
     };

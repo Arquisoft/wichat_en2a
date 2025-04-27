@@ -14,6 +14,7 @@ import GameOver from "./components/GameOver";
 import GameModes from './components/GameModes';
 import CustomGameMode from './components/CustomGameMode';
 import AdminPanel from './components/AdminPanel';
+import EditUser from './components/EditUser';
 import {useAuth} from "./components/AuthContext";
 
 
@@ -75,6 +76,7 @@ function App() {
                         <AdminPanel/>
                     </ProtectedAdminRoute>
                 } />
+                <Route path="/editUser" element={<EditUser/>}/>
             </Routes>
         </Box>
     );

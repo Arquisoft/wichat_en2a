@@ -1,6 +1,6 @@
 import {render, fireEvent, screen} from '@testing-library/react';
 import Navbar from './Navbar';
-import {MemoryRouter} from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import {AuthProvider} from "./AuthContext";
 import React from "react";
 
@@ -73,4 +73,29 @@ describe('Navbar component', () => {
         fireEvent.click(screen.getByRole('button', {name: /Game/i}));
         expect(mockNavigate).toHaveBeenCalledWith('/gamemodes');
     });
+
+    it('navigates to "Home" when the logo is clicked', () => {
+        render(
+            <AuthProvider>
+                <MemoryRouter>
+                    <Navbar onNavigate={mockNavigate} />
+                </MemoryRouter>
+            </AuthProvider>
+        );
+        fireEvent.click(screen.getByAltText('App Logo'));
+        expect(mockNavigate).toHaveBeenCalledWith('/home');
+    });
+
+    it('navigates to "EditUser" when the logo is clicked', () => {
+        render(
+            <AuthProvider>
+                <MemoryRouter>
+                    <Navbar onNavigate={mockNavigate} />
+                </MemoryRouter>
+            </AuthProvider>
+        );
+        fireEvent.click(screen.getByAltText('UserPic'));
+        expect(mockNavigate).toHaveBeenCalledWith('/editUser');
+    });
+
 });

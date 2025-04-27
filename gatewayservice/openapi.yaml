@@ -228,12 +228,21 @@ paths:
                     type: string
                     description: Error information.
                     example: Internal Server Error
-  /question:
+  /question/{questionType}:
     get:
       summary: Fetch a question from the database.
       operationId: fetchQuestion
       tags:
         - Questions
+      parameters:
+        - name: questionType
+          in: path
+          required: true
+          description: The type of the question to retrieve
+          schema:
+            type: string
+            enum: ["flag", "car", "famous-person", "dino", "place"]
+            example: "flag"
       responses:
         "200":
           description: The system returns a question.

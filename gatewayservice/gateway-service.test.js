@@ -232,7 +232,42 @@ describe('Gateway Service', () => {
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual({ error: 'User not found' });
-  })
+  });
+
+  it('should return 200 and user data when the user is updated successfully', async () => {
+    const userId = '123';
+    const requestBody = { name: 'Updated User' };
+
+    // Simulamos la respuesta exitosa de axios
+    axios.put.mockResolvedValueOnce({ data: { id: userId, name: 'Updated User' } });
+
+    const response = await request(app)
+        .put(`/users/${userId}`)
+        .send(requestBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ id: userId, name: 'Updated User' });
+  });
+
+  it('should return 400 if there is an error in the request to update', async () => {
+    const userId = '123';
+    const requestBody = { name: 'Updated User' };
+
+    // Error in response
+    axios.put.mockRejectedValue({
+      response: {
+        status: 400,
+        data: { error: 'Bad Request' }
+      }
+    });
+
+    const response = await request(app)
+        .put(`/users/${userId}`)
+        .send(requestBody);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'Bad Request' });
+  });
 
   // Test /saveScore endpoint
   it('should forward saveScore request to game service', async () => {
@@ -384,7 +419,7 @@ describe('Gateway Service', () => {
       },
     });
 
-    const response = await request(app).get('/question');
+    const response = await request(app).get('/question/flag');
     
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Internal Server Error' });
@@ -396,7 +431,7 @@ describe('Gateway Service', () => {
     const mockResponse = { data: { question: 'https://example.com/flag.png'} };
       axios.get.mockResolvedValue(mockResponse);
   
-      const response = await request(app).get('/question');
+      const response = await request(app).get('/question/flag');
   
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockResponse.data);
@@ -786,7 +821,7 @@ describe('Gateway Service Error Handling', () => {
       response: { status: 500, data: { error: 'Question Service Error' } }
     });
   
-    const response = await request(app).get('/question');
+    const response = await request(app).get('/question/flag');
   
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Question Service Error' });

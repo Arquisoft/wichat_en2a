@@ -406,11 +406,11 @@ describe('User Model', () => {
     expect(user._id).toBeDefined();
     expect(user.username).toBe(userData.username);
     expect(user.password).toBe(userData.password);
-    expect(user.profilePicture).toBeNull();
+    expect(user.profilePicture).toBe("/avatars/default.jpg");
     expect(user.createdAt).toBeDefined();
   });
 
-  it('should set the default value of profilePicture to null', async () => {
+  it('should set the default value of profilePicture to /avatars/default.jpg', async () => {
     const userData = {
       username: 'testuser',
       password: 'password123', //NOSONAR
@@ -419,7 +419,7 @@ describe('User Model', () => {
     const user = new User(userData);
     await user.save();
 
-    expect(user.profilePicture).toBeNull();
+    expect(user.profilePicture).toBe("/avatars/default.jpg");
   });
 
   it('should create a user with a default createdAt date', async () => {
