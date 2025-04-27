@@ -957,4 +957,73 @@ describe('GET /allScores', () => {
   });
 });
 
+describe('Testing /users endpoints', () => { 
+  it('should update user self data successfully with PUT /users/:userId', async () => {
+    const userId = '507f1f77bcf86cd799439011';
+    const updateData = { username: 'updatedSelf' };
+    const mockResponse = { id: userId, username: 'updatedSelf' };
+    axios.put.mockResolvedValueOnce({ data: mockResponse });
+    const response = await request(app)
+      .put(`/users/${userId}`)
+      .send(updateData);
+  
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+    expect(axios.put).toHaveBeenCalledWith(
+      expect.stringContaining(`/users/self/${userId}`),
+      updateData
+    );
+  });
+
+  it('should return 400 if updating self user fails at PUT /users/:userId', async () => {
+    const userId = '507f1f77bcf86cd799439011';
+    const updateData = { username: 'invalidUpdate' };
+    axios.put.mockRejectedValueOnce({
+      response: { status: 400, data: { error: 'Invalid update data' } }
+    });
+    const response = await request(app)
+      .put(`/users/${userId}`)
+      .send(updateData);
+  
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'Invalid update data' });
+  });
+  
+  it('should update user as admin successfully with PUT /users/admin/:userId', async () => {
+    const userId = '507f1f77bcf86cd799439011';
+    const updateData = { username: 'adminUpdatedUser' };
+    const mockResponse = { id: userId, username: 'adminUpdatedUser' };
+    axios.put.mockResolvedValueOnce({ data: mockResponse });
+  
+    const response = await request(app)
+      .put(`/users/admin/${userId}`)
+      .set('Authorization', 'Bearer faketoken')
+      .send(updateData);
+  
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+    expect(axios.put).toHaveBeenCalledWith(
+      expect.stringContaining(`/users/${userId}`),
+      updateData,
+      { headers: { Authorization: 'Bearer faketoken' } }
+    );
+  });
+  
+  it('should return error when admin update fails at PUT /users/admin/:userId', async () => {
+    const userId = '507f1f77bcf86cd799439011';
+    const updateData = { username: 'adminFailedUpdate' };
+    axios.put.mockRejectedValueOnce({
+      response: { status: 400, data: { error: 'Admin invalid update' } }
+    });
+  
+    const response = await request(app)
+      .put(`/users/admin/${userId}`)
+      .set('Authorization', 'Bearer faketoken')
+      .send(updateData);
+  
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'Admin invalid update' });
+  });  
+});
+
 
