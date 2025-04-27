@@ -129,15 +129,15 @@ app.put('/users/self/:userId', async (req, res) => {
   try {
       const userId = req.params.userId;
 
+      // Validate userId format
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ error: 'Invalid userId format' });
+      }
+
       // Convert string ID to ObjectId
       const objectId = new ObjectId(userId);
 
       const updateData = {};
-      
-      // Validate userId format
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-          return res.status(400).json({ error: 'Invalid userId format' });
-      }
       
       // Check if user exists
       const user = await User.findById(objectId);
@@ -195,15 +195,15 @@ app.put('/users/:userId', verifyAdmin, async (req, res) => {
   try {
       const userId = req.params.userId;
 
+      // Validate userId format
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ error: 'Invalid userId format' });
+      }
+
       // Convert string ID to ObjectId
       const objectId = new ObjectId(userId);
 
       const updateData = {};
-      
-      // Validate userId format
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-          return res.status(400).json({ error: 'Invalid userId format' });
-      }
       
       // Check if user exists
       const user = await User.findById(objectId);
