@@ -41,18 +41,24 @@ async function updateQuestions() {
           );
         } catch (error) {
           attempts++;
+          console.log(`Error fetching questions of type ${type} at attempt ${attempts}: ${error}`)
         }
-        if (attempts == 3) {
-          console.log(
-            `Fetch for ${type} has failed, questions will be added while the game is executing...`
-          );
-          
-        }
+        logErrorCaseAttemts(attempts);
       }
       attempts = 0; // Reset attempts for the next type
     }
     console.log(`New questions fetched in ${Date.now() - fetchStart} ms`);
-    console.log(`Database cleaned and updated in ${Date.now() - cleanStart} ms`);
+    console.log(
+      `Database cleaned and updated in ${Date.now() - cleanStart} ms`
+    );
+  }
+}
+
+function logErrorCaseAttemts(attempts) {
+  if (attempts == 3) {
+    console.log(
+      `Fetch for ${type} has failed, questions will be added while the game is executing...`
+    );
   }
 }
 
