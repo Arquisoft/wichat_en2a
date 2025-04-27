@@ -249,7 +249,7 @@ app.get('/me', verifyToken, async (req, res) => {
 app.get('/users', async (req, res) => {
     try {
         // Fetch all users from the database
-        const users = await User.find({}, 'username _id'); // Use _id not *id
+        const users = await User.find({}, 'username isAdmin _id'); // Use _id not *id
         res.json(users);
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error', details: error.message });

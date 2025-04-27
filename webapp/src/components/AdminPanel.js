@@ -25,7 +25,7 @@ const AdminPanel = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const data = await res.json();
-            setUsers(data);
+            setUsers(data.map(u => ({ ...u, isAdmin: !!u.isAdmin })));
         } catch {
             setError('Failed to load users');
         }
