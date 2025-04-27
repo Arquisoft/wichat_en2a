@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('./user-model')
-
+const ObjectId = mongoose.Types.ObjectId;
 const app = express();
 const port = 8001;
 
@@ -60,11 +60,15 @@ app.post('/adduser', async (req, res) => {
             return res.status(409).json({ error: 'Username already exists' });
         }
 
+        const randomIndex = Math.floor(Math.random() * 12) + 1;
+        const avatarPath = `/avatars/avatar${randomIndex}.jpg`;
+
         // Encrypt the password before saving it
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const newUser = new User({
             username: username,
             password: hashedPassword,
+            profilePicture: avatarPath
         });
         await newUser.save();
         res.status(201).json(newUser); //201 means created, not just 200 OK, clearer this way
@@ -103,6 +107,10 @@ app.delete('/users/:userId', async (req, res) => {
 app.put('/users/:userId', async (req, res) => {
   try {
       const userId = req.params.userId;
+
+      // Convert string ID to ObjectId
+      const objectId = new ObjectId(userId);
+
       const updateData = {};
       
       // Validate userId format
@@ -111,7 +119,7 @@ app.put('/users/:userId', async (req, res) => {
       }
       
       // Check if user exists
-      const user = await User.findById(userId);
+      const user = await User.findById(objectId);
       if (!user) {
           return res.status(404).json({ error: 'User not found' });
       }
@@ -149,7 +157,7 @@ app.put('/users/:userId', async (req, res) => {
       
       // Update user with new data
       const updatedUser = await User.findByIdAndUpdate(
-          userId,
+          objectId,
           updateData,
           { new: true } // Return the updated user
       );

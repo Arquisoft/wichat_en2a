@@ -16,7 +16,8 @@ const Login = () => {
             login({
                 userId: response.data.userId || '',
                 username: response.data.username || '',
-                token: response.data.token || ''
+                token: response.data.token || '',
+                profilePicture: response.data.profilePicture
             })
             navigate('/home');
         }
