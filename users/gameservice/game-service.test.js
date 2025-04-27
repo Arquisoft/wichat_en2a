@@ -343,3 +343,45 @@ describe('Game Service Leaderboard Endpoint', () => {
   });
 
 });
+
+
+
+describe('GET /allScores', () => {
+  beforeEach(async () => {
+    await Score.deleteMany({});
+  });
+
+  it('should return scores if they exist', async () => {
+    await Score.insertMany([
+      { userId: testUserId1, score: 100, isVictory: true },
+      { userId: testUserId2, score: 90, isVictory: false }
+    ]);
+  
+    const res = await request(app).get('/allScores');
+  
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBe(2);
+    expect(res.body[0]).toHaveProperty('score', 100);
+  });
+
+  it('should return 404 if no scores found', async () => {
+    const res = await request(app).get('/allScores');
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body).toEqual({ error: 'No scores found' });
+  });
+
+  it('should return 500 on DB error', async () => {
+    // Simula error cerrando la conexión
+    await mongoose.connection.close();
+
+    const res = await request(app).get('/allScores');
+
+    expect(res.statusCode).toBe(500);
+    expect(res.body).toHaveProperty('error', 'Internal Server Error');
+
+    // Vuelve a conectar para siguientes tests
+    await mongoose.connect(process.env.MONGODB_URI);
+  });
+});

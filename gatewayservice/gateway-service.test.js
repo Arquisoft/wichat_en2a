@@ -791,3 +791,46 @@ it('should return 500 when question service fails at /clear-questions', async ()
   expect(response.body).toEqual({ error: 'Failed to clear questions' });
 });
 });
+
+describe('GET /allScores', () => {
+  const mockGameData = [
+    { userId: '1', score: 100, createdAt: '2023-01-01', isVictory: true },
+    { userId: '2', score: 90, createdAt: '2023-01-02', isVictory: false }
+  ];
+
+  const mockUsernames = {
+    '1': 'Alice',
+    '2': 'Bob'
+  };
+
+  it('should fetch scores and merge with usernames', async () => {
+    axios.get.mockResolvedValueOnce({ data: mockGameData }); // gameService
+    axios.post.mockResolvedValueOnce({ data: mockUsernames }); // userService
+
+    const response = await request(app).get('/allScores');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([
+      { userId: '1', score: 100, createdAt: '2023-01-01', isVictory: true, username: 'Alice' },
+      { userId: '2', score: 90, createdAt: '2023-01-02', isVictory: false, username: 'Bob' }
+    ]);
+
+    expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/allScores'), { params: {} });
+    expect(axios.post).toHaveBeenCalledWith(expect.stringContaining('/getAllUsernamesWithIds'), {
+      userIds: ['1', '2']
+    });
+  });
+
+  it('should handle errors gracefully', async () => {
+    axios.get.mockRejectedValueOnce({
+      response: { status: 404, data: { error: 'Not Found' } }
+    });
+
+    const response = await request(app).get('/allScores');
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'Not Found' });
+  });
+});
+
+

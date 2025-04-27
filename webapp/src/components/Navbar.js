@@ -72,10 +72,11 @@ const Navbar = ({ onNavigateRequest }) => {
                     </Box>
 
                     <Box sx={{display: "flex", gap: 2}}>
-                        <Button sx={navButtonStyle} onClick={() => handleNavigation("/home")}>Home</Button>
-                        <Button sx={navButtonStyle} onClick={() => handleNavigation("/gamemodes")}>Game</Button>
-                        <Button sx={navButtonStyle} onClick={() => handleNavigation("/scores")}>User Scores</Button>
-                        <Button sx={navButtonStyle} onClick={() => handleNavigation("/leaderboard")}>Leaderboards</Button>
+                        <Button sx={navButtonStyle} onClick={() => navigate("/home")}>Home</Button>
+                        <Button sx={navButtonStyle} onClick={() => navigate("/gamemodes")}>Game</Button>
+                        <Button sx={navButtonStyle} onClick={() => navigate("/scores")}>My Scores</Button>
+                        <Button sx={navButtonStyle} onClick={() => navigate("/allScores")}>Top Scores</Button>
+                        <Button sx={navButtonStyle} onClick={() => navigate("/leaderboard")}>Leaderboards</Button>
                     </Box>
                     <Box sx={{display: "flex", ml: "auto", alignItems: "center", gap: 2}}>
                         <IconButton onClick={() => handleNavigation("/editUser")}>
@@ -89,7 +90,6 @@ const Navbar = ({ onNavigateRequest }) => {
                         </IconButton>
                         <Button sx={navButtonStyle} onClick={() => handleLogout()}>Log Out</Button>
                     </Box>
-
                 </Toolbar>
             </Container>
         </AppBar>
