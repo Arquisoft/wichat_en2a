@@ -16,12 +16,31 @@ mongoose.connect(mongoUri);
 
 const checkAdminUser = async () => {
   const admin = await User.findOne({ isAdmin: true });
-  if (!admin) {
-      const bcrypt = require('bcrypt');
-      const passwordHash = await bcrypt.hash('admin123', 10);
-      await User.create({ username: 'admin', password: passwordHash, isAdmin: true });
-      console.log('Admin user created with username: admin & password: admin123. PLEASE change the password after first login.');
+  // One admin exists -> do nothing
+  if (admin) {
+    return;
   }
+
+  // No admin exists -> check if account called "admin" exists
+  const adminUser = await User.findOne({ username: 'admin' });
+  if (adminUser) {
+    const bcrypt = require('bcrypt');
+    const isDefaultPassword = await bcrypt.compare('admin123', adminUser.password);
+
+    // "admin" password is default -> grant admin privileges to said account
+    if (isDefaultPassword) {
+      adminUser.isAdmin = true;
+      await adminUser.save();
+      console.log('Existing "admin" user with default password was granted admin privileges.');
+      return;
+    }
+  }
+
+  // no "admin" account or password is not default -> create new admin account
+  const bcrypt = require('bcrypt');
+  const passwordHash = await bcrypt.hash('admin123', 10);
+  await User.create({ username: 'admin', password: passwordHash, isAdmin: true });
+  console.log('Admin user created with username: admin & password: admin123. PLEASE change the account credentials after first login.');
 };
 checkAdminUser();
 
