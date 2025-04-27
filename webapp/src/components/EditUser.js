@@ -87,10 +87,11 @@ const EditUser = () => {
                 }}
             >
                 {/* Avatar Section */}
-                <Box onClick={handleAvatarClick} sx={{ cursor: 'pointer', marginBottom: 4 }}>
+                <Box onClick={handleAvatarClick} sx={{ cursor: 'pointer', marginBottom: 4 }} >
                     <Avatar
                         src={profilePicture || "/avatars/default.jpg"}
                         sx={{ width: 150, height: 150, border: '3px solid white' }}
+                        alt={'UserBigPic'}
                     />
                 </Box>
 
@@ -114,6 +115,7 @@ const EditUser = () => {
                                     cursor: 'pointer',
                                     border: profilePicture === `/avatars/avatar${index + 1}.jpg` ? '2px solid gold' : '2px solid transparent'
                                 }}
+                                alt={'Option for avatar'}
                             />
                         ))}
                     </Box>
