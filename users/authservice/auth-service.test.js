@@ -94,19 +94,27 @@ describe('Auth Service', () => {
   });
 
   it('Should return 400 if username is missing', async () => {
-    const response = await request(app).post('/login').send({ password: 'testpassword' });
+    const response = await request(app).post('/login').send({ 
+      password: 'testpassword' //NOSONAR
+    });
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('error');
   });
 
   it('Should return 400 if username is too short', async () => {
-    const response = await request(app).post('/login').send({ username: 'ab', password: 'testpassword' });
+    const response = await request(app).post('/login').send({ 
+      username: 'ab',
+      password: 'testpassword' //NOSONAR
+    });
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('error');
   });
 
   it('Should return 400 if password is too short', async () => {
-    const response = await request(app).post('/login').send({ username: 'testuser', password: 'ab' });
+    const response = await request(app).post('/login').send({ 
+      username: 'testuser', 
+      password: 'ab' //NOSONAR
+    });
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('error');
   });
@@ -115,7 +123,10 @@ describe('Auth Service', () => {
     // Temporary replacement of User.findOne
     const origFindOne = User.findOne;
     User.findOne = () => { throw new Error('DB error'); };
-    const response = await request(app).post('/login').send({ username: 'testuser', password: 'testpassword' });
+    const response = await request(app).post('/login').send({ 
+      username: 'testuser', 
+      password: 'testpassword' //NOSONAR
+    });
     expect(response.status).toBe(500);
     expect(response.body).toHaveProperty('error', 'Internal Server Error');
     User.findOne = origFindOne;
