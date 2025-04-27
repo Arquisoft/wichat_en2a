@@ -3,6 +3,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import TopScores from './TopScores';
 import { MemoryRouter } from 'react-router-dom';
+import {AuthProvider} from "./AuthContext";
 
 global.fetch = jest.fn();
 
@@ -19,20 +20,30 @@ describe('TopScores Component', () => {
         localStorage.setItem('token', 'mock-token');
     });
 
+    const renderTopScoresComponent = () => {
+        render(
+            <AuthProvider>
+                <MemoryRouter>
+                    <TopScores/>
+                </MemoryRouter>
+            </AuthProvider>
+        );
+    };
+
     test('renders loading state initially', async () => {
         fetch.mockResolvedValueOnce({
             ok: true,
             json: async () => mockScores
         });
 
-        render(<MemoryRouter><TopScores /></MemoryRouter>);
+        renderTopScoresComponent();
         expect(screen.getByText(/Loading Top Scores/i)).toBeInTheDocument();
     });
 
     test('renders error state on fetch failure', async () => {
         fetch.mockRejectedValueOnce(new Error('Fetch failed'));
 
-        render(<MemoryRouter><TopScores /></MemoryRouter>);
+        renderTopScoresComponent();
         await waitFor(() => {
             expect(screen.getByText(/Failed to load scores/i)).toBeInTheDocument();
         });
@@ -44,7 +55,7 @@ describe('TopScores Component', () => {
             json: async () => mockScores
         });
 
-        render(<MemoryRouter><TopScores /></MemoryRouter>);
+        renderTopScoresComponent();
         await waitFor(() => {
             expect(screen.getByText(/Top 25 Scores/i)).toBeInTheDocument();
             expect(screen.getByText(/Alice/)).toBeInTheDocument();
@@ -59,7 +70,7 @@ describe('TopScores Component', () => {
             json: async () => mockScores
         });
 
-        render(<MemoryRouter><TopScores /></MemoryRouter>);
+        renderTopScoresComponent();
         await waitFor(() => {
             expect(screen.getByText(/Alice \(You\)/)).toBeInTheDocument();
         });
@@ -71,7 +82,7 @@ describe('TopScores Component', () => {
             json: async () => mockScores
         });
 
-        render(<MemoryRouter><TopScores /></MemoryRouter>);
+        renderTopScoresComponent();
         await waitFor(() => screen.getByText('Score'));
 
         const buttons = screen.getAllByRole('button', { name: /score/i });

@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography, Avatar } from '@mui/material';
 
 // Component for the win-rate bar showing % graphically
-export const WinRateBar = ({ winRate }) => {
+export let WinRateBar = ({ winRate }) => {
     const rate = parseFloat(winRate) || 0;
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
@@ -31,7 +31,7 @@ export const medalEmojis = ['🥇', '🥈', '🥉'];
 export const medalColors = ['#FFD700', '#C0C0C0', '#CD7F32']; // gold, silver, bronze
 
 // Modified component for the sticky player stats header
-export const StickyPlayerHeader = ({ player, rank, pointsToLevelUp, navbarHeight = 64 }) => {
+export let StickyPlayerHeader = ({ player, rank, pointsToLevelUp, navbarHeight = 64 }) => {
     const isTop3 = rank < 3;
     const bgColor = isTop3 ? medalColors[rank] : '#6A5ACD';
     
@@ -110,7 +110,7 @@ export const StickyPlayerHeader = ({ player, rank, pointsToLevelUp, navbarHeight
 };
 
 // Calculate points needed to level up
-export const calculatePointsToLevelUp = (players, currentUserIndex, currentUser) => {
+export let calculatePointsToLevelUp = (players, currentUserIndex, currentUser) => {
     if (!currentUser || currentUserIndex === 0) return null;
     
     const playerAbove = players[currentUserIndex - 1];
