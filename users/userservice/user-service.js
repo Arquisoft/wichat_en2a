@@ -3,7 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('./user-model')
+const User = require('./user-model');
+const Score = require('./score-model');
 
 const app = express();
 const port = 8001;
@@ -109,6 +110,9 @@ app.delete('/users/:userId', verifyAdmin, async (req, res) => {
       
       // Delete user
       await User.findByIdAndDelete(userId);
+
+      // Delete all scores of (already) deleted user
+      await Score.deleteMany({ userId });
       
       res.json({ message: 'User deleted successfully' });
   } catch (error) {
