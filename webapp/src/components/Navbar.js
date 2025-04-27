@@ -4,6 +4,8 @@ import { useAuth } from './AuthContext';
 import PropTypes from "prop-types";
 import { Avatar, IconButton } from "@mui/material";
 import {useEffect, useState} from "react";
+import { useAuth } from './AuthContext';
+import PropTypes from "prop-types";
 
 const navButtonStyle = {
     backgroundColor: "#f5f5f5", // Blanco grisáceo

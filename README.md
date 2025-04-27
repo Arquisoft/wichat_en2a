@@ -24,15 +24,17 @@
 <img src="https://miro.medium.com/max/365/1*Jr3NFSKTfQWRUyjblBSKeg.png" height="100">
 </p>
 
-This is a base project for the Software Architecture course in 2024/2025. It is a basic application composed of several components.
+This is a repository for the Wichat project of Software Architecture course in 2024/2025. It is composed of several components:
 
-- **User service**. Express service that handles the insertion of new users in the system.
+- **User service**. Express service that handles the management of users in the system.
 - **Auth service**. Express service that handles the authentication of users.
 - **LLM service**. Express service that handles the communication with the LLM.
-- **Gateway service**. Express service that is exposed to the public and serves as a proxy to the two previous ones.
-- **Webapp**. React web application that uses the gateway service to allow basic login and new user features.
+- **Question service**. Express service that handles the management of the questions of the quiz game.
+- **Scheduling service**. Internal service that calls the questionservice through the gateway to update the database of questions periodically.
+- **Gateway service**. Express service that is exposed to the public and serves as a proxy to the services to comunicate with each other and the webapp.
+- **Webapp**. React web application that uses the gateway service to allow user interaction with the services of the application.
 
-Both the user and auth service share a Mongo database that is accessed with mongoose.
+The application uses a Mongo database that is accessed with mongoose that contains several collections to handle each entity.
 
 ## Quick start guide
 
@@ -42,19 +44,27 @@ First, clone the project:
 
 ### LLM API key configuration
 
-In order to communicate with the LLM integrated in this project, we need to setup an API key. Two integrations are available in this propotipe: gemini and empaphy. The API key provided must match the LLM provider used.
+In order to communicate with the LLM integrated in this project, we need to setup two API keys. Two integrations are necessary: gemini and empaphy.
 
-We need to create two .env files. 
-- The first one in the webapp directory (for executing the webapp using ```npm start```). The content of this .env file should be as follows:
+We need to create three .env files. 
+- The first one is in the webapp directory (for executing the webapp using ```npm start```). The content of this .env file should be as follows:
 ```
 REACT_APP_LLM_API_KEY="YOUR-API-KEY"
 ```
-- The second one located in the root of the project (along the docker-compose.yml). This .env file is used for the docker-compose when launching the app with docker. The content of this .env file should be as follows:
+- The second one is located in the root of the project (along the docker-compose.yml). This .env file is used for the docker-compose when launching the app with docker. The content of this .env file should be as follows:
 ```
 LLM_API_KEY="YOUR-API-KEY"
+GEMINI_KEY="YOUR-API-KEY"
+EMPATHY_KEY="YOUR-API-KEY"
+REACT_APP_LLM_API_KEY="YOUR-API-KEY"
+```
+- The third and last one is in the llm service folder. Its content is the following:
+```
+GEMINI_KEY="YOUR-API-KEY"
+EMPATHY_KEY="YOUR-API-KEY"
 ```
 
-Note that these files must NOT be uploaded to the github repository (they are excluded in the .gitignore).
+Note that these files must NOT be uploaded to the github repository under any circunstance (they are excluded in the .gitignore).
 
 An extra configuration for the LLM to work in the deployed version of the app is to include it as a repository secret (LLM_API_KEY). This secret will be used by GitHub Action when building and deploying the application.
 
@@ -70,14 +80,17 @@ First, start the database. Either install and run Mongo or run it using docker:
 
 You can use also services like Mongo Altas for running a Mongo database in the cloud.
 
-Now launch the auth, user and gateway services. Just go to each directory and run `npm install` followed by `npm start`.
+Now launch the auth, user, llm, question, game and gateway services. Just go to each directory and run `npm install` followed by `npm start`.
 
 Lastly, go to the webapp directory and launch this component with `npm install` followed by `npm start`.
 
 After all the components are launched, the app should be available in localhost in port 3000.
 
 ## Deployment
-For the deployment, we have several options. The first and more flexible is to deploy to a virtual machine using SSH. This will work with any cloud service (or with our own server). Other options include using the container services that all the cloud services provide. This means, deploying our Docker containers directly. Here I am going to use the first approach. I am going to create a virtual machine in a cloud service and after installing docker and docker-compose, deploy our containers there using GitHub Actions and SSH.
+For the deployment, we had several options, but in the end we used an Oracle Virtual Machine with Docker to combine the use of containers with the
+capabilities of a VM.
+
+The deployment can be therefore done with a virtual machine using SSH. This will work with any cloud service (or with our own server). Other options include using the container services that all the cloud services provide. This means, deploying our Docker containers directly. Below the first of this two approaches will be used. A virtual machine will be created in a cloud service and, after installing docker and docker-compose, deploy the containers there using GitHub Actions and SSH.
 
 ### Machine requirements for deployment
 The machine for deployment can be created in services like Microsoft Azure or Amazon AWS. These are in general the settings that it must have:
@@ -86,7 +99,7 @@ The machine for deployment can be created in services like Microsoft Azure or Am
 - Docker installed.
 - Open ports for the applications installed (in this case, ports 3000 for the webapp and 8000 for the gateway service).
 
-Once you have the virtual machine created, you can install **docker** using the following instructions:
+Once you have the virtual machine created, **docker** can be installed using the following instructions:
 
 ```ssh
 sudo apt update
@@ -99,12 +112,12 @@ sudo usermod -aG docker ${USER}
 ```
 
 ### Continuous delivery (GitHub Actions)
-Once we have our machine ready, we could deploy by hand the application, taking our docker-compose file and executing it in the remote machine. In this repository, this process is done automatically using **GitHub Actions**. The idea is to trigger a series of actions when some condition is met in the repository. The precondition to trigger a deployment is going to be: "create a new release". The actions to execute are the following:
+Once the machine is ready, we could deploy by hand the application, taking our docker-compose file and executing it in the remote machine. In this repository, this process is done automatically using **GitHub Actions**. The idea is to trigger a series of actions when some condition is met in the repository. The precondition to trigger a deployment is going to be: "create a new release". The actions to execute are the following:
 
 ![imagen](https://github.com/user-attachments/assets/7ead6571-0f11-4070-8fe8-1bbc2e327ad2)
 
 
-As you can see, unitary tests of each module and e2e tests are executed before pushing the docker images and deploying them. Using this approach we avoid deploying versions that do not pass the tests.
+As it can be seen, unitary tests of each module and e2e tests are executed before pushing the docker images and deploying them. Using this approach we avoid deploying versions that do not pass the tests.
 
 The deploy action is the following:
 
