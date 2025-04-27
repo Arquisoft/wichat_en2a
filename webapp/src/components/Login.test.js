@@ -175,7 +175,7 @@ describe('Login component', () => {
         'http://localhost:8000/login',
         expect.objectContaining({
           username: 'testUser',
-          password: 'testPassword'
+          password: 'testPassword' //NOSONAR
         })
       );
     });

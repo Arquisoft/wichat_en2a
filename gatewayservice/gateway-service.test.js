@@ -535,7 +535,19 @@ describe('Gateway Service', () => {
     expect(response.body).toEqual({
         options: ["option1", "option2", "option3"],
     });
-});
+  });
+
+  it('should return error if LLM service fails at /generateIncorrectOptions', async () => {
+    axios.post.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'LLM Error' } }
+    });
+    const response = await request(app).post('/generateIncorrectOptions').send({
+      correctAnswer: 'France',
+      model: 'gemini'
+    });
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'LLM Error' });
+  });  
 });
 
 // Add these tests to your existing test file
