@@ -41,7 +41,7 @@ async function updateQuestions() {
           );
         } catch (error) {
           attempts++;
-          console.log(`Error fetching questions of type ${type} at attempt ${attempts}: ${error}`)
+          console.log(`Error fetching questions at attempt ${attempts}: ${error}`)
         }
         logErrorCaseAttemts(attempts);
       }
