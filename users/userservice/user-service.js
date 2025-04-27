@@ -60,6 +60,71 @@ const verifyAdmin = async (req, res, next) => {
     }
 };
 
+async function updateUserHandler(req, res, options = {}) {
+  try {
+    const userId = req.params.userId;
+
+    // Validate userId format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid userId format' });
+    }
+
+    const objectId = new ObjectId(userId);
+    const updateData = {};
+
+    // Check if user exists
+    const user = await User.findById(objectId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // username update
+    if (req.body.username !== undefined) {
+      if (req.body.username.trim() === '') {
+        return res.status(400).json({ error: 'Username cannot be empty' });
+      }
+      if (typeof req.body.username !== 'string' || !req.body.username.match(/^[a-zA-Z0-9_]+$/)) {
+        return res.status(400).json({ error: 'Invalid username format' });
+      }
+      updateData.username = req.body.username;
+    }
+
+    // password update
+    if (req.body.password !== undefined) {
+      if (req.body.password === '') {
+        return res.status(400).json({ error: 'Password cannot be empty' });
+      }
+      updateData.password = await bcrypt.hash(req.body.password, 10);
+    }
+
+    // isAdmin update (admin only)
+    if (options.allowIsAdmin && req.body.isAdmin !== undefined) {
+      updateData.isAdmin = !!req.body.isAdmin;
+    }
+
+    // profile picture update
+    if (req.body.profilePicture !== undefined) {
+      updateData.profilePicture = req.body.profilePicture === '' ? null : req.body.profilePicture;
+    }
+
+    // Check if there's anything to update
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ error: 'No valid fields to update' });
+    }
+
+    // Update user with new data
+    const updatedUser = await User.findByIdAndUpdate(
+      objectId,
+      updateData,
+      { new: true }
+    );
+
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 //add user endpoint
 app.post('/adduser', async (req, res) => {
     try {
@@ -125,140 +190,10 @@ app.delete('/users/:userId', verifyAdmin, async (req, res) => {
 });
 
 // update user endpoint
-app.put('/users/self/:userId', async (req, res) => {
-  try {
-      const userId = req.params.userId;
-
-      // Validate userId format
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ error: 'Invalid userId format' });
-      }
-
-      // Convert string ID to ObjectId
-      const objectId = new ObjectId(userId);
-
-      const updateData = {};
-      
-      // Check if user exists
-      const user = await User.findById(objectId);
-      if (!user) {
-          return res.status(404).json({ error: 'User not found' });
-      }
-      
-      // username update 
-      if (req.body.username !== undefined) {
-          if (req.body.username.trim() === '') {
-              return res.status(400).json({ error: 'Username cannot be empty' });
-          }
-          // Validate username format
-          if (typeof req.body.username !== 'string' || !req.body.username.match(/^[a-zA-Z0-9_]+$/)) {
-              return res.status(400).json({ error: 'Invalid username format' });
-          }
-          updateData.username = req.body.username;
-      }
-      
-      // Handle password update - prevent empty password
-      if (req.body.password !== undefined) {
-          if (req.body.password === '') {
-              return res.status(400).json({ error: 'Password cannot be empty' });
-          }
-          updateData.password = await bcrypt.hash(req.body.password, 10);
-      }
-      
-      // profile picture update - empty string or null to remove profile picture
-      if (req.body.profilePicture !== undefined) {
-          // if empty string -> to remove profile picture
-          updateData.profilePicture = req.body.profilePicture === '' ? null : req.body.profilePicture;
-      }
-      
-      // Check if there's anything to update
-      if (Object.keys(updateData).length === 0) {
-          return res.status(400).json({ error: 'No valid fields to update' });
-      }
-      
-      // Update user with new data
-      const updatedUser = await User.findByIdAndUpdate(
-          objectId,
-          updateData,
-          { new: true } // Return the updated user
-      );
-      
-      res.json(updatedUser);
-  } catch (error) {
-      res.status(500).json({ error: error.message });
-  }
-});
-
+app.put('/users/self/:userId', (req, res) => updateUserHandler(req, res));
 
 // update user endpoint (admin)
-app.put('/users/:userId', verifyAdmin, async (req, res) => {
-  try {
-      const userId = req.params.userId;
-
-      // Validate userId format
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ error: 'Invalid userId format' });
-      }
-
-      // Convert string ID to ObjectId
-      const objectId = new ObjectId(userId);
-
-      const updateData = {};
-      
-      // Check if user exists
-      const user = await User.findById(objectId);
-      if (!user) {
-          return res.status(404).json({ error: 'User not found' });
-      }
-      
-      // username update 
-      if (req.body.username !== undefined) {
-          if (req.body.username.trim() === '') {
-              return res.status(400).json({ error: 'Username cannot be empty' });
-          }
-          // Validate username format
-          if (typeof req.body.username !== 'string' || !req.body.username.match(/^[a-zA-Z0-9_]+$/)) {
-              return res.status(400).json({ error: 'Invalid username format' });
-          }
-          updateData.username = req.body.username;
-      }
-      
-      // Handle password update - prevent empty password
-      if (req.body.password !== undefined) {
-          if (req.body.password === '') {
-              return res.status(400).json({ error: 'Password cannot be empty' });
-          }
-          updateData.password = await bcrypt.hash(req.body.password, 10);
-      }
-
-      // isAdmin update
-      if (req.body.isAdmin !== undefined) {
-        updateData.isAdmin = !!req.body.isAdmin; // Ensure boolean
-      } 
-      
-      // profile picture update - empty string or null to remove profile picture
-      if (req.body.profilePicture !== undefined) {
-          // if empty string -> to remove profile picture
-          updateData.profilePicture = req.body.profilePicture === '' ? null : req.body.profilePicture;
-      }
-      
-      // Check if there's anything to update
-      if (Object.keys(updateData).length === 0) {
-          return res.status(400).json({ error: 'No valid fields to update' });
-      }
-      
-      // Update user with new data
-      const updatedUser = await User.findByIdAndUpdate(
-          objectId,
-          updateData,
-          { new: true } // Return the updated user
-      );
-      
-      res.json(updatedUser);
-  } catch (error) {
-      res.status(500).json({ error: error.message });
-  }
-});
+app.put('/users/:userId', verifyAdmin, (req, res) => updateUserHandler(req, res, { allowIsAdmin: true }));
 
 // Endpoint to get username of one userId
 app.get('/getUserById/:userId', (req, res) => {
