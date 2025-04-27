@@ -1,5 +1,7 @@
 import {AppBar, Toolbar, Button, Box, Container} from "@mui/material";
 import {useNavigate} from "react-router-dom";
+import { useAuth } from './AuthContext';
+import PropTypes from "prop-types";
 
 const navButtonStyle = {
     backgroundColor: "#f5f5f5", // Blanco grisáceo
@@ -12,6 +14,12 @@ const navButtonStyle = {
 
 const Navbar = () => {
     const navigate = useNavigate();
+    const { logout } = useAuth();
+
+    const handleLogout = () => {
+        logout(); // Clear the user state and localStorage
+        navigate('/login'); // Redirect to the login page after logout
+    };
     return (
         <AppBar position="fixed" sx={{top: 0, left: 0, width: "100%", zIndex: 1100, backgroundColor: "#FFD700"}}>
             <Container maxWidth="xl">
@@ -24,12 +32,16 @@ const Navbar = () => {
                         <Button sx={navButtonStyle} onClick={() => navigate("/leaderboard")}>Leaderboards</Button>
                     </Box>
                     <Box sx={{display: "flex", ml: "auto"}}>
-                        <Button sx={navButtonStyle} onClick={() => navigate("/login")}>Log Out</Button>
+                        <Button sx={navButtonStyle} onClick={() => handleLogout()}>Log Out</Button>
                     </Box>
                 </Toolbar>
             </Container>
         </AppBar>
     );
 };
+Navbar.propTypes = {
+    onNavigateRequest: PropTypes.func
+};
+
 
 export default Navbar;
