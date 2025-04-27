@@ -120,6 +120,73 @@ describe('Gateway Service', () => {
     expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/users'));
   });
 
+  it('should forward delete user request to user service', async () => {
+    const userId = '507f1f77bcf86cd799439011'; // Example user ID
+    const mockResponse = { message: 'User deleted successfully' };
+    axios.delete.mockResolvedValueOnce({ data: mockResponse });
+  
+    const response = await request(app)
+      .delete(`/users/${userId}`)
+      .set('Authorization', 'Bearer faketoken');
+  
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+    expect(axios.delete).toHaveBeenCalledWith(
+      expect.stringContaining(`/users/${userId}`),
+      { headers: { Authorization: 'Bearer faketoken' } }
+    );
+  });
+  
+  it('should return error when user service fails to delete user', async () => {
+    const userId = '507f1f77bcf86cd799439011'; // Example user ID
+    axios.delete.mockRejectedValueOnce({
+      response: { status: 404, data: { error: 'User not found' } }
+    });
+  
+    const response = await request(app)
+      .delete(`/users/${userId}`)
+      .set('Authorization', 'Bearer faketoken');
+  
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'User not found' });
+  });
+  
+  it('should forward update user request to user service', async () => {
+    const userId = '507f1f77bcf86cd799439011'; // Example user ID
+    const updateData = { username: 'newname' };
+    const mockResponse = { _id: userId, username: 'newname' };
+    axios.put.mockResolvedValueOnce({ data: mockResponse });
+  
+    const response = await request(app)
+      .put(`/users/${userId}`)
+      .set('Authorization', 'Bearer faketoken')
+      .send(updateData);
+  
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+    expect(axios.put).toHaveBeenCalledWith(
+      expect.stringContaining(`/users/${userId}`),
+      updateData,
+      { headers: { Authorization: 'Bearer faketoken' } }
+    );
+  });
+  
+  it('should return error when user service fails to update user', async () => {
+    const userId = '507f1f77bcf86cd799439011'; // Example user ID
+    const updateData = { username: 'newname' };
+    axios.put.mockRejectedValueOnce({
+      response: { status: 400, data: { error: 'Invalid data' } }
+    });
+  
+    const response = await request(app)
+      .put(`/users/${userId}`)
+      .set('Authorization', 'Bearer faketoken')
+      .send(updateData);
+  
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'Invalid data' });
+  });
+
   it('should return an error response on failure', async () => {
     mockAxiosError(500, 'Internal Server Error');
 

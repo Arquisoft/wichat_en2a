@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const promBundle = require('express-prom-bundle');
 
 //libraries required for OpenAPI-Swagger
@@ -258,8 +259,15 @@ app.get('/scores', verifyToken, async (req, res) => {
 // Delete user (admin only)
 app.delete('/users/:userId', async (req, res) => {
   try {
+    const { userId } = req.params;
+    
+    // Validate userId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid userId format' });
+    }
+
     // Forward the request and headers (for admin token)
-    const response = await axios.delete(`${userServiceUrl}/users/${req.params.userId}`, {
+    const response = await axios.delete(`${userServiceUrl}/users/${userId}`, {
       headers: { Authorization: req.header('Authorization') }
     });
     res.json(response.data);
@@ -271,8 +279,15 @@ app.delete('/users/:userId', async (req, res) => {
 // Update user (admin only)
 app.put('/users/:userId', async (req, res) => {
   try {
+    const { userId } = req.params;
+    
+    // Validate userId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid userId format' });
+    }
+
     // Forward the request and headers (for admin token)
-    const response = await axios.put(`${userServiceUrl}/users/${req.params.userId}`, req.body, {
+    const response = await axios.put(`${userServiceUrl}/users/${userId}`, req.body, {
       headers: { Authorization: req.header('Authorization') }
     });
     res.json(response.data);
