@@ -27,6 +27,12 @@ describe('Game Component', () => {
 
     beforeEach(() => {
         mockAxios.reset();
+        // Mock localStorage
+        Storage.prototype.getItem = jest.fn((key) => {
+            if (key === 'gameMode') return 'flag';
+            if (key === 'flagQuestions') return '10';
+            return null;
+        });
     });
 
     afterEach(() => {
@@ -56,7 +62,7 @@ describe('Game Component', () => {
     });
 
     test('fetches and displays question and options', async () => {
-        setupMockApiResponse('question', mockQuestion);
+        setupMockApiResponse('question/flag', mockQuestion);
         renderGameComponent();
 
         await waitFor(() => {
@@ -71,7 +77,7 @@ describe('Game Component', () => {
     });
 
     test('Clicking on back redirect to /home', async () => {
-        setupMockApiResponse('question', mockQuestion);
+        setupMockApiResponse('question/flag', mockQuestion);
         renderGameComponent();
         await waitFor(() => {
             const backButton = screen.getByRole('button', { name: /Exit/i});
@@ -107,7 +113,7 @@ describe('Game Component', () => {
     });
 
     test('shows an error message if fetching fails', async () => {
-        setupMockApiResponse('question', {}, 500);
+        setupMockApiResponse('question/flag', {}, 500);
         renderGameComponent();
 
         await waitFor(() => {
@@ -118,7 +124,7 @@ describe('Game Component', () => {
     test('displays the user input and the LLM output in chat after sending a prompt, ensuring the Send button turns off', async () => {
         const mockInput = "Which traditions does this country have?";
         const mockOutput = { answer: 'This country has bullfighting as a tradition.' };
-        setupMockApiResponse('question', mockQuestion);
+        setupMockApiResponse('question/flag', mockQuestion);
         mockAxios.onPost(`${apiEndpoint}/askllm`).reply(200, mockOutput);
 
         renderGameComponent();
@@ -150,7 +156,7 @@ describe('Game Component', () => {
     test('next question will be shown 3 seconds after selecting an option', async () => {
         jest.useFakeTimers(); // Usamos timers fake para avanzar tiempo
 
-        setupMockApiResponse('question', mockQuestion);
+        setupMockApiResponse('question/flag', mockQuestion);
         const mockQuestion2 = {
             _id: '2',
             imageUrl: 'https://example.com/flag2.png',
@@ -208,7 +214,7 @@ describe('Game Component', () => {
 
 
     test('disables all buttons after selecting an answer', async () => {
-        setupMockApiResponse('question', mockQuestion);
+        setupMockApiResponse('question/flag', mockQuestion);
         renderGameComponent();
 
         await waitFor(() => {
@@ -224,7 +230,7 @@ describe('Game Component', () => {
     });
 
     test('changes button color when selecting an incorrect answer', async () => {
-        setupMockApiResponse('question', mockQuestion);
+        setupMockApiResponse('question/flag', mockQuestion);
         mockAxios.onPost(`${apiEndpoint}/check-answer`).reply(200, { isCorrect: false });
 
         renderGameComponent();
@@ -247,7 +253,7 @@ describe('Game Component', () => {
     });
 
     test('changes button color when selecting the correct answer', async () => {
-        setupMockApiResponse('question', mockQuestion);
+        setupMockApiResponse('question/flag', mockQuestion);
         mockAxios.onPost(`${apiEndpoint}/check-answer`).reply(200, { isCorrect: true });
 
         renderGameComponent();
@@ -265,7 +271,7 @@ describe('Game Component', () => {
     });
 
     test('increments score correctly when correct answer is selected', async () => {
-        setupMockApiResponse('question', mockQuestion);
+        setupMockApiResponse('question/flag', mockQuestion);
         mockAxios.onPost(`${apiEndpoint}/check-answer`).reply(200, { isCorrect: true });
 
         renderGameComponent();
@@ -286,7 +292,7 @@ describe('Game Component', () => {
     });
 
     test('does not increment score when incorrect answer is selected', async () => {
-        setupMockApiResponse('question', mockQuestion);
+        setupMockApiResponse('question/flag', mockQuestion);
         mockAxios.onPost(`${apiEndpoint}/check-answer`).reply(200, { isCorrect: false });
 
         renderGameComponent();
@@ -307,7 +313,7 @@ describe('Game Component', () => {
     });
 
     test('save scores when finish all questions', async () => {
-        setupMockApiResponse('question', mockQuestion);
+        setupMockApiResponse('question/flag', mockQuestion);
         mockAxios.onPost(`${apiEndpoint}/check-answer`).reply(200, { isCorrect: false });
 
         renderGameComponent();
@@ -334,7 +340,7 @@ describe('Game Component', () => {
     });
 
     test('function handleTimeUp() is called after timer ends', async () => {
-        setupMockApiResponse('question', mockQuestion);
+        setupMockApiResponse('question/flag', mockQuestion);
         renderGameComponent();
 
         await waitFor(() => {
