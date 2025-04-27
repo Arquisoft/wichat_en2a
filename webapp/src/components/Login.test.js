@@ -125,4 +125,60 @@ describe('Login component', () => {
       expect(screen.queryByText(/Error: Invalid credentials/i)).not.toBeInTheDocument();
     }, { timeout: 7000 });
   });
+
+  it('should disable login button if username or password is missing', async () => {
+    renderLoginComponent();
+  
+    const usernameInput = screen.getByLabelText(/Username/i);
+    const passwordInput = screen.getByLabelText(/Password/i);
+    const loginButton = screen.getByRole('button', { name: /Login/i });
+  
+    fireEvent.change(usernameInput, { target: { value: 'testUser' } });
+    expect(loginButton).toBeDisabled();
+  
+    fireEvent.change(usernameInput, { target: { value: '' } });
+    fireEvent.change(passwordInput, { target: { value: 'testPassword' } });
+    expect(loginButton).toBeDisabled();
+
+    fireEvent.change(passwordInput, { target: { value: '' } });
+    expect(loginButton).toBeDisabled();
+  });
+
+  it('should navigate to /admin if user is an admin', async () => {
+    mockAxios.onPost('http://localhost:8000/login').reply(200, {
+      userId: 'adminId',
+      username: 'adminUser',
+      token: 'adminToken',
+      isAdmin: true,
+    });
+    renderLoginComponent();
+    await fillLoginFormAndSubmit();
+  
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/admin');
+    });
+  });
+
+  it('should send login request to the correct API endpoint', async () => {
+    const spy = jest.spyOn(axios, 'post');
+    mockAxios.onPost('http://localhost:8000/login').reply(200, {
+      userId: 'userId',
+      username: 'testUser',
+      token: 'token123'
+    });
+    
+    renderLoginComponent();
+    await fillLoginFormAndSubmit();
+
+    await waitFor(() => {
+      expect(spy).toHaveBeenCalledWith(
+        'http://localhost:8000/login',
+        expect.objectContaining({
+          username: 'testUser',
+          password: 'testPassword'
+        })
+      );
+    });
+  });  
+  
 });
