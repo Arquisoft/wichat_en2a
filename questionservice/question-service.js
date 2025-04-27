@@ -310,16 +310,15 @@ async function getQuestion(type) {
     try {
       await fetchQuestionData(5, type); // Fetch a few questions if none are available
     } catch (error) {
-      console.error("Error while fetching new questions");
+      console.error("Error while fetching new questions under critical conditions (no questions available)");
     }
   }
 
   if (questionsCount < 200) {
-    try{
-      fetchQuestionData(5, type); // Fetch a new question if less than 200 are available
-    } catch (error) {
-      console.error("Error while fetching new questions");
-    }
+    // Fetch a new question if less than 200 are available
+      fetchQuestionData(5, type).catch(
+        console.error("Error while fetching new questions to improve the pool of questions")
+      );
   }
   
   try {
