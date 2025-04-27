@@ -307,7 +307,7 @@ describe('Gateway Service', () => {
       },
     });
 
-    const response = await request(app).get('/question');
+    const response = await request(app).get('/question/flag');
     
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Internal Server Error' });
@@ -319,7 +319,7 @@ describe('Gateway Service', () => {
     const mockResponse = { data: { question: 'https://example.com/flag.png'} };
       axios.get.mockResolvedValue(mockResponse);
   
-      const response = await request(app).get('/question');
+      const response = await request(app).get('/question/flag');
   
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockResponse.data);
@@ -709,7 +709,7 @@ describe('Gateway Service Error Handling', () => {
       response: { status: 500, data: { error: 'Question Service Error' } }
     });
   
-    const response = await request(app).get('/question');
+    const response = await request(app).get('/question/flag');
   
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Question Service Error' });
