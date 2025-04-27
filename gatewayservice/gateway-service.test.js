@@ -155,7 +155,42 @@ describe('Gateway Service', () => {
 
     expect(response.status).toBe(404);
     expect(response.body).toEqual({ error: 'User not found' });
-  })
+  });
+
+  it('should return 200 and user data when the user is updated successfully', async () => {
+    const userId = '123';
+    const requestBody = { name: 'Updated User' };
+
+    // Simulamos la respuesta exitosa de axios
+    axios.put.mockResolvedValueOnce({ data: { id: userId, name: 'Updated User' } });
+
+    const response = await request(app)
+        .put(`/users/${userId}`)
+        .send(requestBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ id: userId, name: 'Updated User' });
+  });
+
+  it('should return 400 if there is an error in the request to update', async () => {
+    const userId = '123';
+    const requestBody = { name: 'Updated User' };
+
+    // Error in response
+    axios.put.mockRejectedValue({
+      response: {
+        status: 400,
+        data: { error: 'Bad Request' }
+      }
+    });
+
+    const response = await request(app)
+        .put(`/users/${userId}`)
+        .send(requestBody);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'Bad Request' });
+  });
 
   // Test /saveScore endpoint
   it('should forward saveScore request to game service', async () => {
