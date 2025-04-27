@@ -105,7 +105,7 @@ app.get('/getUserById/:userId', async (req, res) => {
 
 app.put('/users/:userId', async (req, res) => {
     try {
-        const response = await axios.put(`${userServiceUrl}/users/${req.params.userId}`, req.body);
+        const response = await axios.put(`${userServiceUrl}/users/self/${req.params.userId}`, req.body);
         res.json(response.data);
     } catch (error) {
         if (error.response) {
