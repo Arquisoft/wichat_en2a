@@ -187,6 +187,16 @@ describe('Gateway Service', () => {
     expect(response.body).toEqual({ error: 'Invalid data' });
   });
 
+  it('should return 500 when user service fails at /users/:userId', async () => {
+    const userId = '507f1f77bcf86cd799439011';
+    axios.delete.mockRejectedValueOnce(new Error('Service down'));
+    const response = await request(app)
+      .delete(`/users/${userId}`)
+      .set('Authorization', 'Bearer faketoken');
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty('error');
+  });
+
   it('should return an error response on failure', async () => {
     mockAxiosError(500, 'Internal Server Error');
 
