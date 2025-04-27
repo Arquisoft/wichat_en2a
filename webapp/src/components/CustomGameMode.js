@@ -77,7 +77,7 @@ const CustomGameMode = () => {
       }
 
       if(shuffle == null)
-        shuffle = false; //if shuffle is not selected, set it to false
+        setShuffle(false); //if shuffle is not selected, set it to false
 
       localStorage.removeItem('gameMode'); // Remove any existing game mode from localStorage
       localStorage.setItem('shuffle', shuffle);
