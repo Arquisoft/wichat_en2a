@@ -46,12 +46,6 @@ describe('CustomGameMode component', () => {
     localStorageMock.clear();
 
     global.fetch.mockImplementation((url) => {
-        if (url.toString().includes('/clear-questions')) {
-           return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
-        }
-        if (url.toString().includes('/fetch-custom-question-data')) {
-           return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
-        }
         return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
     });
   });
@@ -230,7 +224,7 @@ describe('CustomGameMode component', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/gamemodes');
   });
 
-  it('calls API endpoints, sets localStorage, and navigates on Ready click', async () => {
+  it('sets localStorage, and navigates on Ready click', async () => {
     render(
       <MemoryRouter>
         <CustomGameMode />
@@ -253,34 +247,6 @@ describe('CustomGameMode component', () => {
 
     fireEvent.click(readyButton);
 
-    expect(readyButton).toBeDisabled();
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
-
-    await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-            expect.stringContaining('/clear-questions'),
-            { method: 'POST' }
-        );
-    });
-
-     await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-            expect.stringContaining('/fetch-custom-question-data'),
-            expect.objectContaining({
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    questions: [
-                        { questionType: 'flag', numberOfQuestions: 3 },
-                        { questionType: 'car', numberOfQuestions: 7 }
-                    ],
-                    shuffle: true
-                })
-            })
-        );
-    });
-
-
    await waitFor(() => {
         expect(localStorageMock.setItem).toHaveBeenCalledWith('totalQuestions', 10);
         expect(localStorageMock.setItem).toHaveBeenCalledWith('timeLimit', 15);
@@ -291,42 +257,6 @@ describe('CustomGameMode component', () => {
     });
 
      expect(mockNavigate).toHaveBeenCalledTimes(1);
-  });
-
-  it('handles fetch error during Ready click', async () => {
-     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-     global.fetch.mockImplementationOnce(() =>
-       Promise.reject(new Error('Network Error 1'))
-     );
-
-    render(
-      <MemoryRouter>
-        <CustomGameMode />
-      </MemoryRouter>
-    );
-
-    const flagsCheckbox = screen.getAllByRole('checkbox')[1];
-    const flagsSpinner = screen.getAllByRole('spinbutton')[1];
-    fireEvent.click(flagsCheckbox);
-    fireEvent.change(flagsSpinner, { target: { value: '8' } });
-    const readyButton = screen.getByRole('button', { name: /Ready/i });
-    expect(readyButton).toBeEnabled();
-
-    fireEvent.click(readyButton);
-
-    await waitFor(() => {
-      expect(readyButton).toBeEnabled();
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-    });
-
-    expect(mockNavigate).not.toHaveBeenCalled();
-    expect(localStorageMock.setItem).not.toHaveBeenCalled();
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Failed to start custom game:',
-        expect.any(Error)
-    );
-
-    consoleErrorSpy.mockRestore();
   });
 
    it('toggles shuffle state', () => {

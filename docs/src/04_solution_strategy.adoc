@@ -24,6 +24,8 @@ The following technologies are used in our project:
 * *Azure*: To deploy the system, we will use Azure due to its scalability and reliability. We will use a VM stored in Azure to deploy the system and make it accessible. We could have used any other cloud provider, but we decided to use Azure because it was the one shown in the course. Moreover, we could have used a local server, but that would demand to have a machine running 24/7 and we would have to take care of some security issues that using a cloud provided are not so relevant.
 * *Postman*: To manually test the APIs we expose, we will use this tool. It is a very useful tool for testing APIs and it allows us to test the APIs without having to build the whole system. It is also very useful for debugging and for understanding how the APIs work. It will be useful also to build automated tests for the APIs, provided that the tests done in one of them should not depend on ohter APIs. We may use this tool to see exactly what each API expects and returns to build mocks for the tests.
 * *Swagger*: To document the main API in the system (the one exposed by the Gateway-Service), we will use this software. It is a well known tool for documenting APIs and it allows to generate documentation in a semi-automatic way. In our case, we will use a YAML file to describe the documentation and then we will use Swagger to generate it. We will try to keep the documentation as close as possible to the OpenAPI standard (as requested in the course).
+* *Grafana and Prometheus*: To provide live handeling of the status of the application, we have used these two technologies. The main reason to chooose them is that a lesson was provided about them and that we only needed to minimally configure them in our project to make them work.
+* *JMeter*: To perform the load tests we choose to use JMeter over the proposed technology (Gatling) because JMeter is open-source and this way we would not need to worry about the usage of the tokens.
 
 === Architecture
 
@@ -40,6 +42,7 @@ The specific components are:
 ** *LeaderBoard-Service*: This sub-service will be used to retrieve information about users and games to be displayed ordered (for now by the total score obtained).
 * *Questions-Service*: This component will be responsible for retrieving the questions from Wikidata and storing them in its database. It will be built using NodeJS and will be responsible for handling the requests from the Gateway-Service and sending them to Wikidata.
 * *LLM-Service*: This component will be responsible of any interaction the system performs with the LLM model. It will be built using NodeJS and will be responsible for handling the requests from the Gateway-Service and sending them to the LLM model.
+* *Scheduling-Service*: This component will be in charge of the timing of when the retrieval of questions from Wikidata is done. The current implementation is that every day at 1 AM the questions will be erased and new ones will be retrieved. This service will be built using NodeJS.
 
 We will try to follow the microservices architecture as much as possible, but it is quite possible that some of the 'microservices' will be using the same database due to information sharing. However, we will try to keep the services as independent as possible.
 

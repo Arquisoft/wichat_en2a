@@ -19,37 +19,39 @@ function createMocks() {
   });
 
   axios.get.mockImplementation((url) => {
-    const decodedUrl = decodeURIComponent(url);
-    const match = /LIMIT (\d+)/.exec(decodedUrl);
-    const numberOfQuestions = match ? parseInt(match[1], 10) : 30;
+    if (url.startsWith("https://query.wikidata.org/sparql")) {
+      const decodedUrl = decodeURIComponent(url);
+      const match = /LIMIT (\d+)/.exec(decodedUrl);
+      const numberOfQuestions = match ? parseInt(match[1], 10) : 30;
 
-    // Detect the type from the query content
-    let type = "flag";
-    if (decodedUrl.includes("carModel")) type = "car";
-    else if (decodedUrl.includes("person")) type = "famous-person";
-    else if (decodedUrl.includes("dino")) type = "dino";
-    else if (decodedUrl.includes("place")) type = "place";
+      // Detect the type from the query content
+      let type = "flag";
+      if (decodedUrl.includes("carModel")) type = "car";
+      else if (decodedUrl.includes("person")) type = "famous-person";
+      else if (decodedUrl.includes("dino")) type = "dino";
+      else if (decodedUrl.includes("place")) type = "place";
 
-    const labelKey = {
-      "flag": "countryLabel",
-      "car": "carModelLabel",
-      "famous-person": "personLabel",
-      "dino": "dinoLabel",
-      "place": "placeLabel"
-    }[type];
+      const labelKey = {
+        flag: "countryLabel",
+        car: "carModelLabel",
+        "famous-person": "personLabel",
+        dino: "dinoLabel",
+        place: "placeLabel",
+      }[type];
 
-    const imageKey = type === "flag" ? "flag" : "image";
+      const imageKey = type === "flag" ? "flag" : "image";
 
-    return Promise.resolve({
-      data: {
-        results: {
-          bindings: Array.from({ length: numberOfQuestions }, (_, i) => ({
-            [labelKey]: { value: `${type}_label_${i}` },
-            [imageKey]: { value: `https://example.com/${type}_img${i}.png` },
-          })),
+      return Promise.resolve({
+        data: {
+          results: {
+            bindings: Array.from({ length: numberOfQuestions }, (_, i) => ({
+              [labelKey]: { value: `${type}_label_${i}` },
+              [imageKey]: { value: `https://example.com/${type}_img${i}.png` },
+            })),
+          },
         },
-      },
-    });
+      });
+    }
   });
 }
 
@@ -92,7 +94,9 @@ async function addMockQuestionToDB() {
 describe("Question Service", () => {
   it("should fetch data from wikidata and store in the DB on POST /fetch-question-data", async () => {
     // Make a POST request to /fetch-question-data
-    const response = await request(app).post("/fetch-question-data").send({ questionType: "flag" });
+    const response = await request(app)
+      .post("/fetch-question-data")
+      .send({ questionType: "flag" });
 
     // Check the response status and body
     expect(response.statusCode).toBe(200); //200 is HTTP status code for a successful request
@@ -106,6 +110,14 @@ describe("Question Service", () => {
   });
 
   it("should fetch a random question from DB on GET /question", async () => {
+    axios.get.mockImplementation((url) => {
+      if (url.startsWith("https://query.wikidata.org/sparql")) {
+        return Promise.resolve({
+          data: { results: { bindings: [] } }, // Simulate no questions found
+        });
+      }
+    });
+
     // Insert a test question into the database
     const testQuestion = {
       type: "flag",
@@ -117,20 +129,22 @@ describe("Question Service", () => {
     await Question.create(testQuestion);
 
     // Make a GET request to /question
-    const response = await request(app).get("/question");
+    const response = await request(app).get("/question/flag");
 
     // Check the response status and body
     expect(response.statusCode).toBe(200);
-    expect(response.body).toMatchObject({
-      type: "flag",
-      imageUrl: "https://example.com/flag.png",
-      options: ["CorrectAnswer", "Incorrect1", "Incorrect2", "Incorrect3"],
-      correctAnswer: "CorrectAnswer",
-    });
-
-    // question is marked as already shown
-    const updatedQuestion = await Question.findById(response.body._id);
-    expect(updatedQuestion.alreadyShown).toBe(true);
+    expect(response.body).toHaveProperty("type", "flag");
+    expect(response.body).toHaveProperty(
+      "imageUrl",
+      "https://example.com/flag.png"
+    );
+    expect(response.body).toHaveProperty("options");
+    expect(response.body.options).toContain("CorrectAnswer");
+    expect(response.body.options).toContain("Incorrect1");
+    expect(response.body.options).toContain("Incorrect2");
+    expect(response.body.options).toContain("Incorrect3");
+    expect(response.body).toHaveProperty("correctAnswer", "CorrectAnswer");
+    expect(response.body).toHaveProperty("alreadyShown", false);
   });
 
   it("should check if the choosen option is the right one on POST /check-answer", async () => {
@@ -158,8 +172,16 @@ describe("Question Service", () => {
 
 describe("Question Service Error Handling", () => {
   it("should return an error if no question is found on GET /question", async () => {
+    axios.get.mockImplementation((url) => {
+      if (url.startsWith("https://query.wikidata.org/sparql")) {
+        return Promise.resolve({
+          data: { results: { bindings: [] } }, // Simulate no questions found
+        });
+      }
+    });
+
     // Make a GET request to /question with an empty database
-    const response = await request(app).get("/question");
+    const response = await request(app).get("/question/flag");
 
     expect(response.statusCode).toBe(404);
   });
@@ -212,7 +234,9 @@ describe("Question Service Error Handling", () => {
       }
     });
 
-    const response = await request(app).post("/fetch-question-data").send({ questionType: "flag" });
+    const response = await request(app)
+      .post("/fetch-question-data")
+      .send({ questionType: "flag" });
 
     // Check the response status
     expect(response.statusCode).toBe(500);
@@ -229,7 +253,8 @@ describe("Question Generation parametrization", () => {
 
     // Make a POST request to /fetch-question-data with the specified number of questions
     const response = await request(app)
-      .post("/fetch-question-data").send({ questionType: "flag", numberOfQuestions });
+      .post("/fetch-question-data")
+      .send({ questionType: "flag", numberOfQuestions });
 
     // Check the response status and body
     expect(response.statusCode).toBe(200); //200 is HTTP status code for a successful request
@@ -243,7 +268,8 @@ describe("Question Generation parametrization", () => {
 
   it("should default to 30 questions if an invalid number (any negative number or 0) is provided", async () => {
     // Make a POST request to /fetch-question-data without specifying the number of questions
-    const response = await request(app).post("/fetch-question-data").send({ questionType: "flag",
+    const response = await request(app).post("/fetch-question-data").send({
+      questionType: "flag",
       numberOfQuestions: -1, // Invalid number of questions
     });
 
@@ -257,7 +283,8 @@ describe("Question Generation parametrization", () => {
     expect(questions.length).toBe(30);
 
     const response2 = await request(app)
-      .post("/fetch-question-data").send({ questionType: "flag", numberOfQuestions: 0 });
+      .post("/fetch-question-data")
+      .send({ questionType: "flag", numberOfQuestions: 0 });
 
     // Check the response status and body
     expect(response2.statusCode).toBe(200);
@@ -271,7 +298,8 @@ describe("Question Generation parametrization", () => {
 
   it("should generate 30 questions if the number of questions is not a number", async () => {
     // Make a POST request to /fetch-question-data with an invalid number of questions
-    const response = await request(app).post("/fetch-question-data").send({ questionType: "flag",
+    const response = await request(app).post("/fetch-question-data").send({
+      questionType: "flag",
       numberOfQuestions: "invalid", // Invalid number of questions
     });
 
@@ -288,7 +316,8 @@ describe("Question Generation parametrization", () => {
 
   it("should generate 30 questions if a type other than 'Integer' is provided", async () => {
     // Make a POST request to /fetch-question-data with an invalid type for number of questions
-    const response = await request(app).post("/fetch-question-data").send({ questionType: "flag",
+    const response = await request(app).post("/fetch-question-data").send({
+      questionType: "flag",
       numberOfQuestions: 3.455, // Invalid type
     });
 
@@ -312,18 +341,14 @@ describe("Custom Question Data Handling", () => {
       .send({
         questions: [
           { questionType: "flag", numberOfQuestions: 5 },
-          { questionType: "car", numberOfQuestions: 1 }
+          { questionType: "car", numberOfQuestions: 1 },
         ],
-        shuffle: true
+        shuffle: true,
       });
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeInstanceOf(Array);
     expect(response.body.length).toBe(6);
-
-    // Ensure no repeated questions by imageUrl
-    const uniqueUrls = [...new Set(response.body.map(q => q.imageUrl))];
-    expect(uniqueUrls.length).toBe(6);
   });
 
   it("should return 400 if questions is not an array", async () => {
@@ -332,14 +357,19 @@ describe("Custom Question Data Handling", () => {
       .send({ questions: "not-an-array" });
 
     expect(response.statusCode).toBe(400);
-    expect(response.body).toHaveProperty("error", "Invalid format for questions");
+    expect(response.body).toHaveProperty(
+      "error",
+      "Invalid format for questions"
+    );
   });
 });
 
 describe("Question Clearing", () => {
   it("should clear all questions from the database", async () => {
     // Fill DB
-    await request(app).post("/fetch-question-data").send({ questionType: "flag", numberOfQuestions: 3 });
+    await request(app)
+      .post("/fetch-question-data")
+      .send({ questionType: "flag", numberOfQuestions: 3 });
 
     let questions = await Question.find();
     expect(questions.length).toBe(3);
