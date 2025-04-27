@@ -38,6 +38,11 @@ const renderGameComponent = () => {
 
 jest.useFakeTimers();
 
+// Ask API
+const setupMockApiResponse = (endpoint, response, status = 200) => {
+  mockAxios.onGet(`${apiEndpoint}/${endpoint}`).reply(status, response);
+};
+
 describe("Game Component", () => {
   const mockOnNavigate = jest.fn();
   const MAX_QUESTIONS = 10; // Define the max number of questions
@@ -56,11 +61,6 @@ describe("Game Component", () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
   });
-
-  // Ask API
-  const setupMockApiResponse = (endpoint, response, status = 200) => {
-    mockAxios.onGet(`${apiEndpoint}/${endpoint}`).reply(status, response);
-  };
 
   test("renders loading state initially", () => {
     renderGameComponent();
@@ -407,10 +407,20 @@ describe("Unit tests for getGameMode method", () => {
     Storage.prototype.setItem = jest.fn();
   };
 
+  beforeEach(() => {
+    // Mock possible API responses
+    setupMockApiResponse("question/flag", mockQuestion);
+    setupMockApiResponse("question/dino", mockQuestion);
+    setupMockApiResponse("question/car", mockQuestion);
+    setupMockApiResponse("question/famous-person", mockQuestion);
+    setupMockApiResponse("question/place", mockQuestion);
+  });
+
   afterEach(() => {
     // Clear all mocks after each test
     jest.clearAllMocks();
     localStorage.clear();
+    mockAxios.reset();
   });
 
   test("returns stored gameMode when available", () => {
@@ -451,5 +461,18 @@ describe("Unit tests for getGameMode method", () => {
     expect(localStorage.getItem).toHaveBeenCalledWith("gameMode");
     expect(localStorage.setItem).toHaveBeenCalledWith(expect.any(String), 9);
     expect(localStorage.setItem).toHaveBeenCalledTimes(1);
+  });
+
+  test("defaults to flag game mode when no gameMode is stored", () => {
+    setupLocalStorage({});
+
+    renderGameComponent();
+
+    expect(localStorage.getItem).toHaveBeenCalledWith("gameMode");
+    waitFor(() => {
+      expect(mockAxios.history.get.length).toBe(1);
+      expect(mockAxios.history.get[0].url).toBe(`${apiEndpoint}/question/flag`);
+    });
+    expect(localStorage.setItem).not.toHaveBeenCalled();
   });
 });
