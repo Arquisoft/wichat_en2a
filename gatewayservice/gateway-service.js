@@ -279,7 +279,7 @@ app.delete('/users/admin/:userId', async (req, res) => {
     }
 
     // Forward the request and headers (for admin token)
-    const response = await axios.delete(`${userServiceUrl}/users/${userId}`, {
+    const response = await axios.delete(`${userServiceUrl}/users/${userId}`, { // NOSONAR (validation done above)
       headers: { Authorization: req.header('Authorization') }
     });
     res.json(response.data);
@@ -293,13 +293,13 @@ app.put('/users/admin/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     
-    // Validate userId
+    // Validate userId 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(400).json({ error: 'Invalid userId format' });
     }
 
     // Forward the request and headers (for admin token)
-    const response = await axios.put(`${userServiceUrl}/users/${userId}`, req.body, {
+    const response = await axios.put(`${userServiceUrl}/users/${userId}`, req.body, { // NOSONAR (validation done above)
       headers: { Authorization: req.header('Authorization') }
     });
     res.json(response.data);
