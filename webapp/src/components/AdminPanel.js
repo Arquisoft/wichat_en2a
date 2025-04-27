@@ -36,7 +36,7 @@ const AdminPanel = () => {
     const handleDelete = async (userId) => {
         if (!window.confirm('Are you sure you want to delete this user?')) return;
         try {
-            const res = await fetch(`${apiEndpoint}/users/${userId}`, {
+            const res = await fetch(`${apiEndpoint}/users/admin/${userId}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -61,7 +61,7 @@ const AdminPanel = () => {
 
     const handleEdit = async () => {
         try {
-            const res = await fetch(`${apiEndpoint}/users/${editUser._id}`, {
+            const res = await fetch(`${apiEndpoint}/users/admin/${editUser._id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

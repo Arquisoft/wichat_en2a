@@ -269,7 +269,7 @@ app.get('/scores', verifyToken, async (req, res) => {
 });
 
 // Delete user (admin only)
-app.delete('/users/:userId', async (req, res) => {
+app.delete('/users/admin/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     
@@ -289,7 +289,7 @@ app.delete('/users/:userId', async (req, res) => {
 });
 
 // Update user (admin only)
-app.put('/users/:userId', async (req, res) => {
+app.put('/users/admin/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     

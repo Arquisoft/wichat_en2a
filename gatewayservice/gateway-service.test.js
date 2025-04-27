@@ -126,7 +126,7 @@ describe('Gateway Service', () => {
     axios.delete.mockResolvedValueOnce({ data: mockResponse });
   
     const response = await request(app)
-      .delete(`/users/${userId}`)
+      .delete(`/users/admin/${userId}`)
       .set('Authorization', 'Bearer faketoken');
   
     expect(response.status).toBe(200);
@@ -144,7 +144,7 @@ describe('Gateway Service', () => {
     });
   
     const response = await request(app)
-      .delete(`/users/${userId}`)
+      .delete(`/users/admin/${userId}`)
       .set('Authorization', 'Bearer faketoken');
   
     expect(response.status).toBe(404);
@@ -158,7 +158,7 @@ describe('Gateway Service', () => {
     axios.put.mockResolvedValueOnce({ data: mockResponse });
   
     const response = await request(app)
-      .put(`/users/${userId}`)
+      .put(`/users/admin/${userId}`)
       .set('Authorization', 'Bearer faketoken')
       .send(updateData);
   
@@ -187,11 +187,11 @@ describe('Gateway Service', () => {
     expect(response.body).toEqual({ error: 'Invalid data' });
   });
 
-  it('should return 500 when user service fails at /users/:userId', async () => {
+  it('should return 500 when user service fails at /users/admin/:userId', async () => {
     const userId = '507f1f77bcf86cd799439011';
     axios.delete.mockRejectedValueOnce(new Error('Service down'));
     const response = await request(app)
-      .delete(`/users/${userId}`)
+      .delete(`/users/admin/${userId}`)
       .set('Authorization', 'Bearer faketoken');
     expect(response.status).toBe(500);
     expect(response.body).toHaveProperty('error');

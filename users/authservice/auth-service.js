@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('./auth-model');
-const NewUser = require('../userservice/user-model');
 const { check, matchedData, validationResult } = require('express-validator');
 const app = express();
 const port = 8002; 
