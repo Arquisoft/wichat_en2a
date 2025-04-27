@@ -2,8 +2,6 @@ import {render, fireEvent, screen} from '@testing-library/react';
 import Navbar from './Navbar';
 import { MemoryRouter } from 'react-router-dom';
 import {AuthProvider} from "./AuthContext";
-import {MemoryRouter} from 'react-router-dom';
-import {AuthProvider} from "./AuthContext";
 import React from "react";
 
 //useNavigate Mock

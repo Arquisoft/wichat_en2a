@@ -5,8 +5,8 @@ const userSchema = new mongoose.Schema({
     password: String,
     createdAt: Date,
     profilePicture: {
-        type: String,  // store the URL of the image
-        default: null  // default value -> null
+        type: String,
+        default: "/avatars/default.jpg"
     }
 });
 

@@ -41,8 +41,8 @@ app.post('/login',  [
     let username =req.body.username.toString();
     let password =req.body.password.toString();
 
-    const userNotAuth = await NewUser.findOne({username});
-    let profilePic = userNotAuth.profilePicture;
+    // const userNotAuth = await NewUser.findOne({ username });
+    // let profilePic = userNotAuth ? userNotAuth.profilePicture : null;
 
     // Find the user by username in the database
     const user = await User.findOne({ username });
@@ -58,7 +58,7 @@ app.post('/login',  [
         userId: user._id, // Add user ID to response to use on GAME-SERVICE
         username: username, 
         createdAt: user.createdAt || new Date().toISOString(),
-        profilePicture: profilePic ||"/avatars/default.jpg"
+        profilePicture: user.profilePicture || "/avatars/default.jpg"
       });
 
     } else {

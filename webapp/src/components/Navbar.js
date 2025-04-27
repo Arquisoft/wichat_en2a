@@ -1,9 +1,6 @@
 import {AppBar, Toolbar, Button, Box, Container} from "@mui/material";
 import {useNavigate} from "react-router-dom";
-import { useAuth } from './AuthContext';
-import PropTypes from "prop-types";
 import { Avatar, IconButton } from "@mui/material";
-import {useEffect, useState} from "react";
 import { useAuth } from './AuthContext';
 import PropTypes from "prop-types";
 
