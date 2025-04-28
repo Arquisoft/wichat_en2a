@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Typography, Grid, Button, CircularProgress, Box } from '@mui/material';
 import Navbar from './Navbar';
 
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
-
 const gameModes = [
   { type: "flag", label: "Flags", color: "#1976d2", icon: "/flag.png" },
   { type: "car", label: "Cars", color: "#FF8C00", icon: "/car.png" },
