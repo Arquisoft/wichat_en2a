@@ -10,7 +10,6 @@ export const AuthProvider = ({ children }) => {
         const userId = localStorage.getItem('userId');
         const username = localStorage.getItem('username');
         const isAdmin = localStorage.getItem('isAdmin') === 'true';
-        const profilePic = localStorage.getItem('profilePic');
 
         if (token && userId && username) {
             return { token, userId, username, isAdmin };

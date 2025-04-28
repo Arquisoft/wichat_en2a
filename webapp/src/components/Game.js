@@ -66,7 +66,7 @@ const Game = () => {
     const getGameMode = () => {
         const gameMode = localStorage.getItem('gameMode');
         if(!gameMode) return 'flag'; //default mode
-        if (gameMode != 'custom') return gameMode;
+        if (gameMode !== 'custom') return gameMode;
     
         const availableModes = questions.filter(q => {
             const count = parseInt(localStorage.getItem(`${q.type}Questions`) || '0');
