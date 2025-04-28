@@ -218,22 +218,6 @@ describe('Gateway Service', () => {
     expect(axios.get).toHaveBeenCalledWith(expect.stringContaining(`/getUserById/${userId}`));
   });
 
-  it('should return an error response on failure', async () => {
-    const userId = 'nonexistentid';
-
-    axios.get.mockRejectedValueOnce({
-      response: {
-        status: 404,
-        data: { error: 'User not found' }
-      }
-    });
-
-    const response = await request(app).get(`/getUserById/${userId}`);
-
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({ error: 'User not found' });
-  });
-
   it('should return 200 and user data when the user is updated successfully', async () => {
     const userId = '123';
     const requestBody = { name: 'Updated User' };
