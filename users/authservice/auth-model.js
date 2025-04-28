@@ -4,6 +4,10 @@ const userSchema = new mongoose.Schema({
     username: String,
     password: String,
     createdAt: Date,
+    isAdmin: {
+        type: Boolean,
+        default: false
+    },
     profilePicture: {
         type: String,
         default: "/avatars/default.jpg"

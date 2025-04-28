@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node llm-service.js",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "coverage": "jest --coverage"
   },
   "author": "",
   "license": "ISC",

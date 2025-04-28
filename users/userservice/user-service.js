@@ -3,7 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('./user-model')
+const User = require('./user-model');
+const Score = require('./score-model');
 const ObjectId = mongoose.Types.ObjectId;
 const app = express();
 const port = 8001;
@@ -42,6 +43,88 @@ const verifyToken = (req, res, next) => {
     }
   };
 
+// Admin and token verification middleware
+const verifyAdmin = async (req, res, next) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
+    try {
+        const decoded = jwt.verify(token, 'your-secret-key');
+        const user = await User.findById(decoded.userId);
+        if (!user || user.isAdmin !== true) {
+          return res.status(403).json({ error: 'Admin only' });
+        }
+        req.user = user;
+        next();
+    } catch {
+        return res.status(401).json({ error: 'Invalid token' });
+    }
+};
+
+async function updateUserHandler(req, res, options = {}) {
+  try {
+    const userId = req.params.userId;
+
+    // Validate userId format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid userId format' });
+    }
+
+    const objectId = new ObjectId(userId);
+    const updateData = {};
+
+    // Check if user exists
+    const user = await User.findById(objectId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // username update
+    if (req.body.username !== undefined) {
+      if (req.body.username.trim() === '') {
+        return res.status(400).json({ error: 'Username cannot be empty' });
+      }
+      if (typeof req.body.username !== 'string' || !req.body.username.match(/^[a-zA-Z0-9_]+$/)) {
+        return res.status(400).json({ error: 'Invalid username format' });
+      }
+      updateData.username = req.body.username;
+    }
+
+    // password update
+    if (req.body.password !== undefined) {
+      if (req.body.password === '') {
+        return res.status(400).json({ error: 'Password cannot be empty' });
+      }
+      updateData.password = await bcrypt.hash(req.body.password, 10);
+    }
+
+    // isAdmin update (admin only)
+    if (options.allowIsAdmin && req.body.isAdmin !== undefined) {
+      updateData.isAdmin = !!req.body.isAdmin;
+    }
+
+    // profile picture update
+    if (req.body.profilePicture !== undefined) {
+      updateData.profilePicture = req.body.profilePicture === '' ? null : req.body.profilePicture;
+    }
+
+    // Check if there's anything to update
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ error: 'No valid fields to update' });
+    }
+
+    // Update user with new data
+    const updatedUser = await User.findByIdAndUpdate(
+      objectId,
+      updateData,
+      { new: true }
+    );
+
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 //add user endpoint
 app.post('/adduser', async (req, res) => {
     try {
@@ -79,7 +162,7 @@ app.post('/adduser', async (req, res) => {
 
 
 // delete user endpoint
-app.delete('/users/:userId', async (req, res) => {
+app.delete('/users/:userId', verifyAdmin, async (req, res) => {
   try {
       const userId = req.params.userId;
       
@@ -96,6 +179,9 @@ app.delete('/users/:userId', async (req, res) => {
       
       // Delete user
       await User.findByIdAndDelete(userId);
+
+      // Delete all scores of (already) deleted user
+      await Score.deleteMany({ userId });
       
       res.json({ message: 'User deleted successfully' });
   } catch (error) {
@@ -104,69 +190,10 @@ app.delete('/users/:userId', async (req, res) => {
 });
 
 // update user endpoint
-app.put('/users/:userId', async (req, res) => {
-  try {
-      const userId = req.params.userId;
+app.put('/users/self/:userId', (req, res) => updateUserHandler(req, res));
 
-      // Convert string ID to ObjectId
-      const objectId = new ObjectId(userId);
-
-      const updateData = {};
-      
-      // Validate userId format
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-          return res.status(400).json({ error: 'Invalid userId format' });
-      }
-      
-      // Check if user exists
-      const user = await User.findById(objectId);
-      if (!user) {
-          return res.status(404).json({ error: 'User not found' });
-      }
-      
-      // username update 
-      if (req.body.username !== undefined) {
-          if (req.body.username.trim() === '') {
-              return res.status(400).json({ error: 'Username cannot be empty' });
-          }
-          // Validate username format
-          if (typeof req.body.username !== 'string' || !req.body.username.match(/^[a-zA-Z0-9_]+$/)) {
-              return res.status(400).json({ error: 'Invalid username format' });
-          }
-          updateData.username = req.body.username;
-      }
-      
-      // Handle password update - prevent empty password
-      if (req.body.password !== undefined) {
-          if (req.body.password === '') {
-              return res.status(400).json({ error: 'Password cannot be empty' });
-          }
-          updateData.password = await bcrypt.hash(req.body.password, 10);
-      }
-      
-      // profile picture update - empty string or null to remove profile picture
-      if (req.body.profilePicture !== undefined) {
-          // if empty string -> to remove profile picture
-          updateData.profilePicture = req.body.profilePicture === '' ? null : req.body.profilePicture;
-      }
-      
-      // Check if there's anything to update
-      if (Object.keys(updateData).length === 0) {
-          return res.status(400).json({ error: 'No valid fields to update' });
-      }
-      
-      // Update user with new data
-      const updatedUser = await User.findByIdAndUpdate(
-          objectId,
-          updateData,
-          { new: true } // Return the updated user
-      );
-      
-      res.json(updatedUser);
-  } catch (error) {
-      res.status(500).json({ error: error.message });
-  }
-});
+// update user endpoint (admin)
+app.put('/users/:userId', verifyAdmin, (req, res) => updateUserHandler(req, res, { allowIsAdmin: true }));
 
 // Endpoint to get username of one userId
 app.get('/getUserById/:userId', (req, res) => {
@@ -235,7 +262,7 @@ app.get('/me', verifyToken, async (req, res) => {
 app.get('/users', async (req, res) => {
     try {
         // Fetch all users from the database
-        const users = await User.find({}, 'username _id'); // Use _id not *id
+        const users = await User.find({}, 'username isAdmin _id'); // Use _id not *id
         res.json(users);
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error', details: error.message });
