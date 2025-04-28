@@ -16,9 +16,6 @@ import {
   CircularProgress,
 } from '@mui/material';
 import Navbar from './Navbar';
-
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
-
 const categories = [
   { type: 'flag', label: 'Flags' },
   { type: 'car', label: 'Cars' },

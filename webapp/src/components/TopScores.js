@@ -2,8 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import {
     Paper, Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, Typography, CircularProgress,
-    Box, TableSortLabel, Avatar, Select, MenuItem, FormControl, InputLabel,
-    FormControlLabel, Switch
+    Box, TableSortLabel, Avatar, Select, MenuItem, FormControl, InputLabel
 } from '@mui/material';
 import Navbar from './Navbar';
 
