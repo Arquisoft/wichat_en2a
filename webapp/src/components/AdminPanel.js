@@ -31,7 +31,7 @@ const AdminPanel = () => {
         }
     };
 
-    useEffect(() => { fetchUsers(); }, []);
+    useEffect(() => { fetchUsers().then(() => {console.log("fetch users done")}); }, []);
 
     const handleDelete = async (userId) => {
         if (!window.confirm('Are you sure you want to delete this user?')) return;
@@ -76,7 +76,7 @@ const AdminPanel = () => {
             if (res.ok) {
                 setSnackbar('User updated');
                 setEditUser(null);
-                fetchUsers();
+                await fetchUsers();
             } else {
                 const err = await res.json();
                 setError(err.error || 'Update failed');
