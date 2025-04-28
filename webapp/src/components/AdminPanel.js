@@ -5,7 +5,6 @@ import {
     DialogActions, Snackbar, Checkbox, FormControlLabel
 } from '@mui/material';
 import Navbar from './Navbar';
-import { useCallback } from 'react';
 
 const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 
@@ -20,7 +19,7 @@ const AdminPanel = () => {
 
     const token = localStorage.getItem('token');
 
-    const fetchUsers = useCallback(async () => {
+    const fetchUsers = async () => {
         try {
             const res = await fetch(`${apiEndpoint}/users`, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -30,11 +29,10 @@ const AdminPanel = () => {
         } catch {
             setError('Failed to load users');
         }
-    }, [token, apiEndpoint]);
+    };
 
-    useEffect(() => {
-        fetchUsers().then(() => { console.log("fetch users done"); });
-    }, [fetchUsers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => { fetchUsers().then(() => {console.log("fetch users done")}); }, []);
 
     const handleDelete = async (userId) => {
         if (!window.confirm('Are you sure you want to delete this user?')) return;
