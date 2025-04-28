@@ -20,21 +20,15 @@ const GameModes = () => {
 
   const handleGameModeClick = async (type) => {
     if (type === 'custom'){
-      await fetch(`${apiEndpoint}/clear-questions`, { method: 'POST' });
       navigate('/gamemodes/custom');
       return;
     }
     setLoadingType(type);
 
     try {
-      await fetch(`${apiEndpoint}/clear-questions`, { method: 'POST' });
-      await fetch(`${apiEndpoint}/fetch-question-data`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ questionType: type, numberOfQuestions: 10 }),
-      });
       localStorage.setItem('totalQuestions', 10);
       localStorage.setItem('timeLimit', 40);
+      localStorage.setItem('gameMode', type);
 
       navigate('/game');
     } catch (error) {

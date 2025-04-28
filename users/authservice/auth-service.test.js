@@ -92,4 +92,58 @@ describe('Auth Service', () => {
     expect(response.status).toBe(401);
     expect(response.body).toHaveProperty('error', 'Invalid credentials');
   });
+
+  it('Should return 400 if username is missing', async () => {
+    const response = await request(app).post('/login').send({ 
+      password: 'testpassword' //NOSONAR
+    });
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error');
+  });
+
+  it('Should return 400 if username is too short', async () => {
+    const response = await request(app).post('/login').send({ 
+      username: 'ab',
+      password: 'testpassword' //NOSONAR
+    });
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error');
+  });
+
+  it('Should return 400 if password is too short', async () => {
+    const response = await request(app).post('/login').send({ 
+      username: 'testuser', 
+      password: 'ab' //NOSONAR
+    });
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty('error');
+  });
+
+  it('Should return 500 if there is a server error', async () => {
+    // Temporary replacement of User.findOne
+    const origFindOne = User.findOne;
+    User.findOne = () => { throw new Error('DB error'); };
+    const response = await request(app).post('/login').send({ 
+      username: 'testuser', 
+      password: 'testpassword' //NOSONAR
+    });
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty('error', 'Internal Server Error');
+    User.findOne = origFindOne;
+  });
+
+  it('should create an admin user if none exists', async () => {
+    localMongoServer = await MongoMemoryServer.create();
+    process.env.MONGODB_URI = localMongoServer.getUri();
+    localApp = require('./auth-service');
+    // Small wait so checkAdminUser gets to run
+    await new Promise(r => setTimeout(r, 500));
+    const admin = await User.findOne({ username: 'admin' });
+    expect(admin).not.toBeNull();
+    expect(admin.isAdmin).toBe(true);
+    expect(await bcrypt.compare('admin123', admin.password)).toBe(true);
+
+    await localApp.close();
+    await localMongoServer.stop();
+  });
 });

@@ -1,10 +1,11 @@
 const request = require("supertest");
 const axios = require("axios");
-const app = require("./llm-service");
+const { app, server } = require("./llm-service");
 const { generateTemplateMocks } = require("./__mocks__/testUtils");
+const e = require("express");
 
 afterAll(async () => {
-  app.close();
+  await new Promise(resolve => server.close(resolve));
 });
 
 jest.mock("axios");

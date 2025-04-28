@@ -5,7 +5,8 @@
     "main": "service.js",
     "scripts": {
         "start": "node auth-service.js",
-        "test": "jest"
+        "test": "jest",
+        "coverage": "jest --coverage"
     },
     "repository": {
         "type": "git",

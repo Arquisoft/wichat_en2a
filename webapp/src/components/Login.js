@@ -12,18 +12,23 @@ const Login = () => {
     const loginUser = async (username, password) => {
         try{
             const response = await axios.post(`${apiEndpoint}/login`, {username, password});
-
             login({
                 userId: response.data.userId || '',
                 username: response.data.username || '',
-                token: response.data.token || ''
-            })
-            navigate('/home');
+                token: response.data.token || '',
+                isAdmin: response.data.isAdmin || false,
+                profilePicture: response.data.profilePicture
+            });
+            // Redirect based on admin status
+            if (response.data.isAdmin) {
+                navigate('/admin');
+            } else {
+                navigate('/home');
+            }
         }
         catch(error){
             throw new Error (error.response?.data?.error || 'Login failed');
         }
-
     };
 
     return <AuthForm type="login" onSubmit={loginUser}/>;

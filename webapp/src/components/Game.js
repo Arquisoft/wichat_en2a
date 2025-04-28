@@ -63,6 +63,29 @@ const Game = () => {
         botBubble: '#FFD700'   // amarillo claro
     };
 
+    const getGameMode = () => {
+        const gameMode = localStorage.getItem('gameMode');
+        if(!gameMode) return 'flag'; //default mode
+        if (gameMode !== 'custom') return gameMode;
+    
+        const availableModes = questions.filter(q => {
+            const count = parseInt(localStorage.getItem(`${q.type}Questions`) || '0');
+            return count > 0;
+        });
+    
+        if (availableModes.length === 0) return null;
+    
+        const shuffle = localStorage.getItem('shuffle') === 'true';
+        const selectedMode = shuffle 
+            ? availableModes[Math.floor(Math.random() * availableModes.length)]
+            : availableModes[0];
+    
+        const newCount = parseInt(localStorage.getItem(`${selectedMode.type}Questions`)) - 1;
+        localStorage.setItem(`${selectedMode.type}Questions`, newCount);
+        
+        return selectedMode.type;
+    };
+
     const navigate = useNavigate();
     // Fetch question from the API
     const fetchQuestion = async () => {
@@ -72,14 +95,11 @@ const Game = () => {
 
         try {
             console.log("Fetching question...");
-            let response = await axios.get(`${apiEndpoint}/question`);
-            //if for some reason a problem occurred and the questions collection is empty, fetch
-            if (!response.data || response.data.length === 0) {
-                console.log("No questions found, initializing database...");
-                await axios.post(`${apiEndpoint}/fetch-question-data`);
-                console.log("Database initialized. Fetching question again...");
-                response = await axios.get(`${apiEndpoint}/question`);
-            }
+            const gameMode = getGameMode();
+            if (!gameMode)
+                return endGame(); 
+            console.log("Selected game mode: ", gameMode);
+            const response = await axios.get(`${apiEndpoint}/question/${gameMode}`);
             setQuestion(response.data);
             const text = await getQuestionByType(response.data.type);
             setQuestionText(text);

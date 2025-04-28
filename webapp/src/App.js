@@ -13,13 +13,25 @@ import Leaderboard from './components/Leaderboard';
 import GameOver from "./components/GameOver";
 import GameModes from './components/GameModes';
 import CustomGameMode from './components/CustomGameMode';
+import AdminPanel from './components/AdminPanel';
+import EditUser from './components/EditUser';
 import {useAuth} from "./components/AuthContext";
+
 
 function App() {
     const navigate = useNavigate(); // Hook for routes
     const location = useLocation();
     const [error] = useState(null); // state of error messages
     const user = useAuth();
+
+    // Protected route for admin
+    const ProtectedAdminRoute = ({ children }) => {
+        if (!user.user || !user.user.isAdmin) {
+            // Show an error message if the user is not admin
+            return <Typography color="error" sx={{textAlign: 'center', mt: 4}}>Access denied: Admins only</Typography>;
+        }
+        return children;
+    };
 
     useEffect(() => {
         if (!user.user && location.pathname !== '/register') {
@@ -59,7 +71,12 @@ function App() {
                 <Route path="/game-over" element={<GameOver/>} />
                 <Route path="/gamemodes" element={<GameModes />} />
                 <Route path="/gamemodes/custom" element={<CustomGameMode/>}/>
-
+                <Route path="/admin" element={
+                    <ProtectedAdminRoute>
+                        <AdminPanel/>
+                    </ProtectedAdminRoute>
+                } />
+                <Route path="/editUser" element={<EditUser/>}/>
             </Routes>
         </Box>
     );

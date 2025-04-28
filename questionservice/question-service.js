@@ -257,7 +257,7 @@ function getQueryByType(type, numberOfQuestions) {
     if (!match) {
       throw new Error(`No query found for type: ${type}`);
     }
-    return match.query + ` LIMIT ${Math.max(100, numberOfQuestions * 3)}`;
+    return match.query + ` ORDER BY RAND()` + ` LIMIT ${Math.max(100, numberOfQuestions * 3)}`;
 }
 
 function capitalize(str) {
@@ -303,17 +303,35 @@ async function saveQuestionsToDB(questions) {
 }
 
 // Fetch a question from the database
-async function getQuestion() {
+async function getQuestion(type) {
+  const questionsCount = await Question.countDocuments({ type: type });
+
+  if (questionsCount === 0 ) {
     try {
-        return await Question.findOneAndUpdate(
-            {alreadyShown: false},
-            {alreadyShown: true},
-            {new: true}
-        );
+      await fetchQuestionData(5, type); // Fetch a few questions if none are available
     } catch (error) {
-        console.error('Error fetching question:', error);
-        return null;
+      console.error("Error while fetching new questions under critical conditions (no questions available)");
+      return null;
     }
+  }
+
+  if (questionsCount < 200) {
+    // Fetch a new question if less than 200 are available
+      fetchQuestionData(5, type).catch(
+        console.error("Error while fetching new questions to improve the pool of questions")
+      );
+  }
+  
+  try {
+    const questions = await Question.aggregate([
+      { $match: { type: type } },
+      { $sample: { size: 1 } }
+    ]);
+    return questions[0] || null;
+  } catch (error) {
+      console.error('Error fetching question:', error);
+      return null;
+  }
 }
 
 // Check if the selected answer is correct
@@ -332,9 +350,9 @@ async function checkAnswer(questionId, selectedAnswer) {
 }
 
 // Endpoint to fetch a question
-app.get('/question', async (req, res) => {
+app.get('/question/:questionType', async (req, res) => {
     try {
-        const question = await getQuestion();
+        const question = await getQuestion(req.params.questionType);
         if (!question) {
             return res.status(404).json({ error: 'No questions available' });
         }

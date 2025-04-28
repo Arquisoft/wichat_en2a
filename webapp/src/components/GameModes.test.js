@@ -56,28 +56,16 @@ describe('GameModes component', () => {
             });
         });
 
-        it('calls API and goes to /game when clicking a normal mode', async () => {
+        it('goes to /game when clicking a normal mode', async () => {
             renderGameModesComponent();
 
             const flagsButton = screen.getByText('Flags');
             fireEvent.click(flagsButton);
 
-            await waitFor(() => {
-                expect(fetch).toHaveBeenCalledWith(
-                    expect.stringContaining('/clear-questions'),
-                    expect.objectContaining({method: 'POST'})
-                );
-
-                expect(fetch).toHaveBeenCalledWith(
-                    expect.stringContaining('/fetch-question-data'),
-                    expect.objectContaining({
-                        method: 'POST',
-                        body: expect.stringContaining('"questionType":"flag"')
-                    })
-                );
-            });
-
             expect(mockNavigate).toHaveBeenCalledWith('/game');
+            expect(localStorage.getItem('gameMode')).toBe('flag');
+            expect(localStorage.getItem('totalQuestions')).toBe('10');
+            expect(localStorage.getItem('timeLimit')).toBe('40');
         });
     });
 });

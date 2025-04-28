@@ -5,7 +5,9 @@ info:
   version: 0.2.0
 servers:
   - url: http://localhost:8000
-    description: Gateway service
+    description: Gateway service (local)
+  - url: http://79.72.56.202:8000
+    description: Gateway service (remote)
 tags:
   - name: Health
     description: Health check operations
@@ -58,7 +60,7 @@ paths:
                 password:
                   type: string
                   description: User password.
-                  example: pass
+                  example: password123
       responses:
         "200":
           description: User added successfully.
@@ -161,7 +163,7 @@ paths:
                     example: Internal Server Error
   /askllm:
     post:
-      summary: Ask a question to the LLM service.
+      summary: Ask the LLM for a hint.
       operationId: askLLM
       tags:
         - LLM
@@ -174,8 +176,12 @@ paths:
               properties:
                 question:
                   type: string
-                  description: The question to ask the LLM.
-                  example: What do I need to do to pass the Software Architecture course?
+                  description: The question provided in the quiz.
+                  example: What flag is this country from?
+                userMessage:
+                  type: string
+                  description: The message from the user.
+                  example: Provide me a hint for the question.
                 model:
                   oneOf:
                     - type: string
@@ -183,6 +189,11 @@ paths:
                         - empathy
                         - gemini
                   description: The model to use for the LLM.
+                correctAnswer:
+                  type: string
+                  description: The correct answer to the question.
+                  example: Spain
+                
       responses:
         "200":
           description: LLM response.
@@ -194,7 +205,7 @@ paths:
                   answer:
                     type: string
                     description: The answer from the LLM.
-                    example: To pass the Software Architecture course, you need to complete all assignments and pass the final exam.
+                    example: A famous food from this country is paella.
         "400":
           description: Bad request.
           content:
@@ -217,12 +228,21 @@ paths:
                     type: string
                     description: Error information.
                     example: Internal Server Error
-  /question:
+  /question/{questionType}:
     get:
       summary: Fetch a question from the database.
       operationId: fetchQuestion
       tags:
         - Questions
+      parameters:
+        - name: questionType
+          in: path
+          required: true
+          description: The type of the question to retrieve
+          schema:
+            type: string
+            enum: ["flag", "car", "famous-person", "dino", "place"]
+            example: "flag"
       responses:
         "200":
           description: The system returns a question.
@@ -288,12 +308,33 @@ paths:
                     type: string
                     description: Error information.
                     example: Internal Server Error
-  /fetch-flag-data:
+  /fetch-question-data:
     post:
       summary: Fetches questions from Wikidata and stores them in the database.
       operationId: fetchFlagData
       tags:
         - Questions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                numberOfQuestions:
+                  type: integer
+                  description: Number of questions to fetch.
+                  example: 10
+                questionType:
+                  oneOf:
+                    - type: string
+                      enum:
+                        - flag
+                        - car
+                        - famous-person
+                        - dino
+                        - place
+                  description: The model to use for the LLM.
       responses:
         "200":
           description: Questions fetched and stored successfully.
@@ -349,14 +390,17 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              description: List of user IDs.
-              items:
-                type: string
-              example:
-                - "userId1"
-                - "userId2"
-                - "userId3"
+              type: object
+              properties:
+                userIds:
+                  type: array
+                  description: List of user IDs.
+                  items:
+                    type: string
+                  example:
+                    - "userId1"
+                    - "userId2"
+                    - "userId3"
       responses:
         "200":
           description: Succesfully retrieved the list of usernames with IDs.
@@ -461,7 +505,7 @@ paths:
                   type: string
                   description: The ID of the question.
                   example: "questionId1"
-                userAnswer:
+                selectedAnswer:
                   type: string
                   description: The user's answer.
                   example: "Spain"
@@ -647,3 +691,71 @@ paths:
                   details:
                     type: string
                     description: Additional details.
+  /getUserById/{userId}:
+    get:
+      summary: Get user information by ID
+      description: Retrieves a user's details by their MongoDB ObjectId (passed as query parameter)
+      operationId: getUserById
+      tags:
+        - User
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The MongoDB ObjectId of the user to retrieve
+          schema:
+            type: string
+            format: objectid
+            example: "507f1f77bcf86cd799439011"
+      responses:
+        '200':
+          description: Successfully retrieved user information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    type: string
+                    format: objectid
+                    description: User's MongoDB ObjectId
+                    example: "507f1f77bcf86cd799439011"
+                  username:
+                    type: string
+                    description: User's unique username
+                    example: "john_doe"
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Timestamp when user was created
+                    example: "2024-03-17T20:47:23.935Z"
+        '400':
+          description: Invalid user ID format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid user ID format"
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Database connection failed"

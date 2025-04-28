@@ -120,6 +120,83 @@ describe('Gateway Service', () => {
     expect(axios.get).toHaveBeenCalledWith(expect.stringContaining('/users'));
   });
 
+  it('should forward delete user request to user service', async () => {
+    const userId = '507f1f77bcf86cd799439011'; // Example user ID
+    const mockResponse = { message: 'User deleted successfully' };
+    axios.delete.mockResolvedValueOnce({ data: mockResponse });
+  
+    const response = await request(app)
+      .delete(`/users/admin/${userId}`)
+      .set('Authorization', 'Bearer faketoken');
+  
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+    expect(axios.delete).toHaveBeenCalledWith(
+      expect.stringContaining(`/users/${userId}`),
+      { headers: { Authorization: 'Bearer faketoken' } }
+    );
+  });
+  
+  it('should return error when user service fails to delete user', async () => {
+    const userId = '507f1f77bcf86cd799439011'; // Example user ID
+    axios.delete.mockRejectedValueOnce({
+      response: { status: 404, data: { error: 'User not found' } }
+    });
+  
+    const response = await request(app)
+      .delete(`/users/admin/${userId}`)
+      .set('Authorization', 'Bearer faketoken');
+  
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'User not found' });
+  });
+  
+  it('should forward update user request to user service', async () => {
+    const userId = '507f1f77bcf86cd799439011'; // Example user ID
+    const updateData = { username: 'newname' };
+    const mockResponse = { _id: userId, username: 'newname' };
+    axios.put.mockResolvedValueOnce({ data: mockResponse });
+  
+    const response = await request(app)
+      .put(`/users/admin/${userId}`)
+      .set('Authorization', 'Bearer faketoken')
+      .send(updateData);
+  
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+    expect(axios.put).toHaveBeenCalledWith(
+      expect.stringContaining(`/users/${userId}`),
+      updateData,
+      { headers: { Authorization: 'Bearer faketoken' } }
+    );
+  });
+  
+  it('should return error when user service fails to update user', async () => {
+    const userId = '507f1f77bcf86cd799439011'; // Example user ID
+    const updateData = { username: 'newname' };
+    axios.put.mockRejectedValueOnce({
+      response: { status: 400, data: { error: 'Invalid data' } }
+    });
+  
+    const response = await request(app)
+      .put(`/users/${userId}`)
+      .set('Authorization', 'Bearer faketoken')
+      .send(updateData);
+  
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'Invalid data' });
+  });
+
+  it('should return 500 when user service fails at /users/admin/:userId', async () => {
+    const userId = '507f1f77bcf86cd799439011';
+    axios.delete.mockRejectedValueOnce(new Error('Service down'));
+    const response = await request(app)
+      .delete(`/users/admin/${userId}`)
+      .set('Authorization', 'Bearer faketoken');
+    expect(response.status).toBe(500);
+    expect(response.body).toHaveProperty('error');
+  });
+
   it('should return an error response on failure', async () => {
     mockAxiosError(500, 'Internal Server Error');
 
@@ -141,21 +218,40 @@ describe('Gateway Service', () => {
     expect(axios.get).toHaveBeenCalledWith(expect.stringContaining(`/getUserById/${userId}`));
   });
 
-  it('should return an error response on failure', async () => {
-    const userId = 'nonexistentid';
+  it('should return 200 and user data when the user is updated successfully', async () => {
+    const userId = '123';
+    const requestBody = { name: 'Updated User' };
 
-    axios.get.mockRejectedValueOnce({
+    // Simulamos la respuesta exitosa de axios
+    axios.put.mockResolvedValueOnce({ data: { id: userId, name: 'Updated User' } });
+
+    const response = await request(app)
+        .put(`/users/${userId}`)
+        .send(requestBody);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ id: userId, name: 'Updated User' });
+  });
+
+  it('should return 400 if there is an error in the request to update', async () => {
+    const userId = '123';
+    const requestBody = { name: 'Updated User' };
+
+    // Error in response
+    axios.put.mockRejectedValue({
       response: {
-        status: 404,
-        data: { error: 'User not found' }
+        status: 400,
+        data: { error: 'Bad Request' }
       }
     });
 
-    const response = await request(app).get(`/getUserById/${userId}`);
+    const response = await request(app)
+        .put(`/users/${userId}`)
+        .send(requestBody);
 
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({ error: 'User not found' });
-  })
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'Bad Request' });
+  });
 
   // Test /saveScore endpoint
   it('should forward saveScore request to game service', async () => {
@@ -307,7 +403,7 @@ describe('Gateway Service', () => {
       },
     });
 
-    const response = await request(app).get('/question');
+    const response = await request(app).get('/question/flag');
     
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Internal Server Error' });
@@ -319,7 +415,7 @@ describe('Gateway Service', () => {
     const mockResponse = { data: { question: 'https://example.com/flag.png'} };
       axios.get.mockResolvedValue(mockResponse);
   
-      const response = await request(app).get('/question');
+      const response = await request(app).get('/question/flag');
   
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockResponse.data);
@@ -423,7 +519,35 @@ describe('Gateway Service', () => {
     expect(response.body).toEqual({
         options: ["option1", "option2", "option3"],
     });
-});
+  });
+
+  it('should return error if LLM service fails at /generateIncorrectOptions', async () => {
+    axios.post.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'LLM Error' } }
+    });
+    const response = await request(app).post('/generateIncorrectOptions').send({
+      correctAnswer: 'France',
+      model: 'gemini'
+    });
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'LLM Error' });
+  });
+
+  it('should return an error response on failure', async () => {
+    const userId = 'nonexistentid';
+
+    axios.get.mockRejectedValueOnce({
+      response: {
+        status: 404,
+        data: { error: 'User not found' }
+      }
+    });
+
+    const response = await request(app).get(`/getUserById/${userId}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'User not found' });
+  });
 });
 
 // Add these tests to your existing test file
@@ -709,7 +833,7 @@ describe('Gateway Service Error Handling', () => {
       response: { status: 500, data: { error: 'Question Service Error' } }
     });
   
-    const response = await request(app).get('/question');
+    const response = await request(app).get('/question/flag');
   
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Question Service Error' });
@@ -831,6 +955,40 @@ describe('GET /allScores', () => {
     expect(response.status).toBe(404);
     expect(response.body).toEqual({ error: 'Not Found' });
   });
+});
+
+describe('Testing /users endpoints', () => { 
+  it('should update user self data successfully with PUT /users/:userId', async () => {
+    const userId = '507f1f77bcf86cd799439011';
+    const updateData = { username: 'updatedSelf' };
+    const mockResponse = { id: userId, username: 'updatedSelf' };
+    axios.put.mockResolvedValueOnce({ data: mockResponse });
+    const response = await request(app)
+      .put(`/users/${userId}`)
+      .send(updateData);
+  
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+    expect(axios.put).toHaveBeenCalledWith(
+      expect.stringContaining(`/users/self/${userId}`),
+      updateData
+    );
+  });
+
+  it('should return 400 if updating self user fails at PUT /users/:userId', async () => {
+    const userId = '507f1f77bcf86cd799439011';
+    const updateData = { username: 'invalidUpdate' };
+    axios.put.mockRejectedValueOnce({
+      response: { status: 400, data: { error: 'Invalid update data' } }
+    });
+    const response = await request(app)
+      .put(`/users/${userId}`)
+      .send(updateData);
+  
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'Invalid update data' });
+  });
+  
 });
 
 
