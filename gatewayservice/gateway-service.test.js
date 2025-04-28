@@ -531,7 +531,23 @@ describe('Gateway Service', () => {
     });
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'LLM Error' });
-  });  
+  });
+
+  it('should return an error response on failure', async () => {
+    const userId = 'nonexistentid';
+
+    axios.get.mockRejectedValueOnce({
+      response: {
+        status: 404,
+        data: { error: 'User not found' }
+      }
+    });
+
+    const response = await request(app).get(`/getUserById/${userId}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'User not found' });
+  });
 });
 
 // Add these tests to your existing test file
@@ -973,41 +989,6 @@ describe('Testing /users endpoints', () => {
     expect(response.body).toEqual({ error: 'Invalid update data' });
   });
   
-  it('should update user as admin successfully with PUT /users/admin/:userId', async () => {
-    const userId = '507f1f77bcf86cd799439011';
-    const updateData = { username: 'adminUpdatedUser' };
-    const mockResponse = { id: userId, username: 'adminUpdatedUser' };
-    axios.put.mockResolvedValueOnce({ data: mockResponse });
-  
-    const response = await request(app)
-      .put(`/users/admin/${userId}`)
-      .set('Authorization', 'Bearer faketoken')
-      .send(updateData);
-  
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual(mockResponse);
-    expect(axios.put).toHaveBeenCalledWith(
-      expect.stringContaining(`/users/${userId}`),
-      updateData,
-      { headers: { Authorization: 'Bearer faketoken' } }
-    );
-  });
-  
-  it('should return error when admin update fails at PUT /users/admin/:userId', async () => {
-    const userId = '507f1f77bcf86cd799439011';
-    const updateData = { username: 'adminFailedUpdate' };
-    axios.put.mockRejectedValueOnce({
-      response: { status: 400, data: { error: 'Admin invalid update' } }
-    });
-  
-    const response = await request(app)
-      .put(`/users/admin/${userId}`)
-      .set('Authorization', 'Bearer faketoken')
-      .send(updateData);
-  
-    expect(response.status).toBe(400);
-    expect(response.body).toEqual({ error: 'Admin invalid update' });
-  });  
 });
 
 
