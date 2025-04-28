@@ -218,22 +218,6 @@ describe('Gateway Service', () => {
     expect(axios.get).toHaveBeenCalledWith(expect.stringContaining(`/getUserById/${userId}`));
   });
 
-  it('should return an error response on failure', async () => {
-    const userId = 'nonexistentid';
-
-    axios.get.mockRejectedValueOnce({
-      response: {
-        status: 404,
-        data: { error: 'User not found' }
-      }
-    });
-
-    const response = await request(app).get(`/getUserById/${userId}`);
-
-    expect(response.status).toBe(404);
-    expect(response.body).toEqual({ error: 'User not found' });
-  });
-
   it('should return 200 and user data when the user is updated successfully', async () => {
     const userId = '123';
     const requestBody = { name: 'Updated User' };
@@ -535,7 +519,35 @@ describe('Gateway Service', () => {
     expect(response.body).toEqual({
         options: ["option1", "option2", "option3"],
     });
-});
+  });
+
+  it('should return error if LLM service fails at /generateIncorrectOptions', async () => {
+    axios.post.mockRejectedValueOnce({
+      response: { status: 500, data: { error: 'LLM Error' } }
+    });
+    const response = await request(app).post('/generateIncorrectOptions').send({
+      correctAnswer: 'France',
+      model: 'gemini'
+    });
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'LLM Error' });
+  });
+
+  it('should return an error response on failure', async () => {
+    const userId = 'nonexistentid';
+
+    axios.get.mockRejectedValueOnce({
+      response: {
+        status: 404,
+        data: { error: 'User not found' }
+      }
+    });
+
+    const response = await request(app).get(`/getUserById/${userId}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'User not found' });
+  });
 });
 
 // Add these tests to your existing test file
@@ -943,6 +955,40 @@ describe('GET /allScores', () => {
     expect(response.status).toBe(404);
     expect(response.body).toEqual({ error: 'Not Found' });
   });
+});
+
+describe('Testing /users endpoints', () => { 
+  it('should update user self data successfully with PUT /users/:userId', async () => {
+    const userId = '507f1f77bcf86cd799439011';
+    const updateData = { username: 'updatedSelf' };
+    const mockResponse = { id: userId, username: 'updatedSelf' };
+    axios.put.mockResolvedValueOnce({ data: mockResponse });
+    const response = await request(app)
+      .put(`/users/${userId}`)
+      .send(updateData);
+  
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(mockResponse);
+    expect(axios.put).toHaveBeenCalledWith(
+      expect.stringContaining(`/users/self/${userId}`),
+      updateData
+    );
+  });
+
+  it('should return 400 if updating self user fails at PUT /users/:userId', async () => {
+    const userId = '507f1f77bcf86cd799439011';
+    const updateData = { username: 'invalidUpdate' };
+    axios.put.mockRejectedValueOnce({
+      response: { status: 400, data: { error: 'Invalid update data' } }
+    });
+    const response = await request(app)
+      .put(`/users/${userId}`)
+      .send(updateData);
+  
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ error: 'Invalid update data' });
+  });
+  
 });
 
 
