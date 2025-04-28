@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import Navbar from './Navbar';
 
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
 const medalColors = ['#FFD700', '#C0C0C0', '#CD7F32']; // Gold, Silver, Bronze
 
 const Scores = () => {
@@ -33,7 +34,7 @@ const Scores = () => {
                 const token = localStorage.getItem('token');
                 if (!token) throw new Error('No token found. Please log in.');
 
-                const response = await fetch("http://localhost:8000/scores", {
+                const response = await fetch(apiEndpoint, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -206,6 +207,8 @@ const Scores = () => {
                             <TableBody>
                                 {paginatedScores.length > 0 ? (
                                     paginatedScores.map((score, index) => {
+                                        const absoluteIndex = page * rowsPerPage + index;
+                                        
                                         // Determine if this should have a medal (only for victories in desc order)
                                         const victoryIndex = victoriesForMedals.findIndex(v => v === score);
                                         const isTop3Victory = victoryIndex >= 0 && victoryIndex < 3;
