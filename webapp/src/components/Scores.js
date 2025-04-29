@@ -34,7 +34,7 @@ const Scores = () => {
                 const token = localStorage.getItem('token');
                 if (!token) throw new Error('No token found. Please log in.');
 
-                const response = await fetch(apiEndpoint, {
+                const response = await fetch(apiEndpoint + '/scores', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -208,20 +208,20 @@ const Scores = () => {
                                 {paginatedScores.length > 0 ? (
                                     paginatedScores.map((score, index) => {
                                         const absoluteIndex = page * rowsPerPage + index;
-                                        
+
                                         // Determine if this should have a medal (only for victories in desc order)
                                         const victoryIndex = victoriesForMedals.findIndex(v => v === score);
                                         const isTop3Victory = victoryIndex >= 0 && victoryIndex < 3;
-                                        
+
                                         // Set background color based on victory/defeat and medal status
                                         let bgColor = 'inherit';
-                                        
+
                                         if (!score.isVictory) {
                                             bgColor = 'rgba(244, 67, 54, 0.1)'; // Light red for defeats
                                         } else if (isTop3Victory) {
                                             bgColor = medalColors[victoryIndex]; // Medal color for top 3 victories
                                         }
-                                        
+
                                         const fontWeight = isTop3Victory ? 'bold' : 'normal';
 
                                         return (
@@ -229,15 +229,15 @@ const Scores = () => {
                                                 key={index}
                                                 sx={{
                                                     backgroundColor: bgColor,
-                                                    '&:hover': { 
-                                                        backgroundColor: isTop3Victory ? bgColor : 
-                                                                      !score.isVictory ? 'rgba(244, 67, 54, 0.2)' : 
-                                                                      'rgba(106, 90, 205, 0.1)'
+                                                    '&:hover': {
+                                                        backgroundColor: isTop3Victory ? bgColor :
+                                                            !score.isVictory ? 'rgba(244, 67, 54, 0.2)' :
+                                                                'rgba(106, 90, 205, 0.1)'
                                                     }
                                                 }}
                                             >
-                                                <TableCell 
-                                                    sx={{ 
+                                                <TableCell
+                                                    sx={{
                                                         color: !score.isVictory ? 'error.main' : 'inherit',
                                                         fontWeight
                                                     }}
@@ -247,7 +247,7 @@ const Scores = () => {
                                                     {isTop3Victory && victoryIndex === 1 && ' 🥈'}
                                                     {isTop3Victory && victoryIndex === 2 && ' 🥉'}
                                                 </TableCell>
-                                                <TableCell 
+                                                <TableCell
                                                     align="right"
                                                     sx={{ color: !score.isVictory ? 'error.main' : 'inherit' }}
                                                 >
