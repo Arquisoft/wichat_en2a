@@ -207,8 +207,6 @@ const Scores = () => {
                             <TableBody>
                                 {paginatedScores.length > 0 ? (
                                     paginatedScores.map((score, index) => {
-                                        const absoluteIndex = page * rowsPerPage + index;
-
                                         // Determine if this should have a medal (only for victories in desc order)
                                         const victoryIndex = victoriesForMedals.findIndex(v => v === score);
                                         const isTop3Victory = victoryIndex >= 0 && victoryIndex < 3;
