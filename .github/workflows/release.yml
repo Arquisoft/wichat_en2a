@@ -244,4 +244,5 @@ jobs:
           echo "EMPATHY_KEY=${{ secrets.EMPATHY_KEY }}" >> .env
           wget https://raw.githubusercontent.com/arquisoft/wichat_en2a/master/docker-compose.yml -O docker-compose.yml
           docker compose --profile prod down
+          docker image prune -f 
           docker compose --profile prod up -d --pull always
