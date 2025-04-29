@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const promBundle = require('express-prom-bundle');
 
 //libraries required for OpenAPI-Swagger
@@ -101,7 +102,20 @@ app.get('/getUserById/:userId', async (req, res) => {
     } catch (error) {
         res.status(error.response.status).json({error: error.response.data.error});
     }
-})
+});
+
+app.put('/users/:userId', async (req, res) => {
+    try {
+        const response = await axios.put(`${userServiceUrl}/users/self/${req.params.userId}`, req.body);
+        res.json(response.data);
+    } catch (error) {
+        if (error.response) {
+            res.status(error.response.status).json({ error: error.response.data.error });
+        } else {
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+});
 
 app.post('/askllm', async (req, res) => {
   try {
@@ -113,10 +127,10 @@ app.post('/askllm', async (req, res) => {
   }
 });
 
-app.get('/question', async (req, res) => {
+app.get('/question/:questionType', async (req, res) => {
   try {
     // Forward fetch question request to the question service
-    const questionResponse = await axios.get(`${questionServiceUrl}/question`);
+    const questionResponse = await axios.get(`${questionServiceUrl}/question/${req.params.questionType}`);
     res.json(questionResponse.data);
   } catch (error) {
       res.status(error.response.status).json({ error: error.response.data.error });
@@ -213,7 +227,6 @@ app.post('/saveActiveUserScore', verifyToken, async (req, res) => {
 });
 
 
-// En tu archivo de gateway
 app.get('/scoresByUser/:userId', async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -255,6 +268,47 @@ app.get('/scores', verifyToken, async (req, res) => {
       res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal Server Error' });
   }
 });
+
+// Delete user (admin only)
+app.delete('/users/admin/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // Validate userId
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid userId format' });
+    }
+
+    // Forward the request and headers (for admin token)
+    const response = await axios.delete(`${userServiceUrl}/users/${userId}`, { // NOSONAR (validation done above)
+      headers: { Authorization: req.header('Authorization') }
+    });
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal Server Error' });
+  }
+});
+
+// Update user (admin only)
+app.put('/users/admin/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    
+    // Validate userId 
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: 'Invalid userId format' });
+    }
+
+    // Forward the request and headers (for admin token)
+    const response = await axios.put(`${userServiceUrl}/users/${userId}`, req.body, { // NOSONAR (validation done above)
+      headers: { Authorization: req.header('Authorization') }
+    });
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({ error: error.response?.data?.error || 'Internal Server Error' });
+  }
+});
+
 
 app.get('/allScores', async (req, res) => {
   try {
@@ -343,6 +397,7 @@ app.post('/generateIncorrectOptions', async (req, res) => {
       res.status(error.response.status).json({ error: error.response.data.error });
   }
 });
+
 
 // Read the OpenAPI YAML file synchronously
 const openapiPath='./openapi.yaml'

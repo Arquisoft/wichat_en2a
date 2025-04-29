@@ -16,9 +16,6 @@ import {
   CircularProgress,
 } from '@mui/material';
 import Navbar from './Navbar';
-
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || 'http://localhost:8000';
-
 const categories = [
   { type: 'flag', label: 'Flags' },
   { type: 'car', label: 'Cars' },
@@ -69,15 +66,18 @@ const CustomGameMode = () => {
 
     try {
       setLoadingReady(true);
-      await fetch(`${apiEndpoint}/clear-questions`, { method: 'POST' });
-      await fetch(`${apiEndpoint}/fetch-custom-question-data`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          questions: selected,
-          shuffle
-        })
-      });
+      for (const { questionType, numberOfQuestions } of selected) {
+        // Remove any existing questions of this type from localStorage
+        localStorage.removeItem(`${questionType}Questions`); 
+        // Store the number of questions of each type in localStorage
+        localStorage.setItem(`${questionType}Questions`, numberOfQuestions);
+      }
+
+      if(shuffle == null)
+        setShuffle(false); //if shuffle is not selected, set it to false
+
+      localStorage.setItem('gameMode', 'custom');
+      localStorage.setItem('shuffle', shuffle);
       localStorage.setItem('totalQuestions', totalQuestions);
       localStorage.setItem('timeLimit', Math.max(10, Math.min(timeLimit, 60)));
       navigate('/game');

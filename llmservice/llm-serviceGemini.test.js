@@ -1,5 +1,5 @@
 const request = require("supertest");
-const server = require("./llm-service.js"); // Asegúrate de que la ruta sea correcta
+const { server } = require("./llm-service");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 jest.mock("@google/generative-ai");

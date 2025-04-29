@@ -1,0 +1,19 @@
+{
+  "name": "schedulingservice",
+  "version": "1.0.0",
+  "description": "Service that will schedule the creation of questions",
+  "main": "scheduling-service.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node scheduling-service.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0"
+  }
+}

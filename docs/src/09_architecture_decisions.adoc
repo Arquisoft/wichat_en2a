@@ -18,3 +18,5 @@ We considered other data base models to use in our project, including MySQL and 
 - **Scalability**: Easily handles large amounts of unstructured or semi-structured data.
 - **Flexible Schema**: NoSQL structure allows rapid iteration without worrying about complex migrations.
 - **High Performance**: Fast reads and writes, very important when working with a game.
+
+The rest of the decisions are stored in the Wiki of the project. To see them you can access via the following https://github.com/Arquisoft/wichat_en2a/wiki/Team-Decisions[link].
