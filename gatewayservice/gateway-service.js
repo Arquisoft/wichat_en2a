@@ -20,6 +20,7 @@ const authServiceUrl = process.env.AUTH_SERVICE_URL || 'http://localhost:8002';
 const userServiceUrl = process.env.USER_SERVICE_URL || 'http://localhost:8001';
 const gameServiceUrl = process.env.GAME_SERVICE_URL || 'http://localhost:8005';
 
+
 app.use(cors());
 app.use(express.json());
 
