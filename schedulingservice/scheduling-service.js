@@ -13,8 +13,13 @@ async function updateQuestions() {
     // Update the questions at 1 AM
     console.log("Cleaning the database...");
     const cleanStart = Date.now();
-    await axios.post(`${gatewayServiceUrl}/clear-questions`);
-
+    try {
+      await axios.post(`${gatewayServiceUrl}/clear-questions`);
+    } catch (error) {
+      console.error("Error clearing the database:", error);
+      return; // Exit if there's an error clearing the database
+    }
+    
     console.log("Fetching new questions...");
     const fetchStart = Date.now();
 
@@ -41,7 +46,9 @@ async function updateQuestions() {
           );
         } catch (error) {
           attempts++;
-          console.log(`Error fetching questions at attempt ${attempts}: ${error}`)
+          console.log(
+            `Error fetching questions at attempt ${attempts}: ${error}`
+          );
         }
         logErrorCaseAttemts(attempts);
       }
