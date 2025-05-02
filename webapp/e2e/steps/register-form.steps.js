@@ -97,7 +97,7 @@ defineFeature(feature, test => {
 
     given('a registered user', async () => {
       username = "pablo"
-      password = "pablo"
+      password = "pabloasw"
       
     });
 
@@ -105,10 +105,11 @@ defineFeature(feature, test => {
       await expect(page).toFill('input[name="username"]', username);
       await expect(page).toFill('input[name="password"]', password);
       await expect(page).toClick('button', { text: 'Login' })
+      await page.waitForNavigation({ waitUntil: 'networkidle0' });
     });
 
     then('the home page show up', async () => {
-      
+      await expect(page.url()).toContain('/home');
     });
   })
 
