@@ -59,7 +59,7 @@ const Navbar = ({ onNavigateRequest }) => {
                             >
                             </Avatar>
                         </IconButton>
-                        <Button sx={navButtonStyle} onClick={() => handleLogout()}>Log Out</Button>
+                        <Button sx={navButtonStyle} onClick={() => handleLogout()} data-testid="logout-button">Log Out</Button>
                     </Box>
                 </Toolbar>
             </Container>
