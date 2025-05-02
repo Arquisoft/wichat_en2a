@@ -108,7 +108,11 @@ app.get('/getUserById/:userId', async (req, res) => {
         const response = await axios.get(`${userServiceUrl}/getUserById/${req.params.userId}`);
         res.json(response.data);
     } catch (error) {
-        res.status(error.response.status).json({error: error.response.data.error});
+      if (error.response) {
+        res.status(error.response.status).json({ error: error.response.data.error });
+    } else {
+        res.status(500).json({ error: 'Internal server error' });
+    }
     }
 });
 
