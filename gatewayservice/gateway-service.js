@@ -44,6 +44,15 @@ function verifyToken(req, res, next) {
   }
 }
 
+function handleError(error, res) {
+    // Check if the error has the expected structure
+  if (error?.response?.status && error?.response?.data?.error)  
+    res.status(error.response.status).json({ error: error.response.data.error });
+  else
+    // Handle errors without the expected structure
+    res.status(500).json({ error: 'Internal server error' });
+}
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'OK' });
@@ -68,10 +77,7 @@ app.post('/adduser', async (req, res) => {
     const userResponse = await axios.post(userServiceUrl+'/adduser', req.body);
     res.json(userResponse.data);
   } catch (error) {
-    if (error?.response?.status && error?.response?.data?.error)  
-      res.status(error.response.status).json({ error: error.response.data.error });
-    else
-      res.status(500).json({ error: 'Internal server error' });
+    handleError(error, res);
   }
 });
 
@@ -96,10 +102,7 @@ app.get('/users', async (req, res) => {
       const userResponse = await axios.get(`${userServiceUrl}/users`);
       res.json(userResponse.data);
   } catch (error) {
-    if (error?.response?.status && error?.response?.data?.error)  
-      res.status(error.response.status).json({ error: error.response.data.error });
-    else
-      res.status(500).json({ error: 'Internal server error' });
+    handleError(error, res);
   }
 });
 
@@ -108,11 +111,7 @@ app.get('/getUserById/:userId', async (req, res) => {
         const response = await axios.get(`${userServiceUrl}/getUserById/${req.params.userId}`);
         res.json(response.data);
     } catch (error) {
-      if (error.response) {
-        res.status(error.response.status).json({ error: error.response.data.error });
-    } else {
-        res.status(500).json({ error: 'Internal server error' });
-    }
+      handleError(error, res);
     }
 });
 
@@ -121,11 +120,7 @@ app.put('/users/:userId', async (req, res) => {
         const response = await axios.put(`${userServiceUrl}/users/self/${req.params.userId}`, req.body);
         res.json(response.data);
     } catch (error) {
-        if (error.response) {
-            res.status(error.response.status).json({ error: error.response.data.error });
-        } else {
-            res.status(500).json({ error: 'Internal server error' });
-        }
+        handleError(error, res);
     }
 });
 
@@ -135,10 +130,7 @@ app.post('/askllm', async (req, res) => {
     const llmResponse = await axios.post(llmServiceUrl+'/ask', req.body);
     res.json(llmResponse.data);
   } catch (error) {
-    if (error?.response?.status && error?.response?.data?.error)  
-      res.status(error.response.status).json({ error: error.response.data.error });
-    else
-      res.status(500).json({ error: 'Internal server error' });
+    handleError(error, res);
   }
 });
 
@@ -148,11 +140,7 @@ app.get('/question/:questionType', async (req, res) => {
     const questionResponse = await axios.get(`${questionServiceUrl}/question/${req.params.questionType}`);
     res.json(questionResponse.data);
   } catch (error) {
-    // Check if the error has the expected structure
-    if (error?.response?.status && error?.response?.data?.error)  
-      res.status(error.response.status).json({ error: error.response.data.error });
-    else
-      res.status(500).json({ error: 'Internal server error' });
+    handleError(error, res);
   }
 });
 
@@ -162,10 +150,7 @@ app.post('/check-answer', async (req, res) => {
     const checkAnswerResponse = await axios.post(`${questionServiceUrl}/check-answer`, req.body);
     res.json(checkAnswerResponse.data);
   } catch (error) {
-    if (error?.response?.status && error?.response?.data?.error)  
-      res.status(error.response.status).json({ error: error.response.data.error });
-    else
-      res.status(500).json({ error: 'Internal server error' });
+    handleError(error, res);
   }
 });
 
@@ -179,7 +164,7 @@ app.post('/fetch-question-data', async (req, res) => {
     });
     res.json(fetchQuestionDataResponse.data);
   } catch (error) {
-      res.status(error.response.status).json({ error: error.response.data.error });
+      handleError(error, res);
   }
 });
 
@@ -195,8 +180,7 @@ app.post('/fetch-custom-question-data', async (req, res) => {
     });
     res.json(response.data);
   } catch (error) {
-    console.error("Error when fetching custom question data", error);
-    res.status(error.response?.status || 500).json({ error: "Failed to load custom question data"});
+    handleError(error, res);
   }
 });
 
@@ -217,10 +201,7 @@ app.post('/saveScore', async (req, res) => {
     const checkAnswerResponse = await axios.post(`${gameServiceUrl}/saveScore`, req.body);
     res.json(checkAnswerResponse.data);
   } catch (error) {
-    if (error?.response?.status && error?.response?.data?.error)  
-      res.status(error.response.status).json({ error: error.response.data.error });
-    else
-      res.status(500).json({ error: 'Internal server error' });
+    handleError(error, res);
   }
 });
 
@@ -410,10 +391,7 @@ app.get('/leaderboard/top3', async (req, res) => {
         const response = await axios.get(`${gameServiceUrl}/leaderboard/top3`)
         res.json(response.data);
     } catch(error){
-      if (error?.response?.status && error?.response?.data?.error)  
-        res.status(error.response.status).json({ error: error.response.data.error });
-      else
-        res.status(500).json({ error: 'Internal server error' });
+      handleError(error, res);
     }
 });
 
@@ -422,10 +400,7 @@ app.post('/generateIncorrectOptions', async (req, res) => {
     const incorrectOptionsResponse = await axios.post(`${llmServiceUrl}/generateIncorrectOptions`, req.body);
     res.json(incorrectOptionsResponse.data);
   } catch (error) {
-    if (error?.response?.status && error?.response?.data?.error)  
-      res.status(error.response.status).json({ error: error.response.data.error });
-    else
-      res.status(500).json({ error: 'Internal server error' });
+    handleError(error, res);
   }
 });
 
