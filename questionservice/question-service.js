@@ -317,9 +317,9 @@ async function getQuestion(type) {
 
   if (questionsCount < 200) {
     // Fetch a new question if less than 200 are available
-      fetchQuestionData(5, type).catch(
-        console.error("Error while fetching new questions to improve the pool of questions")
-      );
+    fetchQuestionData(5, type).catch((err) => {
+      console.error("Error while fetching new questions to improve the pool of questions", err);
+    });
   }
   
   try {
@@ -337,6 +337,10 @@ async function getQuestion(type) {
 // Check if the selected answer is correct
 async function checkAnswer(questionId, selectedAnswer) {
     try {
+      if (!mongoose.Types.ObjectId.isValid(questionId)) {
+        console.log('Invalid question ID format:', questionId);
+        return false;;
+      }
         const question = await Question.findById(questionId);
         if (!question) {
             console.log('Question not found.');
@@ -359,6 +363,7 @@ app.get('/question/:questionType', async (req, res) => {
         res.json(question);
     } catch (error) {
         console.error("Error while retrieving a question");
+        res.status(500).json({ error: error });
     }
 });
 
@@ -378,6 +383,7 @@ app.post('/check-answer', async (req, res) => {
         res.json({ isCorrect });
     } catch (error) {
         console.error("Error while checking questions");
+        res.status(500).json({ error: error });
     }
 });
 
@@ -389,7 +395,7 @@ app.post("/fetch-question-data", async (req, res) => {
       res.json(results);
     } catch (error) {
       console.error("Error while fetching questions");
-      res.status(500).json({ error: "Failed generate the questions..." });
+      res.status(500).json({ error: error });
     }
 });
 
