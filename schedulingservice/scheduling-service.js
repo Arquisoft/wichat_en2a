@@ -50,7 +50,7 @@ async function updateQuestions() {
             `Error fetching questions at attempt ${attempts}: ${error}`
           );
         }
-        logErrorCaseAttemts(attempts);
+        logErrorCaseAttemts(attempts, type);
       }
       attempts = 0; // Reset attempts for the next type
     }
@@ -61,10 +61,10 @@ async function updateQuestions() {
   }
 }
 
-function logErrorCaseAttemts(attempts) {
+function logErrorCaseAttemts(attempts, type) {
   if (attempts == 3) {
     console.log(
-      `Fetch for ${type} has failed, questions will be added while the game is executing...`
+      `Fetch for ${type || "some type"} has failed, questions will be added while the game is executing...`
     );
   }
 }

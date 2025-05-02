@@ -30,7 +30,7 @@ describe("Question Updater", () => {
 
     await updateQuestions();
 
-    expect(axios.post).toHaveBeenCalledTimes(6);
+    expect(axios.post).toHaveBeenCalledTimes(6); // One for cleaning + 1 per type (5 types)
   });
 
   it("should not make API calls at 1:01 AM", async () => {
@@ -51,5 +51,40 @@ describe("Question Updater", () => {
     await updateQuestions();
 
     expect(axios.post).not.toHaveBeenCalled();
+  });
+
+  it("should stop execution if cleaning the database fails", async () => {
+    setMockTime(1, 0); // Set time to 1:00 AM
+
+    // Mock the first call to fail (cleaning the database)
+    axios.post.mockRejectedValueOnce(new Error("DB error"));
+
+    await updateQuestions();
+
+    expect(axios.post).toHaveBeenCalledTimes(1); // Only the first call should be made
+  });
+
+  it("should retry fetching questions up to 3 times on failure", async () => {
+    setMockTime(1, 0); // Set time to 1:00 AM
+    let counter = 0;
+
+    axios.post.mockImplementation((url) => {
+      if (url.includes("/clear-questions")) {
+        return Promise.resolve({ status: 200 });
+      } else if (url.includes("/fetch-question-data")) {
+        counter++;
+        if (counter === 3) {
+          counter = 0;
+          return Promise.resolve({ data: {} }); // Simulate success on the second attempt
+        } else {
+          return Promise.reject(new Error("Fetch error")); // Simulate fetch failure
+        }
+      }
+    });
+
+    await updateQuestions();
+
+    expect(axios.post).toHaveBeenCalledTimes(16); // 1 for cleaning + 3*5 for fetching questions (5 types, 3 attempts each)
+
   });
 });
