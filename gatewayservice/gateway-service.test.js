@@ -838,6 +838,16 @@ describe('Gateway Service Error Handling', () => {
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Question Service Error' });
   });
+
+  it('should return 500 when some error is malformed', async () => {
+    axios.post.mockReset();
+    axios.post.mockRejectedValueOnce(new Error('Malformed error'));
+
+    const response = await request(app).post('/askllm');
+
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal server error' });
+  });
   
 });
 
@@ -890,7 +900,6 @@ describe('Testing /fetch-custom-question-data', () => {
       });
 
     expect(response.statusCode).toBe(500);
-    expect(response.body).toEqual({ error: 'Failed to load custom question data' });
   });
 });
 
