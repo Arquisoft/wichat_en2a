@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-const { defineFeature, loadFeature }=require('jest-cucumber');
+const {defineFeature, loadFeature} = require('jest-cucumber');
 const setDefaultOptions = require('expect-puppeteer').setDefaultOptions
 const feature = loadFeature('./features/game.feature');
 
@@ -15,7 +15,7 @@ defineFeature(feature, test => {
         page = await browser.newPage();
         //Way of setting up the timeout
         setDefaultOptions({timeout: 10000})
-        await page.setViewport({ width: 1920, height: 1080 });
+        await page.setViewport({width: 1920, height: 1080});
 
         await page
             .goto("http://localhost:3000", {
@@ -23,7 +23,7 @@ defineFeature(feature, test => {
             })
     });
 
-    afterAll(async ()=>{
+    afterAll(async () => {
         browser.close()
     });
 
@@ -31,19 +31,19 @@ defineFeature(feature, test => {
         given('A logged user', async () => {
             let username = "test2";
             let password = "test2";
-            await expect(page).toClick("button", { text: "Don't have an account? Register here." });
+            await expect(page).toClick("button", {text: "Don't have an account? Register here."});
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
-            await expect(page).toClick('button', { text: 'Register' })
+            await expect(page).toClick('button', {text: 'Register'})
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
-            await expect(page).toClick('button', { text: 'Login' })
+            await expect(page).toClick('button', {text: 'Login'})
         });
 
         when('Clicking on play and choosing a gamemode', async () => {
-            await expect(page).toClick('button', { text: 'PLAY' })
+            await expect(page).toClick('button', {text: 'PLAY'})
             await expect(page.url()).toContain('/gamemodes');
-            await expect(page).toClick('button', { text: 'Flags' })
+            await expect(page).toClick('button', {text: 'Flags'})
         });
 
         then('User starts playing', async () => {

@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const {defineFeature, loadFeature} = require('jest-cucumber');
 const setDefaultOptions = require('expect-puppeteer').setDefaultOptions
-const feature = loadFeature('./features/logout.feature');
+const feature = loadFeature('./features/leaderboards.feature');
 
 let page;
 let browser;
@@ -27,10 +27,10 @@ defineFeature(feature, test => {
         browser.close()
     });
 
-    test('A logged user wants to logout', ({given, when, then}) => {
+    test('A logged user wants to see the leaderboards', ({given, when, then}) => {
         given('A logged user', async () => {
-            const username = "test";
-            const password = "test";
+            let username = "test3";
+            let password = "test3";
             await expect(page).toClick("button", {text: "Don't have an account? Register here."});
             await expect(page).toFill('input[name="username"]', username);
             await expect(page).toFill('input[name="password"]', password);
@@ -40,13 +40,13 @@ defineFeature(feature, test => {
             await expect(page).toClick('button', {text: 'Login'})
         });
 
-        when('Clicking on nav bar \'Log Out\' button', async () => {
-            await expect(page).toClick('button', {text: 'Log Out'})
-            await page.waitForNavigation({waitUntil: 'networkidle0'});
+        when('Clicking on leaderboards', async () => {
+            await expect(page).toClick('button', {text: 'Leaderboards'})
+
         });
 
-        then('The user is logged out', async () => {
-            await expect(page.url()).toContain('/login');
+        then('Leaderboards are displayed', async () => {
+            await expect(page.url()).toContain('/leaderboard');
         });
     });
 });
