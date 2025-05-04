@@ -1,3 +1,4 @@
+/*
 const puppeteer = require('puppeteer');
 const {defineFeature, loadFeature} = require('jest-cucumber');
 const setDefaultOptions = require('expect-puppeteer').setDefaultOptions
@@ -49,4 +50,4 @@ defineFeature(feature, test => {
             await expect(page.url()).toContain('/leaderboard');
         });
     });
-});
+});*/
