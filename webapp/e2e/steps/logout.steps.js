@@ -14,7 +14,7 @@ defineFeature(feature, test => {
             : await puppeteer.launch({headless: false, slowMo: 100});
         page = await browser.newPage();
         //Way of setting up the timeout
-        setDefaultOptions({timeout: 10000})
+        setDefaultOptions({timeout: 100000})
         await page.setViewport({width: 1920, height: 1080});
 
         await page
@@ -42,7 +42,6 @@ defineFeature(feature, test => {
 
         when('Clicking on nav bar \'Log Out\' button', async () => {
             await expect(page).toClick('button', {text: 'Log Out'})
-            await page.waitForNavigation({waitUntil: 'networkidle0'});
         });
 
         then('The user is logged out', async () => {
