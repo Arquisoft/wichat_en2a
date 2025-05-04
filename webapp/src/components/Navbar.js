@@ -51,7 +51,10 @@ const Navbar = ({ onNavigateRequest }) => {
                         <Button sx={navButtonStyle} onClick={() => navigate("/leaderboard")}>Leaderboards</Button>
                     </Box>
                     <Box sx={{display: "flex", ml: "auto", alignItems: "center", gap: 2}}>
-                        <IconButton onClick={() => handleNavigation("/editUser")}>
+                        <IconButton
+                            onClick={() => handleNavigation("/editUser")}
+                            data-testid="edit-user-button"
+                        >
                             <Avatar
                                 src={storedProfilePic || "/avatars/default.jpg"}
                                 alt="UserPic"
