@@ -3,7 +3,7 @@ Feature: Registering a new user
 Scenario: The user is not registered in the site
   Given an unregistered user
   When I fill the data in the form and press submit
-  Then the user is added
+  Then The user is added
 
 Scenario: Registering an already registered user
   Given a registered user
@@ -12,7 +12,7 @@ Scenario: Registering an already registered user
 
 Scenario: The user is not registered and try to enter de web
   Given an unregistered user
-  When i fill the data in the form and press submit
+  When I fill the data in the form and press submit
   Then an error message appears
 
 Scenario: The user is registered and can login in
