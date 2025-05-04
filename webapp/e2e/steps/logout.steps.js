@@ -41,10 +41,14 @@ defineFeature(feature, test => {
         });
 
         when('Clicking on nav bar \'Log Out\' button', async () => {
-            await expect(page).toClick('button', {text: 'Log Out'})
+            await page.waitForTimeout(1000);
+            await expect(page.url()).toContain('/home');
+            await page.waitForSelector('[data-testid="logout-button"]', {timeout: 10000});
+            await page.click('[data-testid="logout-button"]');
         });
 
         then('The user is logged out', async () => {
+            await page.waitForTimeout(1000);
             await expect(page.url()).toContain('/login');
         });
     });
