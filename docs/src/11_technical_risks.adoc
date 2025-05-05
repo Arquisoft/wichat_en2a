@@ -6,8 +6,8 @@ One of the main risks of our project is the use of innovative but potentially un
 
 |===
 | Decision | Current approach | Pros of current approach | Cons of current approach | Alternative Approach
-| **Software environment** | Node.js | Great performance and we work with something new | We haven't work with it until now, more experience with other languages (java)| Java  
+| **Software environment** | Node.js | Great performance and we work with something new | We haven't work with it until now, more experience with other languages| Java  
 | **Database** | MongoDB | Flexible, great perfromance with node and easy to use | Flexibility can lead to problems, lack experience with no relational DB | PostgreSQL
 | **Incorrect answers** | LLM | Innovated and flexible | performance, inconsitent, external service | Database, wikidata  
-| **Deployment** | Azure Virtual Machine | Full control, no local resources | external service, cost money | Other external service, local machine  
+| **Deployment** | Oracle Virtual Machine | Full control; no use of local resources; easy scalable | Limited performance due to VM constraints; better performance requires paid plans | Other external service, local machine  
 |===
