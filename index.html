@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>wichat_en2a</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<style>
+/*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
+/* Uncomment the following line when using as a custom stylesheet */
+/* @import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700"; */
+html{font-family:sans-serif;-webkit-text-size-adjust:100%}
+a{background:none}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+b,strong{font-weight:bold}
+abbr{font-size:.9em}
+abbr[title]{cursor:help;border-bottom:1px dotted #dddddf;text-decoration:none}
+dfn{font-style:italic}
+hr{height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+audio,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type=checkbox],input[type=radio]{padding:0}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,::before,::after{box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;line-height:1;position:relative;cursor:auto;-moz-tab-size:4;-o-tab-size:4;tab-size:4;word-wrap:anywhere;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:0}
+p{line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #dddddf;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ul.square{list-style-type:square}
+ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:1px solid #dedede;word-wrap:normal}
+table thead,table tfoot{background:#f7f8f7}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt{background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{line-height:1.6}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
+.clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
+.clearfix::after,.float-group::after{clear:both}
+:not(pre).nobreak{word-wrap:normal}
+:not(pre).nowrap{white-space:nowrap}
+:not(pre).pre-wrap{white-space:pre-wrap}
+:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
+pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
+pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
+pre>code{display:block}
+pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
+em em{font-style:normal}
+strong strong{font-weight:400}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background:#f7f7f7;border:1px solid #ccc;border-radius:3px;box-shadow:0 1px 0 rgba(0,0,0,.2),inset 0 0 0 .1em #fff;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menuref{color:#000}
+.menuseq b:not(.caret),.menuref{font-weight:inherit}
+.menuseq{word-spacing:-.02em}
+.menuseq b.caret{font-size:1.25em;line-height:.8}
+.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
+b.button::before,b.button::after{position:relative;top:-1px;font-weight:400}
+b.button::before{content:"[";padding:0 3px 0 2px}
+b.button::after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin:0 auto;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header::before,#header::after,#content::before,#content::after,#footnotes::before,#footnotes::after,#footer::before,#footer::after{content:" ";display:table}
+#header::after,#content::after,#footnotes::after,#footer::after{clear:both}
+#content{margin-top:1.25em}
+#content::before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
+#header>h1:only-child{border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:flex;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span::before{content:"\00a0\2013\00a0"}
+#header .details br+span.author::before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark::before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber::after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #dddddf;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #e7e7e9;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #e7e7e9;left:auto;right:0}}
+@media screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border:1px solid #e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:none;background:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:hsla(0,0%,100%,.8);line-height:1.44}
+#content{margin-bottom:.625em}
+.sect1{padding-bottom:.625em}
+@media screen and (min-width:768px){#content{margin-bottom:1.25em}
+.sect1{padding-bottom:1.25em}}
+.sect1:last-child{padding-bottom:0}
+.sect1+.sect1{border-top:1px solid #e7e7e9}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor::before,h2>a.anchor::before,h3>a.anchor::before,#toctitle>a.anchor::before,.sidebarblock>.content>.title>a.anchor::before,h4>a.anchor::before,h5>a.anchor::before,h6>a.anchor::before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+details{margin-left:1.25rem}
+details>summary{cursor:pointer;display:block;position:relative;line-height:1.6;margin-bottom:.625rem;outline:none;-webkit-tap-highlight-color:transparent}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"";border:solid transparent;border-left:solid;border-width:.3em 0 .3em .5em;position:absolute;top:.5em;left:-1.25rem;transform:translateX(15%)}
+details[open]>summary::before{border:solid transparent;border-top:solid;border-width:.5em .3em 0;transform:translateY(15%)}
+details>summary::after{content:"";width:1.25rem;height:1em;position:absolute;top:.3em;left:-1.25rem}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
+.paragraph.lead>p,#preamble>.sectionbody>[class=paragraph]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border:1px solid #e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;border-radius:4px}
+.sidebarblock{border:1px solid #dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;border-radius:4px}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:first-child,.sidebarblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child,.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock>.content>pre{border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
+@media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
+@media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
+.literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class=highlight],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
+.literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
+.listingblock:hover code[data-lang]::before{display:block}
+.listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
+.listingblock.terminal pre .command:not([data-prompt])::before{content:"$"}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.prettyprint{background:#f7f7f8}
+pre.prettyprint .linenums{line-height:1.45;margin-left:2em}
+pre.prettyprint li{background:none;list-style-type:inherit;padding-left:0}
+pre.prettyprint li code[data-lang]::before{opacity:1}
+pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
+table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
+table.linenotable td.code{padding-left:.75em}
+table.linenotable td.linenos,pre.pygments .linenos{border-right:1px solid;opacity:.35;padding-right:.5em;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+pre.pygments span.linenos{display:inline-block;margin-right:.75em}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock:not(.excerpt)>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote::before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.75em;margin-right:.5ex;text-align:right}
+.verseblock{margin:0 1em 1.25em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans-serif;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract blockquote::before,.quoteblock.excerpt blockquote::before,.quoteblock .quoteblock blockquote::before{display:none}
+.quoteblock.abstract blockquote,.quoteblock.abstract p,.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{line-height:1.6;word-spacing:0}
+.quoteblock.abstract{margin:0 1em 1.25em;display:block}
+.quoteblock.abstract>.title{margin:0 0 .375em;font-size:1.15em;text-align:center}
+.quoteblock.excerpt>blockquote,.quoteblock .quoteblock{padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
+.quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
+.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;font-size:.85rem;text-align:left;margin-right:0}
+p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content{margin-bottom:1.25em;word-wrap:anywhere}
+td.tableblock>.content>:last-child{margin-bottom:-1.25em}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all>*>tr>*{border-width:1px}
+table.grid-cols>*>tr>*{border-width:0 1px}
+table.grid-rows>*>tr>*{border-width:1px 0}
+table.frame-all{border-width:1px}
+table.frame-ends{border-width:1px 0}
+table.frame-sides{border-width:0 1px}
+table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-child>*{border-top-width:0}
+table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
+table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
+table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
+table.stripes-all>*>tr,table.stripes-odd>*>tr:nth-of-type(odd),table.stripes-even>*>tr:nth-of-type(even),table.stripes-hover>*>tr:hover{background:#f8f8f7}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
+ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
+ul.unstyled,ol.unstyled{margin-left:0}
+li>p:empty:only-child::before{content:"";display:inline-block}
+ul.checklist>li>p:first-child{margin-left:-1em}
+ul.checklist>li>p:first-child>.fa-square-o:first-child,ul.checklist>li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
+ul.checklist>li>p:first-child>input[type=checkbox]:first-child{margin-right:.25em}
+ul.inline{display:flex;flex-flow:row wrap;list-style:none;margin:0 0 .625em -1.25em}
+ul.inline>li{margin-left:1.25em}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+td.hdlist2{word-wrap:anywhere}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
+.colist td:not([class]):first-child img{max-width:none}
+.colist td:not([class]):last-child{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:4px solid #fff;box-shadow:0 0 0 1px #ddd}
+.imageblock.left{margin:.25em .625em 1.25em 0}
+.imageblock.right{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active,#footnotes .footnote a:first-of-type:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background:#00fafa}
+.black{color:#000}
+.black-background{background:#000}
+.blue{color:#0000bf}
+.blue-background{background:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background:#fa00fa}
+.gray{color:#606060}
+.gray-background{background:#7d7d7d}
+.green{color:#006000}
+.green-background{background:#007d00}
+.lime{color:#00bf00}
+.lime-background{background:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background:#7d0000}
+.navy{color:#000060}
+.navy-background{background:#00007d}
+.olive{color:#606000}
+.olive-background{background:#7d7d00}
+.purple{color:#600060}
+.purple-background{background:#7d007d}
+.red{color:#bf0000}
+.red-background{background:#fa0000}
+.silver{color:#909090}
+.silver-background{background:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background:#fafa00}
+span.icon>.fa{cursor:default}
+a span.icon>.fa{cursor:inherit}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note::before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip::before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);border-radius:50%;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]::after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt,summary{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,td.hdlist1,span.alt,summary{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background:#fffef7;border-color:#e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@page{margin:1.25cm .75cm}
+@media print{*{box-shadow:none!important;text-shadow:none!important}
+html{font-size:80%}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare)::after,a[href^="https:"]:not(.bare)::after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]{border-bottom:1px dotted}
+abbr[title]::after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#header,#content,#footnotes,#footer{max-width:none}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span::before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]::before{display:block}
+#footer{padding:0 .9375em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+@media amzn-kf8,print{#header>h1:first-child{margin-top:1.25rem}
+.sect1{padding:0!important}
+.sect1+.sect1{border:0}
+#footer{background:none}
+#footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
+@media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
+</style>
+</head>
+<body class="article">
+<div id="header">
+<h1><span class="image"><img src="./images/arc42-logo.png" alt="arc42"></span> wichat_en2a</h1>
+<div class="details">
+<span id="revnumber">version 8.2 EN,</span>
+<span id="revdate">January 2023</span>
+<br><span id="revremark">(based upon AsciiDoc version)</span>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#section-introduction-and-goals">1. Introduction and Goals</a>
+<ul class="sectlevel2">
+<li><a href="#_introduction">1.1. Introduction</a></li>
+<li><a href="#_requirements_overview">1.2. Requirements Overview</a></li>
+<li><a href="#_quality_goals">1.3. Quality Goals</a></li>
+<li><a href="#_stakeholders">1.4. Stakeholders</a></li>
+</ul>
+</li>
+<li><a href="#section-architecture-constraints">2. Architecture Constraints</a>
+<ul class="sectlevel2">
+<li><a href="#_list_of_constraints">2.1. List of constraints</a></li>
+</ul>
+</li>
+<li><a href="#section-context-and-scope">3. Context and Scope</a>
+<ul class="sectlevel2">
+<li><a href="#_business_context">3.1. Business Context</a></li>
+<li><a href="#_technical_context">3.2. Technical Context</a></li>
+</ul>
+</li>
+<li><a href="#section-solution-strategy">4. Solution Strategy</a>
+<ul class="sectlevel2">
+<li><a href="#_technologies">4.1. Technologies</a></li>
+<li><a href="#_architecture">4.2. Architecture</a></li>
+<li><a href="#organizational_decisions">4.3. Organizational Decisions</a></li>
+</ul>
+</li>
+<li><a href="#section-building-block-view">5. Building Block View</a>
+<ul class="sectlevel2">
+<li><a href="#_whitebox_overall_system">5.1. Whitebox Overall System</a></li>
+</ul>
+</li>
+<li><a href="#section-runtime-view">6. Runtime View</a>
+<ul class="sectlevel2">
+<li><a href="#_runtime_scenario_1_login_and_authentication">6.1. &lt;Runtime Scenario 1. Login and Authentication&gt;</a></li>
+<li><a href="#_runtime_scenario_2_game_mode_and_question_selection">6.2. &lt;Runtime Scenario 2. Game Mode and Question Selection&gt;</a></li>
+<li><a href="#_runtime_scenario_3_image_based_questioning">6.3. &lt;Runtime Scenario 3. Image-Based Questioning&gt;</a></li>
+<li><a href="#_runtime_scenario_4_hint_system_and_ai_assistance">6.4. &lt;Runtime Scenario 4. Hint System and AI Assistance&gt;</a></li>
+<li><a href="#_runtime_scenario_5_game_progress_and_score_management">6.5. &lt;Runtime Scenario 5. Game Progress and Score Management&gt;</a></li>
+<li><a href="#_runtime_scenario_6_leaderboard_and_social_features">6.6. &lt;Runtime Scenario 6. . Leaderboard and Social Features&gt;</a></li>
+</ul>
+</li>
+<li><a href="#section-deployment-view">7. Deployment View</a></li>
+<li><a href="#section-concepts">8. Cross-cutting Concepts</a>
+<ul class="sectlevel2">
+<li><a href="#_internacionalization">8.1. Internacionalization</a></li>
+<li><a href="#_security">8.2. Security</a></li>
+<li><a href="#_testing">8.3. Testing</a></li>
+</ul>
+</li>
+<li><a href="#section-design-decisions">9. Architecture Decisions</a>
+<ul class="sectlevel2">
+<li><a href="#_using_endpoints_in_gateway_service">9.1. Using endpoints in gateway service</a></li>
+<li><a href="#_using_mongodb">9.2. Using MongoDB</a></li>
+</ul>
+</li>
+<li><a href="#section-quality-scenarios">10. Quality Requirements</a></li>
+<li><a href="#section-technical-risks">11. Risks and Technical Debts</a></li>
+<li><a href="#section-glossary">12. Glossary</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<style>
+.arc42help {font-size:small; width: 14px; height: 16px; overflow: hidden; position: absolute; right: 0; padding: 2px 0 3px 2px;}
+.arc42help::before {content: "?";}
+.arc42help:hover {width:auto; height: auto; z-index: 100; padding: 10px;}
+.arc42help:hover::before {content: "";}
+@media print {
+	.arc42help {display:none;}
+}
+</style>
+<div class="paragraph">
+<p><strong>About arc42</strong></p>
+</div>
+<div class="paragraph lead">
+<p>arc42, the template for documentation of software and system architecture.</p>
+</div>
+<div class="paragraph">
+<p>Template Version 8.2 EN. (based upon AsciiDoc version), January 2023</p>
+</div>
+<div class="paragraph">
+<p>Created, maintained and &#169; by Dr. Peter Hruschka, Dr. Gernot Starke and contributors.
+See <a href="https://arc42.org" class="bare">https://arc42.org</a>.</p>
+</div>
+<hr>
+<div class="sidebarblock arc42help">
+<div class="content">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This version of the template contains some help and explanations.
+It is used for familiarization with arc42 and the understanding of the concepts.
+For documentation of your own system you use better the <em>plain</em> version.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-introduction-and-goals">1. Introduction and Goals</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_introduction">1.1. Introduction</h3>
+<div class="paragraph">
+<p>We are a team of seven Software engineering <strong>students</strong> working for ChattySw, a company that has been hired by RTVE aiming to extend their online version of the "Saber y Ganar" quiz show.
+We are starting from scratch, using a skeleton provided by the company to begin working on the desire web page.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_requirements_overview">1.2. Requirements Overview</h3>
+<div class="paragraph">
+<p>The system is designed to provide an interactive quiz experience based on <strong>Saber y Ganar</strong>. The key requirements include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Web-Based Interface</strong>: The application will be accessible through a web frontend, displaying questions, answers, and a hint system.</p>
+</li>
+<li>
+<p><strong>User Accounts &amp; Progress Tracking</strong>: User partticipation will be tracked by the application, allowing them to view leaderboards and varios statistics.</p>
+</li>
+<li>
+<p><strong>Automated Question Generation</strong>: Questions will be taken from wikidata, and answers will be dynamically generated by the LLM.</p>
+</li>
+<li>
+<p><strong>AI-Powered Hints</strong>: An LLM-based hint system will assist users without revealing direct answers, mitigating incorrect information.</p>
+</li>
+<li>
+<p><strong>Time-Limited Responses</strong>: Players must answer within a given time frame.</p>
+</li>
+<li>
+<p><strong>API Access</strong>: The system will expose APIs to retrieve user data and question details.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For a detailed breakdown of requirements, please refer to the following document: 📄 <a href="https://docs.google.com/document/d/1_4KBTx6hVuR90cUW4LoDHEH0E3NZJ3DInacCZjAuGXY/edit?pli=1&amp;tab=t.0#heading=h.knuq2aw7zapd">Project Requirements Document</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_quality_goals">1.3. Quality Goals</h3>
+<div class="paragraph">
+<p>The following quality attributes are prioritized in the architecture:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Quality Goal</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Usability</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The interface should be user-friendly, ensuring smooth interaction with questions and the AI assistant.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Scalability</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The system should efficiently handle multiple concurrent users.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Reliability</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The application must function without errors, correctly retrieving and displaying questions.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Maintainability</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The codebase should follow best practices, allowing future extensions and improvements.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Security</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">User data and interactions must be securely managed, preventing unauthorized access.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_stakeholders">1.4. Stakeholders</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 40%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Role/Name</th>
+<th class="tableblock halign-left valign-top">Contact</th>
+<th class="tableblock halign-left valign-top">Expectations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>RTVE</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Client</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">To have a modernized and functional quiz system with AI-based hints to engage users.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>End Users (Players)</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Public Users</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Want an enjoyable, responsive, and fair game experience with accurate hints and reliable performance.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Development Team (ChattySw)</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Internal Team</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Responsible for implementing the system following the defined requirements and quality standards.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>WikiData</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API Provider</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Provides the database of questions and images, ensuring relevant and accurate information for the game.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>External AI Provider (LLM Service)</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">API Provider</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Provides the AI-based hint system, which must be reliable and minimize incorrect responses. It is also the responsible for adding wrong answers</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-architecture-constraints">2. Architecture Constraints</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this section we will pinpoint the constraints that come into play for the design of our application and its architecture.</p>
+</div>
+<div class="sect2">
+<h3 id="_list_of_constraints">2.1. List of constraints</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Constraint type</th>
+<th class="tableblock halign-left valign-top">Constraint description</th>
+<th class="tableblock halign-left valign-top">Repercussions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Technical</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Using Git and GitHub for version control.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires the team to get accustomed to GitHub and its functionalities.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Technical</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Deploying the application to access it through a web browser.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires the team to get familiarized with tools and services such as Docker, Azure&#8230;&#8203;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Technical</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Not</strong> using the project from the previous year.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires the team to work without starting from code authored by other people previous year&#8217;s students of the chosen project, start fresh.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Technical</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mandatory inclusion of LLM functionalities to help the user.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires the team to get familiarized with the LLM selected (Qwen) and implement it into the program.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Organizational</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">There is a time limit established.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The application must be developed in a few months, which sets a time limit for the team.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Organizational</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Using pull requests for code submissions.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ensures that more than one person will be responsible of each commit.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Organizational</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Holding regular team meetings.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">A team meeting must be held at least once a week (or more if required) and the participants and contents of said meeting must both be noted down.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Conventional</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Developing an application with code up to standards.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Code developed by the team must be as clear to understand as possible (i.e. following code conventions, or adding documentation), in order to ensure the maintainability of the application.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Conventional</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ensuring the LLM provides factual clues.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Requires to adjust the LLM accordingly to ensure it does not provide any falsehoods that may confuse the player of the game.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Conventional</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Following the Arc42 template in the documentation.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The documentation to be provided in the project must be modelled after Arc42.</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-context-and-scope">3. Context and Scope</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This chapter describes the environment and context of the app, who uses the system and on which other systems it depends</p>
+</div>
+<div class="sidebarblock arc42help">
+<div class="content">
+<div class="paragraph">
+<div class="title">Motivation</div>
+<p>The domain interfaces and technical interfaces to communication partners are among your system&#8217;s most critical aspects. Make sure that you completely understand them.</p>
+</div>
+<div class="paragraph">
+<div class="title">Form</div>
+<p>Various options:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Context diagrams</p>
+</li>
+<li>
+<p>Lists of communication partners and their interfaces.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<div class="title">Further Information</div>
+<p>See <a href="https://docs.arc42.org/section-3/">Context and Scope</a> in the arc42 documentation.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_business_context">3.1. Business Context</h3>
+<div class="sidebarblock arc42help">
+<div class="content">
+<div class="paragraph">
+<div class="title">Contents</div>
+<p>Specification of <strong>all</strong> communication partners (users, IT-systems, &#8230;&#8203;) with explanations of domain specific inputs and outputs or interfaces.
+Optionally you can add domain specific formats or communication protocols.</p>
+</div>
+<div class="paragraph">
+<div class="title">Motivation</div>
+<p>All stakeholders should understand which data are exchanged with the environment of the system.</p>
+</div>
+<div class="paragraph">
+<div class="title">Form</div>
+<p>All kinds of diagrams that show the system as a black box and specify the domain interfaces to communication partners.</p>
+</div>
+<div class="paragraph">
+<p>Alternatively (or additionally) you can use a table.
+The title of the table is the name of your system, the three columns contain the name of the communication partner, the inputs, and the outputs.</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>The user in the game interact with the application and he/she Will see a question with its answers and if he want there&#8217;s the possibility of conversate with a chat to obtain hints, each hint will substract points to de user in the game. In this case the questions Will be generate using information with wikidata. For the chat we use a LLM (empathy) using its API. The other 3 wrong answers are generated by the LLM too. There are different types of games, in each game questions have a specific topic like cars or flags. For competing with your friends, you have the possibility of seeing a ranking with all the users that have played the game and it&#8217;s stats.</p>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="./images/BusinessContext.png" alt="Business Context Photo">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_technical_context">3.2. Technical Context</h3>
+<div class="sidebarblock arc42help">
+<div class="content">
+<div class="paragraph">
+<div class="title">Contents</div>
+<p>Technical interfaces (channels and transmission media) linking your system to its environment. In addition a mapping of domain specific input/output to the channels, i.e. an explanation which I/O uses which channel.</p>
+</div>
+<div class="paragraph">
+<div class="title">Motivation</div>
+<p>Many stakeholders make architectural decision based on the technical interfaces between the system and its context. Especially infrastructure or hardware designers decide these technical interfaces.</p>
+</div>
+<div class="paragraph">
+<div class="title">Form</div>
+<p>E.g. UML deployment diagram describing channels to neighboring systems,
+together with a mapping table showing the relationships between channels and input/output.</p>
+</div>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/TechnicalContext.png" alt="technical context photo">
+</div>
+</div>
+<div class="paragraph">
+<p>The application has microservices for the different actions perform in the application( LLMService, Scoreboard, QuestionService, ..).
+For the storage of the users or the questions, scoreboard, users,&#8230;&#8203; it&#8217;s used a database, in this case we use MongoD.
+Other service is the llm service that allows diferent microservices of the application to ask to an llm. In our app, we let ask for the hint and for the three wrong answers for the questions.
+Another service is the question service that manage the questions and the answers for the game.
+Finally we have the webapp service that allows the user to play the game and it&#8217;s 'the front end' of the application.</p>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-solution-strategy">4. Solution Strategy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this section we will describe the approach taken to develop the system from a high-level perspective. This includes the technologies used, the architecture of the system and the most important organizational decisions.</p>
+</div>
+<div class="sect2">
+<h3 id="_technologies">4.1. Technologies</h3>
+<div class="paragraph">
+<p>The following technologies are used in our project:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>NodeJS</strong>: To build our backend, we will use this technology due to its simplicity and its ability to create scalable and efficient servers. This technology is not so familiar to the team but as it is widely used we think we won&#8217;t have many issues as there are plenty of resources available (documentation, GitHub repos, StackOverflow&#8230;&#8203;).</p>
+</li>
+<li>
+<p><strong>Jest</strong>: To test the system, we will use this technology due to its simplicity and its ability to create scalable and efficient tests. Similarly to NodeJS, this is not a technology the team is familiared with, but, for the same reasons exposed before, we don&#8217;t think we will have many issues.</p>
+</li>
+<li>
+<p><strong>MongoDB</strong>: To store the data, we will use this technology due to its flexibility and scalability. Furthermore, this technology is recommended to use combined with NodeJS as they perform quite well together (therefore avoiding the pitfall of performance that is typically associated with the use of NoSQL databases over SQL ones). The team is not so used to work with NoSQL databases, but we think that it will be a good opportunity to learn something new.</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>MongoDB Compass</strong>: For being able to visualize the data stored in MongoDB, we will use this tool. It is a GUI for MongoDB that allows us to see the data stored in the database and to perform queries on it. This tool is very useful for debugging and for understanding how the data is stored in the database. Moreover, it allows us to handle incorrect data that we may introduce during development in a friendly way.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>React</strong>: To build the web application&#8217;s UI, we will use this technology due to its simplicity and its ability to create reusable components. It has also been chosen as it has a relatively gentle learning curve (as we will be learning while building).</p>
+</li>
+<li>
+<p><strong>Docker</strong>: To deploy the system, we will use this technology due to its portability and reliability.</p>
+</li>
+<li>
+<p><strong>Git &amp; GitHub</strong>: For version control and collaboration, we will use Git and GitHub. These tools will enable the team to collaborate efficiently and keep track of changes, issues and documentation.</p>
+</li>
+<li>
+<p><strong>GitHub Actions</strong>: We will use this tool to automate the CI/CD process. This will help the team to keep the codebase clean and maintainable. We will use it to run tests, build the project and deploy it automatically when changes are made to the main branch. There will be two different workflows:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>CI</strong>: This workflow will be triggered when changes are made to the main branch. It will run the tests and build the project. If everything goes well, it will deploy the project to the production environment.</p>
+</li>
+<li>
+<p><strong>CD</strong>: This workflow will be triggered when we choose to deploy in GitHub. It will run the tests and build the project. If everything goes well, it will deploy the project to the production environment.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>SonarQube</strong>: For static code analysis, we will use SonarQube. This tool will help the team to keep the codebase clean and maintainable. The usage of this tool will provide us reports about the code quality and security. It will be integrated into the CI/CD process, so that it will run automatically when changes are made to the main branch. It will also be used to generate reports about the code quality and security.</p>
+</li>
+<li>
+<p><strong>QWen2.5 (7B parameters)</strong>: To add the LLM functionality to the system, we will use this model. This way we may apply to the Empathy contest if we decided to do so. That is the main reason to use this model because we felt that using others like Gemini or DeepSeek would probably provide better results, but we would not be able to enroll our project in the contest.</p>
+</li>
+<li>
+<p><strong>Azure</strong>: To deploy the system, we will use Azure due to its scalability and reliability. We will use a VM stored in Azure to deploy the system and make it accessible. We could have used any other cloud provider, but we decided to use Azure because it was the one shown in the course. Moreover, we could have used a local server, but that would demand to have a machine running 24/7 and we would have to take care of some security issues that using a cloud provided are not so relevant.</p>
+</li>
+<li>
+<p><strong>Postman</strong>: To manually test the APIs we expose, we will use this tool. It is a very useful tool for testing APIs and it allows us to test the APIs without having to build the whole system. It is also very useful for debugging and for understanding how the APIs work. It will be useful also to build automated tests for the APIs, provided that the tests done in one of them should not depend on ohter APIs. We may use this tool to see exactly what each API expects and returns to build mocks for the tests.</p>
+</li>
+<li>
+<p><strong>Swagger</strong>: To document the main API in the system (the one exposed by the Gateway-Service), we will use this software. It is a well known tool for documenting APIs and it allows to generate documentation in a semi-automatic way. In our case, we will use a YAML file to describe the documentation and then we will use Swagger to generate it. We will try to keep the documentation as close as possible to the OpenAPI standard (as requested in the course).</p>
+</li>
+<li>
+<p><strong>Grafana and Prometheus</strong>: To provide live handeling of the status of the application, we have used these two technologies. The main reason to chooose them is that a lesson was provided about them and that we only needed to minimally configure them in our project to make them work.</p>
+</li>
+<li>
+<p><strong>JMeter</strong>: To perform the load tests we choose to use JMeter over the proposed technology (Gatling) because JMeter is open-source and this way we would not need to worry about the usage of the tokens.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_architecture">4.2. Architecture</h3>
+<div class="paragraph">
+<p>The system will be divided into several components, each one will have theit own responsibility. The idea is to follow a microservices architecture, where each component is responsible for a specific task. This way we can scale the system more easily and we can have a more organized codebase. Also, we may be able to work in parallel on different components.</p>
+</div>
+<div class="paragraph">
+<p>The specific components are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>WebApp</strong>: This component will be responsible for the user interface. It will be built using React and will be responsible for displaying the information to the user and for sending the user&#8217;s input to the backend services.</p>
+</li>
+<li>
+<p><strong>Gateway-Service</strong>: This component will be responsible for routing the requests to the correct service. It will be built using NodeJS and will be responsible for handling the requests from the WebApp and sending them to the correct service.</p>
+</li>
+<li>
+<p><strong>Users</strong>: This component will be responsible for managing the users. It will be built using NodeJS and will be responsible for handling the user&#8217;s information and authentication. Within this service, there are several subcomponents:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>User-Service</strong>: This sub-service will be used to handle users within the database.</p>
+</li>
+<li>
+<p><strong>Auth-Service</strong>: This sub-service will be used to handle the authentication of the users.</p>
+</li>
+<li>
+<p><strong>Game-Service</strong>: This sub-service will be used to store the games that the users play.</p>
+</li>
+<li>
+<p><strong>LeaderBoard-Service</strong>: This sub-service will be used to retrieve information about users and games to be displayed ordered (for now by the total score obtained).</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Questions-Service</strong>: This component will be responsible for retrieving the questions from Wikidata and storing them in its database. It will be built using NodeJS and will be responsible for handling the requests from the Gateway-Service and sending them to Wikidata.</p>
+</li>
+<li>
+<p><strong>LLM-Service</strong>: This component will be responsible of any interaction the system performs with the LLM model. It will be built using NodeJS and will be responsible for handling the requests from the Gateway-Service and sending them to the LLM model.</p>
+</li>
+<li>
+<p><strong>Scheduling-Service</strong>: This component will be in charge of the timing of when the retrieval of questions from Wikidata is done. The current implementation is that every day at 1 AM the questions will be erased and new ones will be retrieved. This service will be built using NodeJS.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>We will try to follow the microservices architecture as much as possible, but it is quite possible that some of the 'microservices' will be using the same database due to information sharing. However, we will try to keep the services as independent as possible.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="organizational_decisions">4.3. Organizational Decisions</h3>
+<div class="paragraph">
+<p>All decisions will be recorded at the <a href="https://github.com/Arquisoft/wichat_en2a/wiki/Team-Decisions">decision&#8217;s section</a> of the Wiki of the project. We have decided to do it in such a way so that we do not need to deploy the documentation all the times we record a decision.</p>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-building-block-view">5. Building Block View</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_whitebox_overall_system">5.1. Whitebox Overall System</h3>
+<div class="imageblock text-center">
+<div class="content">
+<img src="./images/Whitebox%20Overall%20System.png" alt="Whitebox Overall System">
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Motivation</dt>
+<dd>
+<p>This diagram shows the different parts of the application that interact when a user is playing, as well as outside elements used.</p>
+</dd>
+<dt class="hdlist1">Contained Building Blocks</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Player</strong>: User that interacts with the game, they will need to fill some sort of login information and be validated before playing.</p>
+</li>
+<li>
+<p><strong>App System</strong>: Main place where the game takes place.</p>
+</li>
+<li>
+<p><strong>WikiData API</strong>: External API, which will be used to generate questions and answers.</p>
+</li>
+<li>
+<p><strong>LLM API</strong>: External use of LLM (QWen) to allow the user to get hints from an artificial intelligence.</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">Important Interfaces</dt>
+<dd>
+<p>As we can see in the diagram, the user will interact with the App Internal System, which will first ask for a list of questions and answers from the WikiData API. Then, as well as showing the questions to the player, it will allow them to see an AI generated hint.</p>
+</dd>
+</dl>
+</div>
+<div class="sect3">
+<h4 id="_container_diagram">5.1.1. Container Diagram</h4>
+<div class="imageblock text-center">
+<div class="content">
+<img src="./images/level2_container.png" alt="level2 container">
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Motivation</dt>
+<dd>
+<p>This diagram shows in more detail the different (<strong>internal</strong>) parts of the application that interact when a user is playing, as well as outside elements used.</p>
+</dd>
+<dt class="hdlist1">Contained Building Blocks</dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Player&#8217;s browser</strong>: The browser will send us some information about the user that interacts with the game, they will need to fill some sort of login information and be validated before playing.</p>
+</li>
+<li>
+<p><strong>App System</strong>: Main place where the game takes place. Will receive some information about the user from the browser (probably using a proxy) and communicate with the other internal parts of the app, or external (like the LLM functionality).</p>
+</li>
+<li>
+<p><strong>App API</strong>: Probably programmed in SpringbReactoot. This part of the app will receive the information about the user from the browser and save it in the database, as well as information about the status of the game.</p>
+</li>
+<li>
+<p><strong>Question generator</strong>: This part will first ask the WikiData API for some questions and answers, which it will later store in the database.</p>
+</li>
+<li>
+<p><strong>Database</strong>: In MongoDB. Will receive information about the user/state of the game/questions and answers.</p>
+</li>
+<li>
+<p><strong>WikiData API</strong>: External API, which will be used to generate questions and answers.</p>
+</li>
+<li>
+<p><strong>LLM API</strong>: External use of LLM (for now it will be QWen) to allow the user to get hints from an artificial intelligence.</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">Important Interfaces</dt>
+<dd>
+<p>As we can see in the diagram, the user will interact with the App Internal System first, which will ask for information about the user from their browser (proxy). This container will send this info to the app API which will store it in the database.</p>
+<div class="paragraph">
+<p>Then, when the game starts, the Question generator will use the WikiData API to get a list of questions and answers, which will be stored in the database as well. Then, as well as showing the questions to the player, the App System container will communicate with the LLM Container to allow players to see an AI generated hint.</p>
+</div>
+</dd>
+</dl>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-runtime-view">6. Runtime View</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_runtime_scenario_1_login_and_authentication">6.1. &lt;Runtime Scenario 1. Login and Authentication&gt;</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The user opens the application and is asked to log in.</p>
+</li>
+<li>
+<p>They enter their credentials (username and password).</p>
+</li>
+<li>
+<p>The client application sends an authentication request to the backend.</p>
+</li>
+<li>
+<p>The backend verifies the credentials by checking in its database.</p>
+</li>
+<li>
+<p>If login is successful, a session token is generated and sent back to the client.</p>
+</li>
+<li>
+<p>The client stores the token for future requests.</p>
+</li>
+<li>
+<p>If login fails, an error message is displayed, asking the user to try again.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/documentation/06_runtime1_login.png" alt="Runtime 1 Login Diagram">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_runtime_scenario_2_game_mode_and_question_selection">6.2. &lt;Runtime Scenario 2. Game Mode and Question Selection&gt;</h3>
+<div class="paragraph">
+<p>After logging in, the user navigates to the game selection screen.
+•	The user selects a game mode (e.g., cities, historical figures, sports…).
+•	The client requests a set of questions from the backend.
+•	The game retrieves a set questions based on the image from WikiData.
+•	The questions and associated images are sent to the client.
+•	The game session starts, displaying the first question.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/documentation/06_runtime2_questionSelection.png" alt="Runtime 2 Question Selection Diagram">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_runtime_scenario_3_image_based_questioning">6.3. &lt;Runtime Scenario 3. Image-Based Questioning&gt;</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The app presents an image to the user based on the game topic.</p>
+</li>
+<li>
+<p>The app gets the set of questions related to the image from the QuestionsDB, such as:
+    o	"Which historical figure is shown in this photo?"
+    o	"What city is this landmark located in?"
+    o	"Which sport is depicted in this picture?"
+    o	"Which historical event is depicted in this picture?"</p>
+</li>
+<li>
+<p>The user selects an answer from multiple-choice options or types in a response.</p>
+</li>
+<li>
+<p>The client sends the answer to the backend for validation.</p>
+</li>
+<li>
+<p>The backend checks if the response matches the correct answer.</p>
+</li>
+<li>
+<p>If correct:
+o	The user earns points.
+o	The next question is displayed.</p>
+</li>
+<li>
+<p>If incorrect:
+o	The user can try again or request a hint</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/documentation/06_runtime3_questions.png" alt="Runtime 3 Questioning Diagram">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_runtime_scenario_4_hint_system_and_ai_assistance">6.4. &lt;Runtime Scenario 4. Hint System and AI Assistance&gt;</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>If the user does not know the answer, they can request a hint.</p>
+</li>
+<li>
+<p>The backend calls the AI to generate a hint based on the image and question.</p>
+</li>
+<li>
+<p>Types of hints may include:
+o	A brief historical fact about the person, place, or event.
+o	A partial reveal of the answer.
+o	A clue referencing a relatedevent.
+o	Eliminating one wrong answer choices (if it is a multiple-choice question).</p>
+</li>
+<li>
+<p>The hint is sent to the client and displayed to the user.</p>
+</li>
+<li>
+<p>The user can then retry answering the question.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/documentation/06_runtime4_hints.png" alt="Runtime 4 Hints Diagram">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_runtime_scenario_5_game_progress_and_score_management">6.5. &lt;Runtime Scenario 5. Game Progress and Score Management&gt;</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The game continues through a predefined number of images and questions.</p>
+</li>
+<li>
+<p>The backend keeps track of the user’s progress, including:
+o	Score.
+o	Number of correct and incorrect answers.
+o	Time taken per question.</p>
+</li>
+<li>
+<p>After the final question, the backend calculates the final score and stores it in the database.</p>
+</li>
+<li>
+<p>The client displays a summary of the results.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/documentation/06_runtime5_score.png" alt="Runtime 4 Hints Diagram">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_runtime_scenario_6_leaderboard_and_social_features">6.6. &lt;Runtime Scenario 6. . Leaderboard and Social Features&gt;</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>The user’s score is compared against other players.</p>
+</li>
+<li>
+<p>The backend updates the leaderboard using the scores database or a dedicated one.</p>
+</li>
+<li>
+<p>The client displays rankings, showing top players.</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="./images/documentation/06_runtime6_leaderboard.png" alt="Runtime 4 Hints Diagram">
+</div>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-deployment-view">7. Deployment View</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Overview Diagram</strong></p>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="./images/deployment.png" alt="deployment">
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Motivation</dt>
+<dd>
+<p>The application is build using Docker and an Oracle Virtual Machine. Using both together creates a combination of the portability and efficiency of the containers obtained by the use of Docker with the additional security and isolation provided by virtual machines.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>Docker is used for the deployment of the application both for developing (local deployment) and when for the final result in the VM. It is a containerization platform that packages applications and their dependencies into lightweight, portable containers, ensuring consistency across environments.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Quality and/or Performance Features</dt>
+<dd>
+<p>Expanding on the advantages of the combined use of Docker and a VM (and also their independent characteristics that add their own value), we can remark:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Isolation</strong>: Not only because of the container-level isolation provided by Docker (which helps prevent dependency conflicts), but also because the additional OS-level isolation thanks to the use of an VM.</p>
+</li>
+<li>
+<p><strong>Security</strong>: The VM can act as a security boundary if a container is ever compromised.</p>
+</li>
+<li>
+<p><strong>Resource Management and Allocation</strong>: The VM has a dedicated CPU, RAM and disk which can be allocated specifically for Docker, and Docker itself reduces resource consumption by sharing the OS kernel.</p>
+</li>
+<li>
+<p><strong>Portability and Compatibility</strong>: Using Docker ensures that the application works in the exact same way across different environments.</p>
+</li>
+<li>
+<p><strong>More</strong>: Easy recovery and backup (this can also be attributed to the use of a Github repository), flexible scalability&#8230;&#8203;</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1">Mapping of Building Blocks to Infrastructure</dt>
+<dd>
+<p>Below there is a list with the current building blocks defined in the application:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Webapp</strong>: Its port (3000) is the one the user will connect to when interacting with the application, as it is its graphic user interface and will work as the frontend.</p>
+</li>
+<li>
+<p><strong>Gateway</strong>: As its name suggets, it works as the interface that comunicates the webapp with the rest of the services and the services between each other, counting with different endpoints for said purpose.</p>
+</li>
+<li>
+<p><strong>Userservice</strong>: It will be in charge of the user management.</p>
+</li>
+<li>
+<p><strong>Authservice</strong>: On the same level as the previous one, it will be the one that handles the authentication of users.</p>
+</li>
+<li>
+<p><strong>Llmservice</strong>: This one is also on the same level as the two before it, and it manages the LLM used in the application. The LLM API will be used interchangeably between the QWen and Gemini models.</p>
+</li>
+<li>
+<p><strong>Questionservice</strong>: This service communicates with the Wikidata API and returns a type of question, with a picture attached to it and a correct answer.</p>
+</li>
+<li>
+<p><strong>Schedulingservice</strong>: This is an internal service used to update the questions from the database that calls the questionservice from the gateway periodically.</p>
+</li>
+<li>
+<p><strong>Gameservice</strong>: This service is used for the management of rankings, each game played and the scores of users.</p>
+</li>
+<li>
+<p><strong>Database</strong>: The database that will contain all the data of the application. As of now, it is used to store users, their passwords and their profile information, scores for each game played and the questions for the game.</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>It is also worth mentioning the use of other tools that are currently impelmented in the application:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>APIs</strong>: The Wikidata API, the LLM API&#8230;&#8203;</p>
+</li>
+<li>
+<p><strong>Prometheus and Grafana</strong>: This tools combined allow to monitor and observe the system creating statistics about it.</p>
+</li>
+</ul>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-concepts">8. Cross-cutting Concepts</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_internacionalization">8.1. Internacionalization</h3>
+<div class="paragraph">
+<p>In hopes of incresing accessibility for our users, we want to give our application the ability of playing in different languages.</p>
+</div>
+<div class="paragraph">
+<p>We are starting off only offering English and Spanish, but this offer may be expanded in the future with different prototypes.</p>
+</div>
+<div class="paragraph">
+<p>As we know that internacionalization is more than just changing the language of the text in the game, we will have to look further into some library that will make these feature easier to implement.</p>
+</div>
+<div class="paragraph">
+<p>Our first prototype won&#8217;t be capable of changing the language, but hopefully in the future it will.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_security">8.2. Security</h3>
+<div class="paragraph">
+<p>We also want our users to not only have fun while playing our game, but feel safe. For this purpose, we use the following characteristics:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Bcrypt</strong>: used to securely hash and store user passwords, protecting them from breaches. Its adaptive nature makes it resistant to brute-force attacks, ensuring robust user authentication.</p>
+</li>
+<li>
+<p><strong>JWT</strong> (JSON Web Token): it enables secure, stateless user authentication. It allows users to stay logged in without storing session data on the server, enhancing scalability and providing a secure way to transmit user data between client and server.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_testing">8.3. Testing</h3>
+<div class="paragraph">
+<p>We want our team to pay lots of attention to testing while developing the app. A correct testing suite can ensure that the app is evolving correctly and that we won&#8217;t have problems in the future.</p>
+</div>
+<div class="paragraph">
+<p>For this, we are using <strong>jest</strong> and testing each individual service as well as the endpoints in the gateway service, before they connect to the webapp directory (front-end).</p>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-design-decisions">9. Architecture Decisions</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_using_endpoints_in_gateway_service">9.1. Using endpoints in gateway service</h3>
+<div class="paragraph">
+<p>This will provide some importante benefits, for example:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Centralized Routing</strong>: Manages and directs traffic to microservices, improving scalability (see the quality requirements part).</p>
+</li>
+<li>
+<p><strong>Enhanced Security</strong>: Acts as a security layer for authentication and logging.</p>
+</li>
+<li>
+<p><strong>Simplified Client Access</strong>: Provides a unified API endpoint, making client-side development easier.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Some downsides could be that if the gateway service fails, our whole app fails. And this will also make our app harder to mantain.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_using_mongodb">9.2. Using MongoDB</h3>
+<div class="paragraph">
+<p>We considered other data base models to use in our project, including MySQL and PostgreSQL, after some thinking, we sttled with MongoDB for the following reasons:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Scalability</strong>: Easily handles large amounts of unstructured or semi-structured data.</p>
+</li>
+<li>
+<p><strong>Flexible Schema</strong>: NoSQL structure allows rapid iteration without worrying about complex migrations.</p>
+</li>
+<li>
+<p><strong>High Performance</strong>: Fast reads and writes, very important when working with a game.</p>
+</li>
+<li>
+<p><strong>Good compatibility</strong>: Node.js has a great compatibility with non-relation databases</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The rest of the decisions are stored in the Wiki of the project. To see them you can access via the following <a href="https://github.com/Arquisoft/wichat_en2a/wiki/Team-Decisions">link</a>.</p>
+</div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-quality-scenarios">10. Quality Requirements</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Quality Requirements</th>
+<th class="tableblock halign-left valign-top">Scenario</th>
+<th class="tableblock halign-left valign-top">Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Security</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Protect user data through secure authentication (e.g., bcrypt, JWT) and defend against attacks like SQL injection</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">High</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scalability</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ensure the app can handle increased load from more users and questions without degrading performance</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">High</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Performance</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Provide fast response times for a smooth user experience, especially during gameplay.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">High</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maintainability</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Make the codebase easy to update, modify, and extend with clean architecture and documentation for future extensions of the prototype</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Medium</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Usability</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ensure the user interface is intuitive and responsive, offering a pleasant experience for all users</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Medium</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Testability</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Facilitate automated testing for quicker development cycles and better reliability</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Medium</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Portability</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Have a smooth deploymentin different operating systems/devices/platforms.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Low</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-technical-risks">11. Risks and Technical Debts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>One of the main risks of our project is the use of innovative but potentially unstable technologies and approaches. Below, there is a list with the key risks and technical debts, comparing our current choices with alternative solutions.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 20%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Decision</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Current approach</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Pros of current approach</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cons of current approach</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Alternative Approach</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Software environment</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Node.js</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Great performance and we work with something new</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">We haven&#8217;t work with it until now, more experience with other languages</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Java</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Database</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">MongoDB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Flexible, great perfromance with node and easy to use</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Flexibility can lead to problems, lack experience with no relational DB</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PostgreSQL</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Incorrect answers</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LLM</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Innovated and flexible</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">performance, inconsitent, external service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Database, wikidata</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Deployment</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Oracle Virtual Machine</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Full control; no use of local resources; easy scalable</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Limited performance due to VM constraints; better performance requires paid plans</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Other external service, local machine</p></td>
+</tr>
+</tbody>
+</table>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="section-glossary">12. Glossary</h2>
+<div class="sectionbody">
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 66.6667%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Term</th>
+<th class="tableblock halign-left valign-top">Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>MongoDB</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>A NoSQL, document-oriented database that stores data in flexible, JSON-like documents, making it easy to handle.</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>JWT (JSON Web Token)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Compact, URL-safe token used for securely transmitting information between parties, commonly for user authentication and authorization in web applications.</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>CI/CD Testing</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Automated process of running tests during Continuous Integration (CI) and Continuous Deployment (CD) pipelines to ensure code changes are reliable, functional, and ready for deployment</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>WikiData</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Knowledge base that stores structured data to support Wikipedia, and external applications, enabling access to facts and relationships.</em></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>LLM (Large Language Model)</em></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><em>Artificial intelligence model trained on of text data to understand, generate, and process human language.</em></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 8.2 EN<br>
+Last updated 2025-02-11 11:38:17 +0100
+</div>
+</div>
+</body>
+</html>
