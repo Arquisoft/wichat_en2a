@@ -2,22 +2,4 @@ ifndef::imagesdir[:imagesdir: ../images]
 
 [[section-design-decisions]]
 == Architecture Decisions
-
-=== Using endpoints in gateway service
-This will provide some importante benefits, for example:
-
-- **Centralized Routing**: Manages and directs traffic to microservices, improving scalability (see the quality requirements part).
-- **Enhanced Security**: Acts as a security layer for authentication and logging.
-- **Simplified Client Access**: Provides a unified API endpoint, making client-side development easier.
-
-Some downsides could be that if the gateway service fails, our whole app fails. And this will also make our app harder to mantain.
-
-=== Using MongoDB
-We considered other data base models to use in our project, including MySQL and PostgreSQL, after some thinking, we sttled with MongoDB for the following reasons: 
-
-- **Scalability**: Easily handles large amounts of unstructured or semi-structured data.
-- **Flexible Schema**: NoSQL structure allows rapid iteration without worrying about complex migrations.
-- **High Performance**: Fast reads and writes, very important when working with a game.
-- **Good compatibility**: Node.js has a great compatibility with non-relation databases
-
-The rest of the decisions are stored in the Wiki of the project. To see them you can access via the following https://github.com/Arquisoft/wichat_en2a/wiki/Team-Decisions[link].
+The architectural decisions are stored in the Wiki of our project. To see them you can access via the following https://github.com/Arquisoft/wichat_en2a/wiki/Team-Decisions[link].
