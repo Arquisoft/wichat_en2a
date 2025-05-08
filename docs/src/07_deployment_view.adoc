@@ -6,7 +6,7 @@ ifndef::imagesdir[:imagesdir: ../images]
 == Deployment View
 **Overview Diagram**
 [.text-center]
-image::../images/deployment.png[]
+image::../images/07_deployment_view.png[]
 
 Motivation::
 
@@ -30,13 +30,13 @@ Below there is a list with the current building blocks defined in the applicatio
 - **Gateway**: As its name suggets, it works as the interface that comunicates the webapp with the rest of the services and the services between each other, counting with different endpoints for said purpose.
 - **Userservice**: It will be in charge of the user management.
 - **Authservice**: On the same level as the previous one, it will be the one that handles the authentication of users.
-- **Llmservice**: This one is also on the same level as the two before it, and it manages the LLM used in the application. The LLM API will be used interchangeably between the QWen and Gemini models.
+- **Llmservice**: This one is also on the same level as the two before it, and it manages the LLM used in the application. The LLM API will be used interchangeably between the models provided for Empathy (generation of distractors) and Gemini (generation of hints for the chat).
 - **Questionservice**: This service communicates with the Wikidata API and returns a type of question, with a picture attached to it and a correct answer.
 - **Schedulingservice**: This is an internal service used to update the questions from the database that calls the questionservice from the gateway periodically.
 - **Gameservice**: This service is used for the management of rankings, each game played and the scores of users.
-- **Database**: The database that will contain all the data of the application. As of now, it is used to store users, their passwords and their profile information, scores for each game played and the questions for the game.
+- **Database**: The database that will contain all the data of the application. The one used is an external MongoDB database with several collections for each service (users, questions...). As of now, it is used to store users, their passwords and their profile information, scores for each game played and the questions for the game.
 
 It is also worth mentioning the use of other tools that are currently impelmented in the application:
 
-- **APIs**: The Wikidata API, the LLM API...
-- **Prometheus and Grafana**: This tools combined allow to monitor and observe the system creating statistics about it.
+- **APIs**: The Wikidata API, the LLM APIs...
+- **Prometheus and Grafana**: This tools combined allow to monitor and observe the system creating statistics about it, although they were not implemented in the release.

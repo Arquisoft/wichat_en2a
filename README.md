@@ -31,6 +31,7 @@ This is a repository for the Wichat project of Software Architecture course in 2
 - **LLM service**. Express service that handles the communication with the LLM.
 - **Question service**. Express service that handles the management of the questions of the quiz game.
 - **Scheduling service**. Internal service that calls the questionservice through the gateway to update the database of questions periodically.
+- **Game service**. Express service that handles the scores and leaderboard management.
 - **Gateway service**. Express service that is exposed to the public and serves as a proxy to the services to comunicate with each other and the webapp.
 - **Webapp**. React web application that uses the gateway service to allow user interaction with the services of the application.
 
